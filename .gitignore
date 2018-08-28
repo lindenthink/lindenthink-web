@@ -65,3 +65,5 @@ typings/
 modules.xml
 vcs.xml
 misc.xml
+dist
+.yo-rc.json
