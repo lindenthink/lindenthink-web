@@ -1,44 +1,8 @@
 const webpack = require('webpack');
 const path = require('path');
 
-/*
- * We've enabled Postcss, autoprefixer and precss for you. This allows your app
- * to lint  CSS, support variables and mixins, transpile future CSS syntax,
- * inline images, and more!
- *
- * To enable SASS or LESS, add the respective loaders to module.rules
- *
- * https://github.com/postcss/postcss
- *
- * https://github.com/postcss/autoprefixer
- *
- * https://github.com/jonathantneal/precss
- *
- */
-
 const autoprefixer = require('autoprefixer');
 const precss = require('precss');
-
-/*
- * SplitChunksPlugin is enabled by default and replaced
- * deprecated CommonsChunkPlugin. It automatically identifies modules which
- * should be splitted of chunk by heuristics using module duplication count and
- * module category (i. e. node_modules). And splits the chunks…
- *
- * It is safe to remove "splitChunks" from the generated configuration
- * and was added as an educational example.
- *
- * https://webpack.js.org/plugins/split-chunks-plugin/
- *
- */
-
-/*
- * We've enabled UglifyJSPlugin for you! This minifies your app
- * in order to load faster and run less javascript.
- *
- * https://github.com/webpack-contrib/uglifyjs-webpack-plugin
- *
- */
 
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -72,7 +36,21 @@ module.exports = {
 						}
 					}
 				]
-			}
+			}, {
+               test: /\.js$/,
+				use: {
+                    loader: "eslint-loader",
+					options: {
+                        quiet: true,
+                        failOnWarning: true,
+                        failOnError: true,
+                    	formatter: require("eslint-friendly-formatter")// 默认的错误提示方式
+					}
+                },
+                enforce: "pre",// 编译前检查
+				exclude: [/node_modules/,/bootstrap/],
+				include: [path.resolve(__dirname, 'app')]
+            }
 		]
 	},
 
@@ -111,6 +89,12 @@ module.exports = {
 			root: __dirname,
 			verbose: true,
 			dry: false
+		}),
+		new webpack.ProvidePlugin({ // 參考：https://segmentfault.com/a/1190000006887523#articleHeader3
+			$: 'jquery',
+			jQuery: 'jquery',
+			'window.jQuery': 'jquery',
+			'window.$': 'jquery'
 		})
 	]
 };
