@@ -9,6 +9,19 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
+    devtool: 'eval-source-map',
+    entry: path.resolve(__dirname, 'app/app.js'),
+    output: {
+        filename: '[name].[chunkhash].js',
+        path: path.resolve(__dirname, 'dist')
+    },
+    mode: 'development',
+    devServer: {
+        contentBase: "./dist",//本地服务器所加载的页面所在的目录
+        port: 9000,
+        historyApiFallback: true,//不跳转
+        inline: true//实时刷新
+    },
 	module: {
 		rules: [
 			{
@@ -50,19 +63,12 @@ module.exports = {
                 enforce: "pre",// 编译前检查
 				exclude: [/node_modules/,/bootstrap/],
 				include: [path.resolve(__dirname, 'app')]
+            },{
+                test: /\.(png|jpg|jpe?g|gif|svg)$/,
+                use: 'url-loader?limit=8192&name=images/[name].[ext]'
             }
 		]
 	},
-
-	entry: path.resolve(__dirname, 'app/main.js'),
-
-	output: {
-		filename: '[name].[chunkhash].js',
-		path: path.resolve(__dirname, 'dist')
-	},
-
-	mode: 'development',
-
 	optimization: {
 		splitChunks: {
 			cacheGroups: {
@@ -71,7 +77,6 @@ module.exports = {
 					test: /[\\/]node_modules[\\/]/
 				}
 			},
-
 			chunks: 'async',
 			minChunks: 1,
 			minSize: 30000,
@@ -83,7 +88,7 @@ module.exports = {
         new webpack.BannerPlugin('版权归[lindenthink.com]所有，翻版必究'),
     	new UglifyJSPlugin(),
 		new HtmlWebpackPlugin({
-			template: path.resolve(__dirname, "app/index.html")
+			template: path.resolve(__dirname, "app/app.html")
 		}),
 		new CleanWebpackPlugin('dist/*.*',{
 			root: __dirname,
