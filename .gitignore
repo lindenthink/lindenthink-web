@@ -65,5 +65,8 @@ typings/
 modules.xml
 vcs.xml
 misc.xml
+codeStyleConfig.xml
+Project.xml
+Project_Default.xml
 dist
 .yo-rc.json
