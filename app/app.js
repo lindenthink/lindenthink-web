@@ -9,13 +9,13 @@ import './public/img/app-fund.jpg'
 
 import './app.css'
 
-$('body').scroll(function () {
-    console.info('scrolling...');
-    if (document.body.scrollTop >= 100 && !$('nav').hasClass('fixed-top')) {
+window.addEventListener('scroll', function () {
+    if (document.body.scrollTop >= 80 && !$('nav').hasClass('fixed-top')) {
         $('nav').addClass('fixed-top');
-    } else {
-        if ($('nav').hasClass('fixed-top')) {
-            $('nav').removeClass('fixed-top');
-        }
+        return;
+    }
+    if (document.body.scrollTop < 80 && $('nav').hasClass('fixed-top')) {
+        $('nav').removeClass('fixed-top');
     }
 });
+
