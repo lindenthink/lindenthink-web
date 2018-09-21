@@ -1,13 +1,15 @@
-/** 测试环境配置 */
+/** 生成环境配置 */
 const webpack = require('webpack');
 const path = require('path');
 
+
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 module.exports = {
-    devtool: 'eval-source-map',
+    devtool: none,
     entry: {
         common: path.resolve(__dirname, 'app/common/common.js'),
         home: path.resolve(__dirname, 'app/home.js'),
@@ -17,13 +19,7 @@ module.exports = {
         filename: '[name].[chunkhash].js',
         path: path.resolve(__dirname, 'dist')
     },
-    mode: 'development',
-    devServer: {
-        contentBase: './dist',//本地服务器所加载的页面所在的目录
-        port: 9000,
-        historyApiFallback: true,//不跳转
-        inline: true//实时刷新
-    },
+    mode: 'production',
     module: {
         rules: [
             {
@@ -33,20 +29,6 @@ module.exports = {
                     use: ['css-loader']
                 })
             }, {
-                test: /\.js$/,
-                use: {
-                    loader: 'eslint-loader',
-                    options: {
-                        quiet: true,
-                        failOnWarning: true,
-                        failOnError: true,
-                        formatter: require('eslint-friendly-formatter')// 默认的错误提示方式
-                    }
-                },
-                enforce: 'pre',// 编译前检查
-                exclude: [/node_modules/, /bootstrap/],
-                include: [path.resolve(__dirname, 'app')]
-            }, {
                 test: /\.(png|jpg|jpe?g|gif|svg)$/,
                 use: 'url-loader?limit=8192&name=images/[name].[ext]'
             }
@@ -54,13 +36,23 @@ module.exports = {
     },
 
     plugins: [
+        new webpack.BannerPlugin('版权归[lindenthink.com]所有，翻版必究'),
+        new UglifyJSPlugin(),
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, 'app/home.html'),
+            minify: {
+                removeComments: true,
+                collapseWhitespace: true
+            },
             chunks: ['common', 'home']
         }),
         new HtmlWebpackPlugin({
-            filename: 'wealth.html',
+            filename: 'welth.html',
             template: path.resolve(__dirname, 'app/wealth/wealth.html'),
+            minify: {
+                removeComments: true,
+                collapseWhitespace: true
+            },
             chunks: ['common', 'wealth']
         }),
         new CleanWebpackPlugin('dist/*', {

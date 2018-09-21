@@ -1,0 +1,2 @@
+import './wealth.css'
+
