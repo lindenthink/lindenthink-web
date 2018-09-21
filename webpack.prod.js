@@ -47,7 +47,7 @@ module.exports = {
             chunks: ['common', 'home']
         }),
         new HtmlWebpackPlugin({
-            filename: 'welth.html',
+            filename: 'wealth.html',
             template: path.resolve(__dirname, 'app/wealth/wealth.html'),
             minify: {
                 removeComments: true,
