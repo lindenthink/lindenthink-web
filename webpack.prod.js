@@ -9,7 +9,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 module.exports = {
-    devtool: none,
+    devtool: 'none',
     entry: {
         common: path.resolve(__dirname, 'app/common/common.js'),
         home: path.resolve(__dirname, 'app/home.js'),
