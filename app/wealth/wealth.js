@@ -1,2 +1,2 @@
-import './wealth.css'
+import './wealth.less'
 

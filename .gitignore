@@ -71,3 +71,4 @@ Project_Default.xml
 dist
 .yo-rc.json
 .idea/workspace.xml
+.idea/watcherTasks.xml
