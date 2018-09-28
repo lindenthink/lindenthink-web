@@ -47,8 +47,11 @@ module.exports = {
                 exclude: [/node_modules/, /bootstrap/],
                 include: [path.resolve(__dirname, 'app')]
             }, {
-                test: /\.(png|jpg|jpe?g|gif|svg)$/,
+                test: /\.(png|jpg|jpe?g|gif)$/,
                 use: 'url-loader?limit=8192&name=images/[name].[ext]'
+            }, {
+                test: /\.(eot|woff2|woff|ttf|svg)$/,
+                use: 'url-loader?limit=8192&name=fonts/[name].[ext]'
             }
         ]
     },
