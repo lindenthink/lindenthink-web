@@ -1,11 +1,11 @@
 <!-- wealth.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>菩提思</title>
-    <link rel="icon" type="image/x-icon" href="images/logo.png"/>
+<link>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>菩提思</title>
+<link rel="icon" type="image/x-icon" href="images/logo.png"/>
 </head>
 <body>
 
@@ -19,19 +19,19 @@
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="index.html">主页</a>
+                    <a class="nav-link glyphicon glyphicon-home" href="index.html">主页</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">日积月累</a>
+                    <a class="nav-link glyphicon glyphicon-usd">日积月累</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">匠心独运</a>
+                    <a class="nav-link glyphicon glyphicon-briefcase" href="#">匠心独运</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">人生百味</a>
+                    <a class="nav-link glyphicon glyphicon-book" href="#">人生百味</a>
                 </li>
-                <li class="nav-item ">
-                    <a class="nav-link" href="#">闲情逸致</a>
+                <li class="nav-item">
+                    <a class="nav-link glyphicon glyphicon-music" href="#">闲情逸致</a>
                 </li>
             </ul>
             <form class="form-inline">
@@ -41,87 +41,250 @@
         </div>
     </nav>
     <div class="card-header">&nbsp;</div><!-- 用来防止导航栏覆盖到页面内容 -->
+
+    <div class="alert alert-info" role="alert">
+        <div class="row">
+            <div class="col-1">
+                公告 <i class="glyphicon glyphicon-volume-up"></i>
+            </div>
+            <div class="col-10">
+                <marquee class="d-block">千呼万唤始出来，犹抱琵琶半遮面。网站建设中，敬请期待^_^</marquee>
+            </div>
+            <div class="col-1">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </header>
 
 <main>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-2">
-                <div id="tree"  class="position-fixed"></div>
-            </div>
-            <div class="col-8">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">编程</a></li>
-                        <li class="breadcrumb-item"><a href="#">JAVA</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">多线程</li>
-                    </ol>
-                </nav>
+    <div class="row">
+        <div class="col-2">
+            <div id="tree" class="position-fixed"></div>
+        </div>
 
-                <div class="card">
-                    <div class="card-header text-center">
-                        自我介绍
-                    </div>
-                    <div class="card-body">
-                        <p>自由的鸟翱翔于天空，自在的鱼畅游于海洋。记录人生中的点点滴滴，蓦然回首，记忆犹新！</p>
-                    </div>
-                </div>
+        <div class="col-8">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                       aria-controls="home" aria-selected="true">编程->JAVA->基础</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                       aria-controls="profile" aria-selected="false">
+                        多线程
+                        <button type="button" class="close" aria-label="Close" onclick="close()"><span
+                                aria-hidden="true" class="text-danger">&times;</span></button>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="messages-tab" data-toggle="tab" href="#messages" role="tab"
+                       aria-controls="messages" aria-selected="false">
+                        Messages
+                        <button type="button" class="close" aria-label="Close" onclick="close()"><span
+                                aria-hidden="true" class="text-danger">&times;</span></button>
+                    </a>
+                </li>
+            </ul>
 
-                <div class="card">
-                    <div class="card-header text-center">
-                        自我介绍
+            <div class="tab-content">
+                <div class="tab-pane active" style="height: 45rem" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <div class="list-group">
+                        <a href="#"
+                           class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Java Concurrent包</h5>
+                                <small>3 days ago</small>
+                            </div>
+                            <p class="mb-1">介绍了concurrent包中各种多线程相关的类，并给出示例.</p>
+                            <small>Linden.</small>
+                        </a>
                     </div>
-                    <div class="card-body">
-                        <p>自由的鸟翱翔于天空，自在的鱼畅游于海洋。记录人生中的点点滴滴，蓦然回首，记忆犹新！</p>
-                    </div>
-                </div>
 
-                <div class="card">
-                    <div class="card-header text-center">
-                        自我介绍
-                    </div>
-                    <div class="card-body">
-                        <p>自由的鸟翱翔于天空，自在的鱼畅游于海洋。记录人生中的点点滴滴，蓦然回首，记忆犹新！</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header text-center">
-                        自我介绍
-                    </div>
-                    <div class="card-body">
-                        <p>自由的鸟翱翔于天空，自在的鱼畅游于海洋。记录人生中的点点滴滴，蓦然回首，记忆犹新！</p>
-                    </div>
-                </div>
-
-
-                <div class="card">
-                    <div class="card-header text-center">
-                        自我介绍
-                    </div>
-                    <div class="card-body">
-                        <p>自由的鸟翱翔于天空，自在的鱼畅游于海洋。记录人生中的点点滴滴，蓦然回首，记忆犹新！</p>
-                    </div>
-                </div>
-
-
-                <div class="card">
-                    <div class="card-header text-center">
-                        自我介绍
-                    </div>
-                    <div class="card-body">
-                        <p>自由的鸟翱翔于天空，自在的鱼畅游于海洋。记录人生中的点点滴滴，蓦然回首，记忆犹新！</p>
-                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination  justify-content-center">
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="#">1 </a></li>
+                            <li class="page-item active"><a class="page-link " href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
 
 
-                <div class="card">
-                    <div class="card-header text-center">
-                        自我介绍
+                <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="row">
+                        <div class="col-2">
+                            <nav id="navbar-example3" class="navbar navbar-light bg-light">
+                                <a class="navbar-brand" href="#">章节</a>
+                                <nav class="nav nav-pills flex-column">
+                                    <a class="nav-link" href="#item-1">Item 1</a>
+                                    <nav class="nav nav-pills flex-column">
+                                        <a class="nav-link ml-3 my-1" href="#item-1-1">Item 1-1</a>
+                                        <a class="nav-link ml-3 my-1" href="#item-1-2">Item 1-2</a>
+                                    </nav>
+                                    <a class="nav-link" href="#item-2">Item2</a>
+                                    <a class="nav-link" href="#item-3">Item3</a>
+                                    <nav class="nav nav-pills flex-column">
+                                        <a class="nav-link ml-3 my-1" href="#item-3-1">Item 3-1</a>
+                                        <a class="nav-link ml-3 my-1" href="#item-3-2">Item 3-2</a>
+                                    </nav>
+                                </nav>
+                            </nav>
+                        </div>
+
+                        <div class="col-10">
+                            <div data-spy="scroll" data-target="#navbar-example3" data-offset="0">
+                                <h4 id="item-1">Item 1</h4>
+                                <p>It is a compile-It is a compile-time error if the character following a backslash in
+                                    an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The
+                                    Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided for
+                                    compatibility with C, but can express only Unicode values \u0000 through \u00FF, so
+                                    Unicode escapes are usually preferred.)time error if the character following a
+                                    backslash in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6,
+                                    or 7. The Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided
+                                    for compatibilitIt is a compile-time error if the character following a backslash in
+                                    an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The
+                                    Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided for
+                                    compatibility with C, but can express only Unicode values \u0000 through \u00FF, so
+                                    Unicode escapes are usually preferred.)y with C, but can express only Unicode values
+                                    \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
+                                <h5 id="item-1-1">Item 1-1</h5>
+                                <p>It is a compile-time error if the character following a backslash in an escape is not
+                                    an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
+                                    processIt is a compile-time error if the character following a backslash in an
+                                    escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The
+                                    Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided for
+                                    compatibility with C, but can express only Unicode values \u0000 through \u00FF, so
+                                    Unicode escapes are usually preferred.)ed earlier (§3.3). (Octal escapes are
+                                    provided for compatibility with C, but can expresIt is a compile-time error if the
+                                    character following a backslash in an escape is not an ASCII b, t, n, f, r, ", ', \,
+                                    0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal
+                                    escapes are provided for compatibility with C, but can express only Unicode values
+                                    \u0000 through \u00FF, so Unicode escapes are usually preferred.)s only Unicode
+                                    values \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
+                                <h5 id="item-1-2">Item 2-2</h5>
+                                <p>It is a compile-time error if the character following a backslash in an escape is not
+                                    an ASCIt is a compile-time error if the character following a backslash in an escape
+                                    is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode
+                                    escape \u is processed earlier (§3.3). (Octal escapes are provided for compatibility
+                                    with C, but can express only Unicode values \u0000 through \u00FF, so Unicode
+                                    escapes are usually preferred.)II b, t,It is a compile-time error if the character
+                                    following a backslash in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2,
+                                    3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal escapes
+                                    are provided for compatibility with C, but can express only Unicode values \u0000
+                                    through \u00FF, so Unicode escapes are usually preferred.) n, f, r, ", ', \, 0, 1,
+                                    2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal
+                                    escapes are provided for compatibility with C, but can express only Unicode values
+                                    \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
+                                <h4 id="item-2">Item 2</h4>
+                                <p>It iIt is a compile-time error if the character following a backslash in an escape is
+                                    not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape
+                                    \u is processed earlier (§3.3). (Octal escapes are provided for compatibility with
+                                    C, but can express only UniIt is a compile-time error if the character following a
+                                    backslash in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6,
+                                    or 7. The Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided
+                                    for compatibility with C, but can express only Unicode values \u0000 through \u00FF,
+                                    so Unicode escapes are usually preferred.)code values \u0000 through \u00FF, so
+                                    Unicode escapes are usually preferred.)s a compile-time error if the character
+                                    following a backslash in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2,
+                                    3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal escapes
+                                    are provided for compatibility with C, but can express only Unicode values \u0000
+                                    through \u00FF, so Unicode escapes are usually preferred.)</p>
+                                <h4 id="item-3">Item 3</h4>
+                                <p>It is a compile-time error if the character following a backslash in an escape is not
+                                    an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
+                                    processed earlier (§3.3). (Octal escapes are provided for compatibility with C, but
+                                    can express only Unicode values \u0000 through \u00FF, so Unicode escapes are
+                                    usually preferred.) is a compile-time error if the character following a backslash
+                                    in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, It is a compile-time error
+                                    if the character following a backslash in an escape is not an ASCII b, t, n, f, r,
+                                    ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier
+                                    (§3.3). (Octal escapes are provided for compatibility with C, but can express only
+                                    Unicode values \u0000 through \u00FF, so Unicode escapes are usually preferred.)1,
+                                    2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal
+                                    escapes are provided for compatibility with C, but can express only Unicode values
+                                    \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
+                                <h5 id="item-3-1">Item 3-1</h5>
+                                <p>It is a compile-time error if the character following a backslash in an escape is not
+                                    an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
+                                    processed earlier (§3.3). (Octal escapes are provided for compatibility with C, but
+                                    can express only Unicode values \u0000 through \u00FF, so Unicode escapes are
+                                    usually preferred.)It is a compile-time error if the character following a backslash
+                                    in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The
+                                    Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided for
+                                    compatibility with C, but can express only Unicode values \u0000 through \u00FF, It
+                                    is a compile-time error if the character following a backslash in an escape is not
+                                    an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
+                                    processed earlier (§3.3). (Octal escapes are provided for compatibility with C, but
+                                    can express only Unicode values \u0000 through \u00FF, so Unicode escapes are
+                                    usually preferred.)so Unicode escapes are usually preferred.)</p>
+                                <h5 id="item-3-2">Item 3-2</h5>
+                                <p>It is a compile-time error if the character following a backslash in an escape is not
+                                    an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The UnIt is a
+                                    compile-time error if the character following a backslash in an escape is not an
+                                    ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
+                                    processed earlier (§3.3). (Octal escapes are provided for compatibility with C, but
+                                    can express only Unicode values \u0000 through \u00FF, so Unicode escapes are
+                                    usually preferred.)icode escape \u is processed earlier (§3.3). (Octal escapes are
+                                    provided for compatibility with C, but can express only Unicode values \u0000
+                                    through \u00FF, so Unicode escapes are usually preferred.)It is a compile-time error
+                                    if the character following a backslash in an escape is not an ASCII b, t, n, f, r,
+                                    ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier
+                                    (§3.3). (Octal escapes are provided for compatibility with C, but can express only
+                                    Unicode values \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <p>自由的鸟翱翔于天空，自在的鱼畅游于海洋。记录人生中的点点滴滴，蓦然回首，记忆犹新！</p>
+
+                    <div class="card text-dark bg-light mb-3">
+                        <div class="card-header">评论区</div>
+                        <div class="list-group">
+                            #1
+                            <hr/>
+                            <span href="#" class="list-group-item list-group-item-action">不错！</span>
+                            #2
+                            <blockquote class="w-50 text-secondary">
+                                <pre>引用zhang的发言：</pre>
+                                这样DIY出来的降噪耳机，只能算是被动降噪的。不是真正降噪耳机。
+                            </blockquote>
+                            <span href="#" class="list-group-item list-group-item-action">还行</span>
+                        </div>
                     </div>
+                    <div class="card text-dark bg-light mb-3">
+                        <div class="card-header">留言区</div>
+                        <form>
+                            <div class="form-group">
+                                <label for="exampleFormControlInput1">邮箱地址：</label>
+                                <input type="email" class="form-control" id="exampleFormControlInput1"
+                                       placeholder="name@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleFormControlTextarea1">留言内容：</label>
+                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="支持markdown格式，请不要输入广告及垃圾信息"></textarea>
+                            </div>
+                            <div class="justify-content-end">
+                                <button type="submit" class="btn btn-info">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="messages" role="tabpanel" aria-labelledby="messages-tab">
+                    <img class="d-block w-100" src="images/404.jpg" alt="Second slide">
                 </div>
 
             </div>

@@ -1,6 +1,7 @@
 import './wealth.less'
 import 'bootstrap-treeview/dist/bootstrap-treeview.min.css'
 import 'bootstrap-treeview/dist/bootstrap-treeview.min'
+import '../static/img/404.jpg'
 
 const tree = [
     {
@@ -70,7 +71,7 @@ $('#tree').treeview({
     levels: 10,
     collapseIcon:'glyphicon glyphicon-chevron-down',
     expandIcon:'glyphicon glyphicon-chevron-right',
-    emptyIcon:'glyphicon glyphicon-folder-close',
+    emptyIcon:'glyphicon glyphicon-list-alt',
     showTags: true,
     onNodeSelected: (event, node) => {
         console.info('选择[' + node.text+']菜单');
