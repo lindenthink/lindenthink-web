@@ -19,19 +19,19 @@
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link glyphicon glyphicon-home" href="index.html">主页</a>
+                    <a class="nav-link glyphicon glyphicon-home text-info" href="index.html">主页</a>
                 </li>
                 <li class="nav-item active">
                     <a class="nav-link glyphicon glyphicon-usd">日积月累</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link glyphicon glyphicon-briefcase" href="#">匠心独运</a>
+                    <a class="nav-link glyphicon glyphicon-briefcase text-info" href="#">匠心独运</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link glyphicon glyphicon-book" href="#">人生百味</a>
+                    <a class="nav-link glyphicon glyphicon-book text-info" href="#">人生百味</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link glyphicon glyphicon-music" href="#">闲情逸致</a>
+                    <a class="nav-link glyphicon glyphicon-music text-info" href="#">闲情逸致</a>
                 </li>
             </ul>
             <form class="form-inline">
@@ -72,7 +72,7 @@
                        aria-controls="home" aria-selected="true">编程->JAVA->基础</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                    <a class="nav-link text-info" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
                        aria-controls="profile" aria-selected="false">
                         多线程
                         <button type="button" class="close" aria-label="Close" onclick="close()"><span
@@ -80,7 +80,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="messages-tab" data-toggle="tab" href="#messages" role="tab"
+                    <a class="nav-link text-info" id="messages-tab" data-toggle="tab" href="#messages" role="tab"
                        aria-controls="messages" aria-selected="false">
                         Messages
                         <button type="button" class="close" aria-label="Close" onclick="close()"><span
@@ -293,9 +293,35 @@
 </main>
 
 <footer>
-    <div class="bg-dark text-center text-white">
-        <div>版权所有&copy;2018-2019 lindenthink.com</div>
-        <div>关于我|联系我|沪备×××</div>
+    <div class="bg-dark text-center text-white mt-2">
+        <div class="row p-2">
+            <div class="col-2 text-center border-right offset-3">
+                <span class="glyphicon glyphicon-link">站内链接</span>
+                <ul class="list-group">
+                    <a class="list-group-item bg-dark text-info" href="#">关于我</a>
+                    <a class="list-group-item bg-dark text-info" href="#">联系我</a>
+                </ul>
+            </div>
+            <div class="col-2 text-center border-right">
+                <span class="glyphicon glyphicon-link">参考链接</span>
+                <ul class="list-group">
+                    <a class="list-group-item bg-dark text-info" href="#">BootStrap</a>
+                    <a class="list-group-item bg-dark text-info" href="#">菜鸟教程</a>
+                    <a class="list-group-item bg-dark text-info" href="#">Glyphicon</a>
+                    <a class="list-group-item bg-dark text-info" href="#">Swagger</a>
+                    <a class="list-group-item bg-dark text-info" href="#">Oracle</a>
+                </ul>
+            </div>
+            <div class="col-2 text-center">
+                <span class="glyphicon glyphicon-link">友情链接</span>
+                <ul class="list-group">
+                    <a class="list-group-item bg-dark text-info" href="#">阮一峰的网络日志</a>
+                    <a class="list-group-item bg-dark text-info" href="#">OhYee</a>
+                </ul>
+            </div>
+        </div>
+        <div class="mt-2">版权所有&copy;2018-2019 lindenthink.com</div>
+        <div>沪备×××</div>
     </div>
 </footer>
 

@@ -66,18 +66,24 @@ const tree = [
     }
 ];
 
-$('#tree').treeview({
+/**
+ * 树型菜单选项设置
+ */
+const options = {
     data: tree,
     levels: 10,
     collapseIcon:'glyphicon glyphicon-chevron-down',
     expandIcon:'glyphicon glyphicon-chevron-right',
     emptyIcon:'glyphicon glyphicon-list-alt',
     showTags: true,
+    color:'#117a8b',
     onNodeSelected: (event, node) => {
         console.info('选择[' + node.text+']菜单');
         // TODO
     }
-});
+}
 
-$('#tree').treeview('collapseAll', { silent: true }); // 默认关闭菜单
-
+$(function() {
+    $('#tree').treeview(options);
+    $('#tree').treeview('collapseAll', { silent: true }); // 默认关闭菜单
+})
