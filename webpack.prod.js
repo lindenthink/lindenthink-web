@@ -30,10 +30,10 @@ module.exports = {
                 })
             }, {
                 test: /\.(png|jpg|jpe?g|gif)$/,
-                use: 'url-loader?limit=8192&name=images/[name].[ext]'
+                use: 'url-loader?limit=1024&name=images/[name].[ext]'
             }, {
                 test: /\.(eot|woff2|woff|ttf|svg)$/,
-                use: 'url-loader?limit=8192&name=fonts/[name].[ext]'
+                use: 'url-loader?limit=1024&name=fonts/[name].[ext]'
             }
         ]
     },
