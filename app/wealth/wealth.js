@@ -3,6 +3,10 @@ import 'bootstrap-treeview/dist/bootstrap-treeview.min.css'
 import 'bootstrap-treeview/dist/bootstrap-treeview.min'
 import '../static/img/404.jpg'
 
+export class Wealth {
+
+}
+
 const tree = [
     {
         text: '编程',
@@ -17,6 +21,9 @@ const tree = [
                     },
                     {
                         text: '多线程'
+                    },
+                    {
+                        text: '文档'
                     }
                 ]
             },
@@ -82,6 +89,7 @@ const options = {
         // TODO
     }
 }
+
 
 $(function() {
     $('#tree').treeview(options);
