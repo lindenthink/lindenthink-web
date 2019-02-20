@@ -7,3 +7,9 @@ import './static/icon/new.png'
 
 import './home.less'
 
+import Vue from 'vue'
+
+const app = new Vue({
+    el: '#app',
+    data: {message: '菩提思'}
+});

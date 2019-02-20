@@ -1,4 +1,5 @@
 const path = require('path');
+const glob = require('glob');
 
 // 插件
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -7,14 +8,17 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const config = require('./config/config');
 
 // 常量
-const production = process.env.NODE_ENV === 'production';
+const production = process.env.NODE_ENV === 'production'; // 是否为生产环境
+const minify = production ? { // 是否压缩html文件
+    removeComments: true,
+    collapseWhitespace: true
+} : {};
+const htmlPaths = glob.sync('app/**/*.html'); // 多页面时，自动配置符合该路径形式页面的entry和HtmlWebpackPlugin
 
 module.exports = {
     devtool: production ? 'eval-source-map' : 'none',
     entry: {
-        common: path.resolve(__dirname, 'app/common/common.js'),
-        home: path.resolve(__dirname, 'app/home.js'),
-        wealth: path.resolve(__dirname, 'app/wealth/wealth.js')
+        common: path.resolve(__dirname, 'app/common/common.js')
     },
     output: {
         filename: '[name].[chunkhash].js',
@@ -33,15 +37,42 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, 'app/home.html'),
-            chunks: ['common', 'home']
+            chunks: ['common', 'home'],
+            minify: minify,
         }),
         new HtmlWebpackPlugin({
             filename: 'wealth.html',
             template: path.resolve(__dirname, 'app/wealth/wealth.html'),
-            chunks: ['common', 'wealth']
+            chunks: ['common', 'wealth'],
+            minify: minify
         })
-    ]
+    ],
+    resolve: {
+        alias: {
+            'vue$': 'vue/dist/vue.esm.js'
+        }
+    }
 };
 
-module.exports.plugins.push(...config.plugins);
+autoEntry();
+autoHtmlWebpackPlugins();
 module.exports.module.rules.push(...config.rules);
+module.exports.plugins.push(...config.plugins);
+
+/**
+ * 自动配置entry，公共部分还是需要手动配置，默认为app/common/common.js
+ */
+function autoEntry() {
+    for (let htmlPath of htmlPaths) {
+        let htmlName = path.basename(htmlPath);
+        let name = htmlName.slice(0, htmlName.length - 5);
+        module.exports.entry[name] = path.resolve(__dirname, htmlPath.replace('.html', '.js'));
+    }
+}
+
+/**
+ * 自动配置HtmlWebpackPlugins
+ */
+function autoHtmlWebpackPlugins() {
+    // TODO
+}
