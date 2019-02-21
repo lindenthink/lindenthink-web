@@ -9,10 +9,6 @@ const config = require('./config/config');
 
 // 常量
 const production = process.env.NODE_ENV === 'production'; // 是否为生产环境
-const minify = production ? { // 是否压缩html文件
-    removeComments: true,
-    collapseWhitespace: true
-} : {};
 const htmlPaths = glob.sync('app/**/*.html'); // 多页面时，自动配置符合该路径形式页面的entry和HtmlWebpackPlugin
 
 module.exports = {
@@ -34,19 +30,7 @@ module.exports = {
     module: {
         rules: []
     },
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, 'app/home.html'),
-            chunks: ['common', 'home'],
-            minify: minify,
-        }),
-        new HtmlWebpackPlugin({
-            filename: 'wealth.html',
-            template: path.resolve(__dirname, 'app/wealth/wealth.html'),
-            chunks: ['common', 'wealth'],
-            minify: minify
-        })
-    ],
+    plugins: [],
     resolve: {
         alias: {
             'vue$': 'vue/dist/vue.esm.js'
@@ -54,15 +38,16 @@ module.exports = {
     }
 };
 
-autoEntry();
-autoHtmlWebpackPlugins();
+// 加载配置
+autoConfigEntry();
+autoConfigHtmlWebpackPlugins();
 module.exports.module.rules.push(...config.rules);
 module.exports.plugins.push(...config.plugins);
 
 /**
  * 自动配置entry，公共部分还是需要手动配置，默认为app/common/common.js
  */
-function autoEntry() {
+function autoConfigEntry() {
     for (let htmlPath of htmlPaths) {
         let htmlName = path.basename(htmlPath);
         let name = htmlName.slice(0, htmlName.length - 5);
@@ -73,6 +58,22 @@ function autoEntry() {
 /**
  * 自动配置HtmlWebpackPlugins
  */
-function autoHtmlWebpackPlugins() {
-    // TODO
+function autoConfigHtmlWebpackPlugins() {
+    for (let htmlPath of htmlPaths) {
+        let htmlName = path.basename(htmlPath);
+        let name = htmlName.slice(0, htmlName.length - 5);
+        let options = {
+            template: path.resolve(__dirname, htmlPath),
+            chunks: ['common', name],
+            minify: production ? { // 是否压缩html文件
+                removeComments: true,
+                collapseWhitespace: true
+            } : {}
+        };
+        if (name !== 'home' && name !== 'app') { // 主页默认为index.html其他和原文件保持一致
+            options.filename = htmlName;
+        }
+        let plugin = new HtmlWebpackPlugin(options);
+        module.exports.plugins.push(plugin);
+    }
 }
