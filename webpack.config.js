@@ -56,7 +56,7 @@ function autoConfigEntry() {
 }
 
 /**
- * 自动配置HtmlWebpackPlugins
+ * 自动配置HtmlWebpackPlugins,公共部分还是需要手动配置，默认为common
  */
 function autoConfigHtmlWebpackPlugins() {
     for (let htmlPath of htmlPaths) {
