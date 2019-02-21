@@ -8,7 +8,7 @@ module.exports = {
                 use: ['css-loader', 'less-loader']
             })
         }, {
-            test: /\.(png|jpg|jpe?g|gif)$/,
+            test: /\.(png|jpg|jpe?g|gif|ico)$/,
             use: 'url-loader?limit=1024&name=images/[name].[ext]'
         }, {
             test: /\.(eot|woff2|woff|ttf|svg)$/,

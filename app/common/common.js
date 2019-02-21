@@ -2,34 +2,24 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.js'
 
 import '../static/img/logo.png'
+import '../static/icon/leaf.ico'
 
 import Vue from 'vue'
 
 /** 页眉组件 */
 Vue.component('linden-header', {
     template: `
+    <div>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-            <span class="navbar-brand">菩提思</span>
+            <span class="navbar-brand font-weight-bold glyphicon glyphicon-leaf text-success">菩提思</span>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
                     aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarText">
+            <div class="collapse navbar-collapse">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link glyphicon glyphicon-home text-info" href="index.html">主页</a>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link glyphicon glyphicon-usd text-info" href="wealth.html">日积月累</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link glyphicon glyphicon-briefcase text-info" href="tool.html">匠心独运</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link glyphicon glyphicon-book text-info" href="life.html">人生百味</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link glyphicon glyphicon-music text-info" href="fun.html">闲情逸致</a>
+                    <li class="nav-item"  v-for="page in pages">
+                        <a :class="['nav-link', isCurPage(page.url) ? 'text-white' : 'text-info']"  :href="isCurPage(page.url) ? '#' : page.url">{{page.title}}</a>
                     </li>
                 </ul>
                 <form class="form-inline">
@@ -40,13 +30,13 @@ Vue.component('linden-header', {
         </nav>
         <div class="card-header">&nbsp;</div><!-- 用来防止导航栏覆盖到页面内容 -->
 
-        <div class="alert alert-info" role="alert">
+        <div class="alert alert-info" role="alert" v-if="notice.show">
             <div class="row">
                 <div class="col-1">
                     公告 <i class="glyphicon glyphicon-volume-up"></i>
                 </div>
                 <div class="col-10">
-                    <marquee class="d-block">千呼万唤始出来，犹抱琵琶半遮面。网站建设中，敬请期待^_^</marquee>
+                    <marquee class="d-block">{{notice.message}}</marquee>
                 </div>
                 <div class="col-1">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -55,15 +45,40 @@ Vue.component('linden-header', {
                 </div>
             </div>
         </div>
+    </div>
     `,
     data: function () {
         return {
+            pages: [{
+                url: 'index.html',
+                title: '主页'
+            }, {
+                url: 'wealth.html',
+                title: '日积月累'
+            }, {
+                url: 'tool.html',
+                title: '匠心独运'
+            }, {
+                url: 'life.html',
+                title: '人生百味'
+            }, {
+                url: 'fun.html',
+                title: '闲情逸致'
+            }
+            ],
+            curPage: 'index',
             notice: {
                 show: true,
                 message: '千呼万唤始出来，犹抱琵琶半遮面。网站正在建设中，敬请期待^_^'
             }
         };
+    },
+    methods: {
+        isCurPage: curPage => {
+            return window.location.toString().indexOf(curPage) > -1;
+        }
     }
+
 });
 
 /** 页脚组件 */

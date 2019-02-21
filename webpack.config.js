@@ -43,7 +43,7 @@ module.exports.module.rules.push(...config.rules);
 module.exports.plugins.push(...config.plugins);
 
 /**
- * 自动配置entry，公共部分还是需要手动配置，默认为app/common/common.js
+ * 自动配置entry
  */
 function autoConfigEntry() {
     for (let htmlPath of htmlPaths) {
