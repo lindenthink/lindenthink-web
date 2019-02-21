@@ -9,305 +9,232 @@
 </head>
 <body>
 
-<header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <span class="navbar-brand">菩提思</span>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
-                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarText">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link glyphicon glyphicon-home text-info" href="index.html">主页</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link glyphicon glyphicon-usd">日积月累</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link glyphicon glyphicon-briefcase text-info" href="#">匠心独运</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link glyphicon glyphicon-book text-info" href="#">人生百味</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link glyphicon glyphicon-music text-info" href="#">闲情逸致</a>
-                </li>
-            </ul>
-            <form class="form-inline">
-                <input class="form-control mr-sm-2" type="search" placeholder="输入搜索内容" aria-label="Search">
-                <button class="btn btn-outline-info my-2 my-sm-0" type="button" id="searchBtn">搜索</button>
-            </form>
-        </div>
-    </nav>
-    <div class="card-header">&nbsp;</div><!-- 用来防止导航栏覆盖到页面内容 -->
+<div id="app">
+    <header>
+        <linden-header></linden-header>
+    </header>
 
-    <div class="alert alert-info" role="alert">
-        <div class="row">
-            <div class="col-1">
-                公告 <i class="glyphicon glyphicon-volume-up"></i>
+    <main>
+        <div class="row mt-3">
+            <div class="col-2">
+                <div id="tree" class="position-fixed"></div>
             </div>
-            <div class="col-10">
-                <marquee class="d-block">千呼万唤始出来，犹抱琵琶半遮面。网站建设中，敬请期待^_^</marquee>
-            </div>
-            <div class="col-1">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true" class="text-danger">&times;</span>
-                </button>
-            </div>
-        </div>
-    </div>
-</header>
 
-<main>
-    <div class="row mt-3">
-        <div class="col-2">
-            <div id="tree" class="position-fixed"></div>
-        </div>
+            <div class="col-8">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                           aria-controls="home" aria-selected="true">文章列表</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-info" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                           aria-controls="profile" aria-selected="false">
+                            多线程
+                            <button type="button" class="close" aria-label="Close" onclick="close()"><span
+                                    aria-hidden="true" class="text-danger">&times;</span></button>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-info" id="messages-tab" data-toggle="tab" href="#unknown" role="tab"
+                           aria-controls="messages" aria-selected="false">
+                            Messages
+                            <button type="button" class="close" aria-label="Close" onclick="close()"><span
+                                    aria-hidden="true" class="text-danger">&times;</span></button>
+                        </a>
+                    </li>
+                </ul>
 
-        <div class="col-8">
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
-                       aria-controls="home" aria-selected="true">文章列表</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-info" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
-                       aria-controls="profile" aria-selected="false">
-                        多线程
-                        <button type="button" class="close" aria-label="Close" onclick="close()"><span
-                                aria-hidden="true" class="text-danger">&times;</span></button>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-info" id="messages-tab" data-toggle="tab" href="#unknown" role="tab"
-                       aria-controls="messages" aria-selected="false">
-                        Messages
-                        <button type="button" class="close" aria-label="Close" onclick="close()"><span
-                                aria-hidden="true" class="text-danger">&times;</span></button>
-                    </a>
-                </li>
-            </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" style="height: 45rem" id="home" role="tabpanel"
+                         aria-labelledby="home-tab">
+                        <div class="card m-2" style="width: 18rem;">
+                            <img class="card-img-top" src="images/logo.png" alt="Card image cap">
+                            <div class="card-body">
+                                <h5 class="card-title">Card title</h5>
+                                <small class="glyphicon glyphicon-edit text-secondary">2018-03-06 13:05:47</small>
+                                <p class="card-text border-top border-bottom">
+                                    Some quick example text to build on the card
+                                    title and make up the bulk
+                                    of the card's content.
+                                </p>
+                                <small class="glyphicon glyphicon-eye-open text-secondary text-right">18</small>
+                                <small class="glyphicon glyphicon-comment text-secondary text-right">18</small>
+                                <a href="#" class="text-info d-block text-right">查看原文</a>
+                            </div>
+                        </div>
 
-            <div class="tab-content">
-                <div class="tab-pane active" style="height: 45rem" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    <div class="card m-2" style="width: 18rem;">
-                        <img class="card-img-top" src="images/logo.png" alt="Card image cap">
-                        <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <small class="glyphicon glyphicon-edit text-secondary">2018-03-06 13:05:47</small>
-                            <p class="card-text border-top border-bottom">
-                                Some quick example text to build on the card
-                                title and make up the bulk
-                                of the card's content.
-                            </p>
-                            <small class="glyphicon glyphicon-eye-open text-secondary text-right">18</small>
-                            <small class="glyphicon glyphicon-comment text-secondary text-right">18</small>
-                            <a href="#" class="text-info d-block text-right">查看原文</a>
+                        <nav aria-label="Page navigation" class="mb-2 align-content-end">
+                            <ul class="pagination  justify-content-center">
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                </li>
+                                <li class="page-item"><a class="page-link" href="#">1 </a></li>
+                                <li class="page-item active"><a class="page-link " href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+
+
+                    <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+
+                        <div data-spy="scroll" data-target="#navbar-example3" data-offset="0">
+                            <h4 id="item-1">Item 1</h4>
+                            <p>It is a compile-It is a compile-time error if the character following a backslash in
+                                an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The
+                                Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided for
+                                compatibility with C, but can express only Unicode values \u0000 through \u00FF, so
+                                Unicode escapes are usually preferred.)time error if the character following a
+                                backslash in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6,
+                                or 7. The Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided
+                                for compatibilitIt is a compile-time error if the character following a backslash in
+                                an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The
+                                Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided for
+                                compatibility with C, but can express only Unicode values \u0000 through \u00FF, so
+                                Unicode escapes are usually preferred.)y with C, but can express only Unicode values
+                                \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
+                            <h5 id="item-1-1">Item 1-1</h5>
+                            <p>It is a compile-time error if the character following a backslash in an escape is not
+                                an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
+                                processIt is a compile-time error if the character following a backslash in an
+                                escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The
+                                Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided for
+                                compatibility with C, but can express only Unicode values \u0000 through \u00FF, so
+                                Unicode escapes are usually preferred.)ed earlier (§3.3). (Octal escapes are
+                                provided for compatibility with C, but can expresIt is a compile-time error if the
+                                character following a backslash in an escape is not an ASCII b, t, n, f, r, ", ', \,
+                                0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal
+                                escapes are provided for compatibility with C, but can express only Unicode values
+                                \u0000 through \u00FF, so Unicode escapes are usually preferred.)s only Unicode
+                                values \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
+                            <h5 id="item-1-2">Item 2-2</h5>
+                            <p>It is a compile-time error if the character following a backslash in an escape is not
+                                an ASCIt is a compile-time error if the character following a backslash in an escape
+                                is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode
+                                escape \u is processed earlier (§3.3). (Octal escapes are provided for compatibility
+                                with C, but can express only Unicode values \u0000 through \u00FF, so Unicode
+                                escapes are usually preferred.)II b, t,It is a compile-time error if the character
+                                following a backslash in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2,
+                                3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal escapes
+                                are provided for compatibility with C, but can express only Unicode values \u0000
+                                through \u00FF, so Unicode escapes are usually preferred.) n, f, r, ", ', \, 0, 1,
+                                2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal
+                                escapes are provided for compatibility with C, but can express only Unicode values
+                                \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
+                            <h4 id="item-2">Item 2</h4>
+                            <p>It iIt is a compile-time error if the character following a backslash in an escape is
+                                not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape
+                                \u is processed earlier (§3.3). (Octal escapes are provided for compatibility with
+                                C, but can express only UniIt is a compile-time error if the character following a
+                                backslash in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6,
+                                or 7. The Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided
+                                for compatibility with C, but can express only Unicode values \u0000 through \u00FF,
+                                so Unicode escapes are usually preferred.)code values \u0000 through \u00FF, so
+                                Unicode escapes are usually preferred.)s a compile-time error if the character
+                                following a backslash in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2,
+                                3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal escapes
+                                are provided for compatibility with C, but can express only Unicode values \u0000
+                                through \u00FF, so Unicode escapes are usually preferred.)</p>
+                            <h4 id="item-3">Item 3</h4>
+                            <p>It is a compile-time error if the character following a backslash in an escape is not
+                                an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
+                                processed earlier (§3.3). (Octal escapes are provided for compatibility with C, but
+                                can express only Unicode values \u0000 through \u00FF, so Unicode escapes are
+                                usually preferred.) is a compile-time error if the character following a backslash
+                                in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, It is a compile-time error
+                                if the character following a backslash in an escape is not an ASCII b, t, n, f, r,
+                                ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier
+                                (§3.3). (Octal escapes are provided for compatibility with C, but can express only
+                                Unicode values \u0000 through \u00FF, so Unicode escapes are usually preferred.)1,
+                                2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal
+                                escapes are provided for compatibility with C, but can express only Unicode values
+                                \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
+                            <h5 id="item-3-1">Item 3-1</h5>
+                            <p>It is a compile-time error if the character following a backslash in an escape is not
+                                an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
+                                processed earlier (§3.3). (Octal escapes are provided for compatibility with C, but
+                                can express only Unicode values \u0000 through \u00FF, so Unicode escapes are
+                                usually preferred.)It is a compile-time error if the character following a backslash
+                                in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The
+                                Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided for
+                                compatibility with C, but can express only Unicode values \u0000 through \u00FF, It
+                                is a compile-time error if the character following a backslash in an escape is not
+                                an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
+                                processed earlier (§3.3). (Octal escapes are provided for compatibility with C, but
+                                can express only Unicode values \u0000 through \u00FF, so Unicode escapes are
+                                usually preferred.)so Unicode escapes are usually preferred.)</p>
+                            <h5 id="item-3-2">Item 3-2</h5>
+                            <p>It is a compile-time error if the character following a backslash in an escape is not
+                                an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The UnIt is a
+                                compile-time error if the character following a backslash in an escape is not an
+                                ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
+                                processed earlier (§3.3). (Octal escapes are provided for compatibility with C, but
+                                can express only Unicode values \u0000 through \u00FF, so Unicode escapes are
+                                usually preferred.)icode escape \u is processed earlier (§3.3). (Octal escapes are
+                                provided for compatibility with C, but can express only Unicode values \u0000
+                                through \u00FF, so Unicode escapes are usually preferred.)It is a compile-time error
+                                if the character following a backslash in an escape is not an ASCII b, t, n, f, r,
+                                ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier
+                                (§3.3). (Octal escapes are provided for compatibility with C, but can express only
+                                Unicode values \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
+                        </div>
+
+                        <div class="card text-dark bg-light mb-3">
+                            <div class="card-header text-primary">评论区</div>
+                            <div class="list-group">
+                                #1 zhang:
+                                <hr/>
+                                <span href="#" class="list-group-item list-group-item-action"> 这样DIY出来的降噪耳机，只能算是被动降噪的。不是真正降噪耳机。</span>
+                                #2 wang:
+                                <blockquote class="w-50 text-secondary">
+                                    <pre>引用zhang的发言：</pre>
+                                    这样DIY出来的降噪耳机，只能算是被动降噪的。不是真正降噪耳机。
+                                </blockquote>
+                                <span href="#" class="list-group-item list-group-item-action">还行</span>
+                            </div>
+                        </div>
+                        <div class="card text-dark bg-light mb-3">
+                            <div class="card-header text-primary">留言区</div>
+                            <form>
+                                <div class="form-group">
+                                    <label for="exampleFormControlInput1">邮箱地址：</label>
+                                    <input type="email" class="form-control" id="exampleFormControlInput1"
+                                           placeholder="name@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleFormControlTextarea1">留言内容：</label>
+                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
+                                              placeholder="支持markdown格式，请不要输入广告及垃圾信息"></textarea>
+                                </div>
+                                <div class="justify-content-end">
+                                    <button type="submit" class="btn btn-info">Submit</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
-                    <nav aria-label="Page navigation" class="mb-2 align-content-end">
-                        <ul class="pagination  justify-content-center">
-                            <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                            </li>
-                            <li class="page-item"><a class="page-link" href="#">1 </a></li>
-                            <li class="page-item active"><a class="page-link " href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                    <span class="sr-only">Next</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-
-
-                <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-
-                    <div data-spy="scroll" data-target="#navbar-example3" data-offset="0">
-                        <h4 id="item-1">Item 1</h4>
-                        <p>It is a compile-It is a compile-time error if the character following a backslash in
-                            an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The
-                            Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided for
-                            compatibility with C, but can express only Unicode values \u0000 through \u00FF, so
-                            Unicode escapes are usually preferred.)time error if the character following a
-                            backslash in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6,
-                            or 7. The Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided
-                            for compatibilitIt is a compile-time error if the character following a backslash in
-                            an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The
-                            Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided for
-                            compatibility with C, but can express only Unicode values \u0000 through \u00FF, so
-                            Unicode escapes are usually preferred.)y with C, but can express only Unicode values
-                            \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
-                        <h5 id="item-1-1">Item 1-1</h5>
-                        <p>It is a compile-time error if the character following a backslash in an escape is not
-                            an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
-                            processIt is a compile-time error if the character following a backslash in an
-                            escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The
-                            Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided for
-                            compatibility with C, but can express only Unicode values \u0000 through \u00FF, so
-                            Unicode escapes are usually preferred.)ed earlier (§3.3). (Octal escapes are
-                            provided for compatibility with C, but can expresIt is a compile-time error if the
-                            character following a backslash in an escape is not an ASCII b, t, n, f, r, ", ', \,
-                            0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal
-                            escapes are provided for compatibility with C, but can express only Unicode values
-                            \u0000 through \u00FF, so Unicode escapes are usually preferred.)s only Unicode
-                            values \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
-                        <h5 id="item-1-2">Item 2-2</h5>
-                        <p>It is a compile-time error if the character following a backslash in an escape is not
-                            an ASCIt is a compile-time error if the character following a backslash in an escape
-                            is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode
-                            escape \u is processed earlier (§3.3). (Octal escapes are provided for compatibility
-                            with C, but can express only Unicode values \u0000 through \u00FF, so Unicode
-                            escapes are usually preferred.)II b, t,It is a compile-time error if the character
-                            following a backslash in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2,
-                            3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal escapes
-                            are provided for compatibility with C, but can express only Unicode values \u0000
-                            through \u00FF, so Unicode escapes are usually preferred.) n, f, r, ", ', \, 0, 1,
-                            2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal
-                            escapes are provided for compatibility with C, but can express only Unicode values
-                            \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
-                        <h4 id="item-2">Item 2</h4>
-                        <p>It iIt is a compile-time error if the character following a backslash in an escape is
-                            not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape
-                            \u is processed earlier (§3.3). (Octal escapes are provided for compatibility with
-                            C, but can express only UniIt is a compile-time error if the character following a
-                            backslash in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6,
-                            or 7. The Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided
-                            for compatibility with C, but can express only Unicode values \u0000 through \u00FF,
-                            so Unicode escapes are usually preferred.)code values \u0000 through \u00FF, so
-                            Unicode escapes are usually preferred.)s a compile-time error if the character
-                            following a backslash in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2,
-                            3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal escapes
-                            are provided for compatibility with C, but can express only Unicode values \u0000
-                            through \u00FF, so Unicode escapes are usually preferred.)</p>
-                        <h4 id="item-3">Item 3</h4>
-                        <p>It is a compile-time error if the character following a backslash in an escape is not
-                            an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
-                            processed earlier (§3.3). (Octal escapes are provided for compatibility with C, but
-                            can express only Unicode values \u0000 through \u00FF, so Unicode escapes are
-                            usually preferred.) is a compile-time error if the character following a backslash
-                            in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, It is a compile-time error
-                            if the character following a backslash in an escape is not an ASCII b, t, n, f, r,
-                            ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier
-                            (§3.3). (Octal escapes are provided for compatibility with C, but can express only
-                            Unicode values \u0000 through \u00FF, so Unicode escapes are usually preferred.)1,
-                            2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier (§3.3). (Octal
-                            escapes are provided for compatibility with C, but can express only Unicode values
-                            \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
-                        <h5 id="item-3-1">Item 3-1</h5>
-                        <p>It is a compile-time error if the character following a backslash in an escape is not
-                            an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
-                            processed earlier (§3.3). (Octal escapes are provided for compatibility with C, but
-                            can express only Unicode values \u0000 through \u00FF, so Unicode escapes are
-                            usually preferred.)It is a compile-time error if the character following a backslash
-                            in an escape is not an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The
-                            Unicode escape \u is processed earlier (§3.3). (Octal escapes are provided for
-                            compatibility with C, but can express only Unicode values \u0000 through \u00FF, It
-                            is a compile-time error if the character following a backslash in an escape is not
-                            an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
-                            processed earlier (§3.3). (Octal escapes are provided for compatibility with C, but
-                            can express only Unicode values \u0000 through \u00FF, so Unicode escapes are
-                            usually preferred.)so Unicode escapes are usually preferred.)</p>
-                        <h5 id="item-3-2">Item 3-2</h5>
-                        <p>It is a compile-time error if the character following a backslash in an escape is not
-                            an ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The UnIt is a
-                            compile-time error if the character following a backslash in an escape is not an
-                            ASCII b, t, n, f, r, ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is
-                            processed earlier (§3.3). (Octal escapes are provided for compatibility with C, but
-                            can express only Unicode values \u0000 through \u00FF, so Unicode escapes are
-                            usually preferred.)icode escape \u is processed earlier (§3.3). (Octal escapes are
-                            provided for compatibility with C, but can express only Unicode values \u0000
-                            through \u00FF, so Unicode escapes are usually preferred.)It is a compile-time error
-                            if the character following a backslash in an escape is not an ASCII b, t, n, f, r,
-                            ", ', \, 0, 1, 2, 3, 4, 5, 6, or 7. The Unicode escape \u is processed earlier
-                            (§3.3). (Octal escapes are provided for compatibility with C, but can express only
-                            Unicode values \u0000 through \u00FF, so Unicode escapes are usually preferred.)</p>
+                    <div class="tab-pane" id="unknown" role="tabpanel" aria-labelledby="messages-tab">
+                        <img class="d-block w-100" src="images/404.jpg" alt="Second slide">
                     </div>
 
-                    <div class="card text-dark bg-light mb-3">
-                        <div class="card-header text-primary">评论区</div>
-                        <div class="list-group">
-                            #1 zhang:
-                            <hr/>
-                            <span href="#" class="list-group-item list-group-item-action"> 这样DIY出来的降噪耳机，只能算是被动降噪的。不是真正降噪耳机。</span>
-                            #2 wang:
-                            <blockquote class="w-50 text-secondary">
-                                <pre>引用zhang的发言：</pre>
-                                这样DIY出来的降噪耳机，只能算是被动降噪的。不是真正降噪耳机。
-                            </blockquote>
-                            <span href="#" class="list-group-item list-group-item-action">还行</span>
-                        </div>
-                    </div>
-                    <div class="card text-dark bg-light mb-3">
-                        <div class="card-header text-primary">留言区</div>
-                        <form>
-                            <div class="form-group">
-                                <label for="exampleFormControlInput1">邮箱地址：</label>
-                                <input type="email" class="form-control" id="exampleFormControlInput1"
-                                       placeholder="name@example.com">
-                            </div>
-                            <div class="form-group">
-                                <label for="exampleFormControlTextarea1">留言内容：</label>
-                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
-                                          placeholder="支持markdown格式，请不要输入广告及垃圾信息"></textarea>
-                            </div>
-                            <div class="justify-content-end">
-                                <button type="submit" class="btn btn-info">Submit</button>
-                            </div>
-                        </form>
-                    </div>
                 </div>
-
-                <div class="tab-pane" id="unknown" role="tabpanel" aria-labelledby="messages-tab">
-                    <img class="d-block w-100" src="images/404.jpg" alt="Second slide">
-                </div>
-
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<footer>
-    <div class="bg-dark text-center text-white mt-3 p-2">
-        <div class="row p-2">
-            <div class="col-2 text-center border-right offset-3">
-                <span class="glyphicon glyphicon-link">站内链接</span>
-                <ul class="list-group">
-                    <a class="list-group-item bg-dark text-info" href="#">关于我</a>
-                    <a class="list-group-item bg-dark text-info" href="#">联系我</a>
-                    <a class="list-group-item bg-dark text-info" href="http://47.104.243.84:9000/">发布平台</a>
-                    <a class="list-group-item bg-dark text-info" href="#">管理平台</a>
-                </ul>
-            </div>
-            <div class="col-2 text-center border-right">
-                <span class="glyphicon glyphicon-link">参考链接</span>
-                <ul class="list-group">
-                    <a class="list-group-item bg-dark text-info" href="https://getbootstrap.com/">BootStrap</a>
-                    <a class="list-group-item bg-dark text-info" href="http://www.runoob.com">菜鸟教程</a>
-                    <a class="list-group-item bg-dark text-info" href="https://www.glyphicons.com">Glyphicon</a>
-                    <a class="list-group-item bg-dark text-info" href="http://webpack.css88.com">Webpack中文文档</a>
-                    <a class="list-group-item bg-dark text-info" href="https://www.easyicon.net/">EasyIcon</a>
-                </ul>
-            </div>
-            <div class="col-2 text-center">
-                <span class="glyphicon glyphicon-link">友情链接</span>
-                <ul class="list-group">
-                    <a class="list-group-item bg-dark text-info" href="http://www.ruanyifeng.com/blog">阮一峰的网络日志</a>
-                </ul>
-            </div>
-        </div>
-        <div>版权所有&copy;2018-2019 lindenthink.com</div>
-        <div>沪ICP备×××号</div>
-    </div>
-</footer>
-
+    <footer>
+        <linden-footer>
+        </linden-footer>
+    </footer>
+</div>
 </body>
 </html>

@@ -3,10 +3,14 @@ import 'bootstrap-treeview/dist/bootstrap-treeview.min.css'
 import 'bootstrap-treeview/dist/bootstrap-treeview.min'
 import '../static/img/404.jpg'
 
-export class Wealth {
+import '../common/common'
 
-}
+import Vue from 'vue'
 
+const vue = new Vue({
+    el: '#app',
+    data: {}
+});
 const tree = [
     {
         text: '编程',
@@ -79,19 +83,19 @@ const tree = [
 const options = {
     data: tree,
     levels: 10,
-    collapseIcon:'glyphicon glyphicon-chevron-down',
-    expandIcon:'glyphicon glyphicon-chevron-right',
-    emptyIcon:'glyphicon glyphicon-list-alt',
+    collapseIcon: 'glyphicon glyphicon-chevron-down',
+    expandIcon: 'glyphicon glyphicon-chevron-right',
+    emptyIcon: 'glyphicon glyphicon-list-alt',
     showTags: true,
-    color:'#117a8b',
+    color: '#117a8b',
     onNodeSelected: (event, node) => {
-        console.info('选择[' + node.text+']菜单');
+        console.info('选择[' + node.text + ']菜单');
         // TODO
     }
 }
 
 
-$(function() {
+$(function () {
     $('#tree').treeview(options);
-    $('#tree').treeview('collapseAll', { silent: true }); // 默认关闭菜单
+    $('#tree').treeview('collapseAll', {silent: true}); // 默认关闭菜单
 })
