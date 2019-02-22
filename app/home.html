@@ -19,14 +19,17 @@
                 <div class="col-2">
                     <div class="card">
                         <div class="card-header text-lg-center text-muted font-weight-bold">
-                            <i class="glyphicon glyphicon-pushpin"></i> 经典语录
+                            <i class="glyphicon glyphicon-pushpin"></i>经典语录
                         </div>
                         <img src="images/logo.png" class="w-100"/>
-                        <p class="mt-2"> {{quotations}}</p>
+                        <p class="mt-2">
+                            <span class="font-italic">"{{quotation.extract}}"</span>
+                        </p>
+                        <span class="badge text-right">{{quotation.author}} &lt;&lt;{{quotation.article}}&gt;&gt;</span>
                     </div>
                     <div class="card mt-3">
                         <div class="card-header text-center text-muted font-weight-bold">
-                            <i class="glyphicon glyphicon-pushpin"></i> 网站统计
+                            <i class="glyphicon glyphicon-pushpin"></i>网站统计
                         </div>
                         <div class="card-body  text-left">
                             <p class="card-text"><i class="glyphicon glyphicon-file"></i> 文章数量：{{statistics.filesCount}}

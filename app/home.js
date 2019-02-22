@@ -13,7 +13,11 @@ import Vue from 'vue'
 const vue = new Vue({
     el: '#app',
     data: {
-        quotations: '在这人世间，有些路是非要单独一个人去面对，单独一个人去跋涉的，路再长再远，夜再黑再暗，也得独自默默地走下去。[席慕蓉]',
+        quotation: {
+            extract: '在这人世间，有些路是非要单独一个人去面对，单独一个人去跋涉的，路再长再远，夜再黑再暗，也得独自默默地走下去。',
+            article: '生命里永远有一种等待',
+            author: '席慕蓉'
+        },
         statistics: {
             filesCount: 2,
             visitorsCount: 5,
