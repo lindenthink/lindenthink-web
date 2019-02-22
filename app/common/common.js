@@ -6,6 +6,25 @@ import '../static/icon/leaf.ico'
 
 import Vue from 'vue'
 
+/** 导航页面，按照数组中顺序生成菜单栏 */
+const navPages = [{
+    url: 'index.html',
+    title: '主页'
+}, {
+    url: 'wealth.html',
+    title: '日积月累'
+}, {
+    url: 'tool.html',
+    title: '匠心独运'
+}, {
+    url: 'life.html',
+    title: '人生百味'
+}, {
+    url: 'fun.html',
+    title: '闲情逸致'
+}
+];
+
 /** 页眉组件 */
 Vue.component('linden-header', {
     template: `
@@ -49,33 +68,19 @@ Vue.component('linden-header', {
     `,
     data: function () {
         return {
-            pages: [{
-                url: 'index.html',
-                title: '主页'
-            }, {
-                url: 'wealth.html',
-                title: '日积月累'
-            }, {
-                url: 'tool.html',
-                title: '匠心独运'
-            }, {
-                url: 'life.html',
-                title: '人生百味'
-            }, {
-                url: 'fun.html',
-                title: '闲情逸致'
-            }
-            ],
-            curPage: 'index',
-            notice: {
-                show: true,
-                message: '千呼万唤始出来，犹抱琵琶半遮面。网站正在建设中，敬请期待^_^'
-            }
-        };
+            pages: navPages,
+            notice:
+                {
+                    show: true,
+                    message:
+                        '千呼万唤始出来，犹抱琵琶半遮面。网站正在建设中，敬请期待^_^'
+                }
+        }
     },
     methods: {
         isCurPage: curPage => {
-            return window.location.toString().indexOf(curPage) > -1;
+            let location = window.location.toString();
+            return location.indexOf(curPage) > -1 || (curPage === navPages[0].url && location.indexOf('html') < 0);
         }
     }
 
