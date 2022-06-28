@@ -1,5 +1,79 @@
 <template>
-  <my-md-editor mode="preview" :content="text"></my-md-editor>
+  <a-affix offset-top="6">
+    <a-breadcrumb separator=">" style="background-color: #f0f2f5">
+      <a-breadcrumb-item>文章</a-breadcrumb-item>
+      <a-breadcrumb-item>
+        <router-link :to="{ path: '/articles', params: { tab: tabKey } }">
+          {{ tabName }}
+        </router-link>
+      </a-breadcrumb-item>
+      <a-breadcrumb-item>正文</a-breadcrumb-item>
+    </a-breadcrumb>
+  </a-affix>
+
+  <div class="article">
+    <div class="article-head">
+      <h1 class="article-head-title">解放C盘</h1>
+      <a-tag>JAVA</a-tag>
+      <a-tag>HTML</a-tag>
+      <a-tag>CSS</a-tag>
+      <div class="article-head-meta">
+        <span
+          style="
+            display: inline-block;
+            text-align: center;
+            line-height: 15px;
+            margin-right: 5px;
+            height: 15px;
+            width: 15px;
+            border-radius: 7.5px;
+            color: green;
+            border: 1px dotted green;
+          "
+          >原</span
+        >
+        <CalendarOutlined style="margin-right: 5px" /><span>发表于：2022-04-24</span
+        ><a-divider type="vertical"></a-divider> <EyeOutlined style="margin-right: 5px" /><span>浏览数：202</span
+        ><a-divider type="vertical"></a-divider> <LikeOutlined style="margin-right: 5px" /><span>点赞数：202</span
+        ><a-divider type="vertical"></a-divider> <MessageOutlined style="margin-right: 5px" /><span>评论数：20</span
+        ><br />
+      </div>
+      <!-- <a-image :width="Math.min(740, 1200)" src="/2.jpg" :preview="false" fallback="/2.jpg"/> -->
+      <a-typography style="text-align: left; padding: 0rem 2.5rem">
+        <blockquote style="letter-spacing: 0.3em; font-weight: 150">
+          C盘一般都是作为系统盘来使用，相对空间会小一些。由于大多软件默认都是安装到这个磁盘，而且我们平时使用的应用依赖的配置或者缓存文件也同样存到这个磁盘中，所以它的空间很容易被占满。
+        </blockquote>
+      </a-typography>
+    </div>
+    <my-md-editor mode="preview" :content="text"></my-md-editor>
+    <div class="article-foot">
+      <ul class="article-foot-copyright">
+        <li><strong>本文作者：</strong>Linden</li>
+        <li>
+          <strong>本文链接：</strong>
+          <a href="http://47.104.243.84/2020/07/24/解放C盘/" title="解放C盘"
+            >http://47.104.243.84/2020/07/24/解放C盘/</a
+          >
+        </li>
+        <li>
+          <strong>版权声明：</strong>本博客所有文章除特别声明外，均采用
+          <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"
+            ><copyright-outlined />BY-NC-SA</a
+          >
+          许可协议。转载请注明出处！
+        </li>
+      </ul>
+      <a-divider :style="{ color: 'lightgrey' }">●</a-divider>
+      <div class="article-foot-nav">
+        <div>
+          <a href="#"><left-outlined /> 文章1文章1文章1</a>
+        </div>
+        <div>
+          <a href="#">文章2文章2文章2文章2 <right-outlined /></a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="comment">
     <a-list
@@ -58,7 +132,7 @@
           </a-row>
           <a-form-item>
             <transition name="fade">
-              <div class="quote" v-if="isShowQuote === true">
+              <div class="comment-quote" v-if="isShowQuote === true">
                 <a-comment :author="quoteItem.author" :avatar="quoteItem.avatar">
                   <template #content> {{ quoteItem.content }} </template>
                   <template #datetime>
@@ -85,8 +159,21 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive,onMounted } from 'vue'
-import { UserOutlined, MailOutlined, LinkOutlined, CloseCircleOutlined } from '@ant-design/icons-vue'
+import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import {
+  UserOutlined,
+  MailOutlined,
+  LinkOutlined,
+  CloseCircleOutlined,
+  CopyrightOutlined,
+  LeftOutlined,
+  RightOutlined,
+  EyeOutlined,
+  LikeOutlined,
+  MessageOutlined,
+  CalendarOutlined,
+} from '@ant-design/icons-vue'
 import type { FormInstance } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
@@ -96,6 +183,16 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.locale('zh-cn')
 dayjs.extend(relativeTime)
 
+const tabNameMap = new Map([
+  ['list', '列表'],
+  ['series', '系列'],
+  ['archive', '归档'],
+])
+
+const router = useRouter()
+let queryParam: any = router.currentRoute.value.query
+const tabKey = queryParam['tab']
+const tabName = tabNameMap.get(tabKey)
 const commentContent = ref<string>('')
 const submitting = false
 const formRef = ref<FormInstance>()
@@ -137,6 +234,10 @@ const text = `
 网站还在不断完善中，希望自己能够更加有动力去学习和记录，也希望能给他人带来些许的参考和帮助。
 
 努力永远不会太迟，不负韶华不负自己，共勉！
+## 链接
+- [Demo](https://code-farmer-i.github.io/vue-markdown-editor/examples/base-editor.html)
+- [Documentation](https://code-farmer-i.github.io/vue-markdown-editor/)
+- [Changelog](https://code-farmer-i.github.io/vue-markdown-editor/changelog.html)
 `
 const data = [
   {
@@ -169,19 +270,54 @@ const clickReply = (item: any) => {
 </script>
 
 <style lang="less" scoped>
-.comment {
-  padding: 10px;
-  margin-top: 10px;
+.article {
   background-color: white;
+  margin-top: 5px;
+  padding: 10px;
 }
 
-.quote {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 1px 0 10px;
-  border-left: 5px solid rgb(222, 222, 222);
-  background-color: rgb(243, 242, 242);
-  margin-bottom: 5px;
+.article-head {
+  margin-top: 40px;
+  text-align: center;
+  .article-head-title {
+    font-size: 2em;
+  }
+  .article-head-meta {
+    margin: 3px 0 10px 0;
+    color: #999;
+    font-family: 'Lato', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-size: 12px;
+    text-align: center;
+  }
+}
+.article-foot {
+  padding: 0rem 2.5rem;
+  .article-foot-copyright {
+    padding: 0.5em 1em;
+    // border-left: 3px solid #91d5ff;
+    border: 1px solid #91d5ff;
+    background-color: #e6f7ff;
+    list-style: none;
+  }
+  .article-foot-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+}
+
+.comment {
+  padding: 2rem 2.5rem;
+  margin-top: 10px;
+  background-color: white;
+  .comment-quote {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1px 0 10px;
+    border-left: 5px solid rgb(222, 222, 222);
+    background-color: rgb(243, 242, 242);
+    margin-bottom: 5px;
+  }
 }
 
 .fade-enter-active,
@@ -194,6 +330,9 @@ const clickReply = (item: any) => {
   opacity: 0;
 }
 
+:deep(.vuepress-markdown-body:not(.custom)) {
+  padding: 1rem 2.5rem 2rem 2.5rem;
+}
 // :deep(.ant-list-pagination) {
 //   text-align: right;
 //   padding-bottom: 10px;

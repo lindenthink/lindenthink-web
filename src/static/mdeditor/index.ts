@@ -6,8 +6,8 @@ import '@kangc/v-md-editor/lib/theme/style/vuepress.css'
 import createLineNumbertPlugin from '@kangc/v-md-editor/lib/plugins/line-number/index'
 import createCopyCodePlugin from '@kangc/v-md-editor/lib/plugins/copy-code/index'
 import '@kangc/v-md-editor/lib/plugins/copy-code/copy-code.css'
-import 'https://unpkg.com/mermaid/dist/mermaid.min.js'
-import createMermaidPlugin from '@kangc/v-md-editor/lib/plugins/mermaid/cdn'
+// import 'https://unpkg.com/mermaid/dist/mermaid.min.js'
+// import createMermaidPlugin from '@kangc/v-md-editor/lib/plugins/mermaid/cdn'
 import '@kangc/v-md-editor/lib/plugins/mermaid/mermaid.css'
 import createTodoListPlugin from '@kangc/v-md-editor/lib/plugins/todo-list/index'
 import '@kangc/v-md-editor/lib/plugins/todo-list/todo-list.css'
@@ -20,7 +20,7 @@ VueMarkdownEditor.use(vuepressTheme, {
 })
   .use(createLineNumbertPlugin())
   .use(createCopyCodePlugin())
-  .use(createMermaidPlugin())
+  // .use(createMermaidPlugin())
   .use(createTodoListPlugin())
   .use(createAlignPlugin())
 
@@ -29,7 +29,7 @@ VMdPreview.use(vuepressTheme, {
 })
   .use(createLineNumbertPlugin())
   .use(createCopyCodePlugin())
-  .use(createMermaidPlugin())
+  // .use(createMermaidPlugin())
   .use(createTodoListPlugin())
   .use(createAlignPlugin())
 

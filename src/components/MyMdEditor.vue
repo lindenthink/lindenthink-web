@@ -3,8 +3,8 @@
     v-model="content"
     height="600px"
     left-toolbar="undo redo clear | h bold italic strikethrough | code quote table tip hr location | image link | ul ol | save"
-    autofocus="true"
-    disabled-menus="[]"
+    :autofocus="autofocus"
+    :disabled-menus="disabledMenus"
     :toolbar="toolbar"
     @upload-image="onUploadImage"
     v-if="mode === 'edit'"
@@ -20,6 +20,8 @@ defineProps({
 })
 
 // const emit = defineEmits(['upload-img'])
+const disabledMenus:String[] = []
+const autofocus:Boolean = true
 
 const onUploadImage = (event: any, insertImage: any, files: any) => {
   console.log(files)
