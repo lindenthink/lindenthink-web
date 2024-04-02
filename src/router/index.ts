@@ -16,7 +16,7 @@ const routes = [
     },
   },
   {
-    path: '/article/:id',
+    path: '/:tab/article/:id',
     name: 'article',
     component: () => import('@/views/articles/ArticleView.vue'),
   },

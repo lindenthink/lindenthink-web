@@ -1,4 +1,4 @@
-const configPath = 'live2d/message.json'
+const configPath = '/live2d/message.json'
 
 String.prototype.renderTip = function (context) {
     let tokenReg = /(\\)?\{([^\{\}\\]+)(\\)?\}/g;
@@ -136,6 +136,8 @@ function showMessage(text, timeout){
         el.style.opacity = '0';
     }, timeout)
 }
+
+window.pickRandom = pickRandom
 
 function pickRandom(target) {
     return Array.isArray(target) ? target[Math.floor(Math.random() * target.length)] : target

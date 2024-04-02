@@ -10,18 +10,20 @@
     v-if="mode === 'edit'"
   ></v-md-editor>
 
-  <v-md-preview :text="content" v-else></v-md-preview>
+  <v-md-preview :text="content" @copy-code-success="handleCopyCodeSuccess" v-else></v-md-preview>
 </template>
 
 <script lang="ts" setup>
+import { message } from 'ant-design-vue'
+
 defineProps({
   content: String,
   mode: String,
 })
 
 // const emit = defineEmits(['upload-img'])
-const disabledMenus:String[] = []
-const autofocus:Boolean = true
+const disabledMenus: String[] = []
+const autofocus: Boolean = true
 
 const onUploadImage = (event: any, insertImage: any, files: any) => {
   console.log(files)
@@ -31,6 +33,11 @@ const onUploadImage = (event: any, insertImage: any, files: any) => {
     width: 'auto',
     height: 'auto',
   })
+}
+
+const handleCopyCodeSuccess = () => {
+  message.success('代码复制成功')
+  // (window as any).showMessage('代码片段已复制成功，引用时记得注明出处呦！', 5000)
 }
 
 const toolbar = {

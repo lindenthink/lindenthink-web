@@ -4,10 +4,12 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { notification } from 'ant-design-vue'
+// import { notification } from 'ant-design-vue'
 
 import APlayer from 'APlayer'
 import 'APlayer/dist/APlayer.min.css'
+import {showMessage } from '@/static/linden'
+
 
 let props = defineProps({
   // 开启吸底模式
@@ -128,22 +130,22 @@ onMounted(() => {
         let needNotify = true
         ap.on('canplay', () => {
           if (needNotify) {
-            ;(window as any).showMessage('音乐已加载完成，可以点击左下角播放按钮进行欣赏！', 5000)
+            showMessage('音乐已加载完成，可以点击左下角播放按钮进行欣赏哦！', 5000)
           }
           needNotify = false
         })
         ap.on('pause', () => {
-          ;(window as any).showMessage('已暂停播放音乐！', 3000)
+          showMessage('已暂停播放音乐！', 3000)
         })
         ap.on('play', () => {
           let music = data.find((item: any) => item.url === ap.audio.src)
-          ;(window as any).showMessage(`开始播放 <b>${music.author}</b> 演唱的『<b>${music.title}</b>』！`, 3000)
+          showMessage(`开始播放 <span style=\"color:rgb(165, 163, 163)\">${music.author}</span> 演唱的『${music.title}』`, 3000)
         })
         ap.on('lrchide', () => {
-          ;(window as any).showMessage('已隐藏歌词！', 3000)
+          showMessage('已隐藏歌词！', 3000)
         })
         ap.on('lrcshow', () => {
-          ;(window as any).showMessage('已显示歌词！', 3000)
+          showMessage('已显示歌词！', 3000)
         })
       })
   })

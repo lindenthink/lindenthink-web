@@ -5,22 +5,22 @@
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>菩提思</title>
-    <link rel="stylesheet" href="live2d/live2d.css" />
-    <script src="live2d/live2dcubismcore.min.js"></script>
-    <script src="live2d/bundle.js"></script>
+    <link rel="stylesheet" href="/live2d/live2d.css" />
   </head>
 
-  <body style="margin: 0">
+  <body style="margin: 0; background-color: #f0f2f5">
     <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-
     <div id="landlord">
       <div id="message" class="message" style="opacity: 0"></div>
       <canvas id="live2d" width="100" height="340" class="live2d"></canvas>
     </div>
+
+    <script type="module" src="/src/main.ts"></script>
+    <script src="/live2d/live2dcubismcore.min.js"></script>
+    <script src="/live2d/bundle.js"></script>
     <script>
-      loadlive2d({ resourcesPath: "live2d/model/", modelDir: "Hiyori" });
+      loadlive2d({ resourcesPath: '/live2d/model/', modelDir: 'Hiyori' })
     </script>
-    <script type="text/javascript" src="live2d/message.js"></script>
+    <script type="text/javascript" src="/live2d/message.js"></script>
   </body>
 </html>

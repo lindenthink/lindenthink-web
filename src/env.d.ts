@@ -18,3 +18,6 @@ declare module '@kangc/v-md-editor/lib/plugins/todo-list/index'
 declare module '@kangc/v-md-editor/lib/plugins/align'
 
 declare module 'APlayer'
+
+declare module '@/static/linden'
+declare module '@/directives/ripple'

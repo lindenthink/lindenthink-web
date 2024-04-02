@@ -1,36 +1,40 @@
+
 #landlord {
     user-select: none;
     position: fixed;
     right: 1.5rem;
-    bottom: 0;
+    bottom: 10vh;
     width: 240px;
     height: 360px;
-    z-index: 9;
+    z-index: 5;
     font-size: 0;
     transition: all .3s ease-in-out;
 }
 
 #live2d {
-    margin-left: 120px;
+    margin-left: 5rem;
     position: relative;
 }
 
 .message {
-    opacity: 0;
-    width: 240px;
+    opacity: 0.8;
+    width: 15rem;
     padding: 7px;
     top: -40px;
-    right: -10px;
+    right: 0px;
     text-align: center;
-    border: 1px solid #91d5ff;
     border-radius: 12px;
-    background-color: #e6f7ff;
-    color: #48abe9;
-    box-shadow: 0 3px 15px 2px #91d5ff;
+    /* border: 1px solid #91d5ff; */
+    border: 1px solid rgb(209, 141, 14, 0.6);
+    /* background-color: #e6f7ff; */
+    background-color: rgba(236, 217, 188, 0.5);
+    /* color: #48abe9; */
+    color: rgb(209, 141, 14);
+    /* box-shadow: 0 3px 15px 2px #91d5ff; */
+    box-shadow: 0 3px 15px 2px rgb(209, 141, 14, 0.6);
     font-size: 13px;
     font-weight: 400;
     text-overflow: ellipsis;
-    text-transform: uppercase;
     overflow: hidden;
     position: absolute;
     animation-delay: 5s;
@@ -40,7 +44,7 @@
     animation-timing-function: ease-in-out;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1200px) {
     #landlord {
         display: none;
     }

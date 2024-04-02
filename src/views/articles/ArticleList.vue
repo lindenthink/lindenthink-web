@@ -1,6 +1,6 @@
 <template>
   <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="listData">
-    <template #header>
+    <!-- <template #header>
       <a-form layout="inline">
         <a-form-item>
           <a-select
@@ -31,17 +31,23 @@
           <template #icon><SearchOutlined /></template>
         </a-button>
       </a-form>
-    </template>
+    </template> -->
     <template #renderItem="{ item }">
       <a-list-item key="item.title">
         <a-list-item-meta>
           <template #description>
-            <a-tag>JAVA</a-tag>
-            <a-tag>HTML</a-tag>
-            <a-tag>CSS</a-tag><br />
+            <span>
+              <EditOutlined style="margin-right: 8px" />
+              流年
+            </span>
+            <a-divider type="vertical"></a-divider>
+            <span>
+              <CalendarOutlined style="margin-right: 8px" />
+              {{ item.createTime }}
+            </span>
           </template>
           <template #title>
-            <router-link :to="{ path: `/article/${item.id}`, query: { tab: 'list' } }"> {{ item.title }} </router-link>
+            <router-link :to="{ path: `/list/article/${item.id}` }"> {{ item.title }} </router-link>
           </template>
           <template #avatar><a-avatar :src="item.avatar" /></template>
         </a-list-item-meta>
@@ -70,7 +76,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { EyeOutlined, LikeOutlined, MessageOutlined, SearchOutlined } from '@ant-design/icons-vue'
+import { EyeOutlined, LikeOutlined, MessageOutlined, CalendarOutlined, EditOutlined } from '@ant-design/icons-vue'
 import type { SelectProps, TreeSelectProps } from 'ant-design-vue'
 
 const listData: Record<string, any>[] = []
@@ -82,7 +88,7 @@ for (let i = 0; i < 50; i++) {
     avatar: `/logo.jpg`,
     description:
       'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-    createTime: '2022-05-20 12:00:00',
+    createTime: '2022-05-20',
     starCount: 300,
     phaiseCount: 120,
     replyCount: 5,
@@ -136,4 +142,10 @@ const treeData = ref<TreeSelectProps['treeData']>([
 ])
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+:deep(.ant-list-pagination) {
+  text-align: center;
+  padding-bottom: 10px;
+  margin-top: 24px;
+}
+</style>
