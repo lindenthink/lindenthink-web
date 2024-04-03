@@ -30,7 +30,7 @@ let props = defineProps({
   // 主题色
   theme: {
     type: String,
-    default: '#00e079',
+    default: '#48abe9',
   },
   // 传递歌词方式
   lrcType: {
