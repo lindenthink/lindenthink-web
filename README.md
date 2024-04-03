@@ -25,3 +25,9 @@ yarn dev
 - 后端
   - python
   - jango
+
+
+## 感谢
+* https://aplayer.js.org/#/zh-Hans/
+* https://binaryify.github.io/NeteaseCloudMusicApi
+* https://github.com/sqaiyan/netmusic-node/blob/master/app.js

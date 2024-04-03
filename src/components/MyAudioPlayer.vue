@@ -4,12 +4,10 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
-// import { notification } from 'ant-design-vue'
 
 import APlayer from 'APlayer'
 import 'APlayer/dist/APlayer.min.css'
 import {showMessage } from '@/static/linden'
-
 
 let props = defineProps({
   // 开启吸底模式

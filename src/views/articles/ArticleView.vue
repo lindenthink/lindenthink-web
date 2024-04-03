@@ -57,7 +57,7 @@
         </a-breadcrumb>
       <!-- </a-affix> -->
 
-      <a-badge-ribbon text="原创" color="pink" style="z-index: 9">
+      <a-badge-ribbon text="原创" color="blue" style="z-index: 9">
         <div class="article">
           <div class="article-head">
             <h1 class="article-head-title">解放C盘</h1>
