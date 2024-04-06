@@ -36,7 +36,7 @@
       <div class="main">
          <a-alert message="说明" type="info" show-icon>
         <template #description>
-          以下列表按照最近登录时间倒叙+申请时间正序排列，如果您的博客也想在这里展示请先添加本博客为友链然后点击<a
+          以下列表按照最近登录时间倒叙+申请时间正序排列，如果您的博客也想在这里展示请先添加本博客为友链然后点击<a style="font-size: 1.2em;font-weight: bold;"
             @click="showApplyModel = true"
             >申请</a
           >，本博客信息如下：
@@ -48,7 +48,7 @@
           </ul>
         </template>
       </a-alert>
-        <a-list :grid="{ gutter: 1 }" :data-source="data" style="margin-top: 10px">
+        <a-list :grid="{ gutter: 1 }" :data-source="data" style="margin-top: 20px;padding:10px;">
           <template #renderItem="{ item }">
             <a-list-item>
               <a-card hoverable style="width: 240px" @click="clickLink(item)" v-ripple>
@@ -62,7 +62,7 @@
           </template>
         </a-list>
       </div>
-      <my-comment />
+      <MyComment />
     </a-layout-content>
     <a-layout-sider></a-layout-sider>
   </a-layout>
@@ -75,6 +75,7 @@ import MyComment from '@/components/MyComment.vue'
 const showApplyModel = ref(false)
 const data = [1, 2, 3, 4]
 const linkRequest = ref({})
+const rules = ref({})
 
 const submitApply = () => {}
 
@@ -94,19 +95,7 @@ const clickLink = (item: any) => window.open('https://www.baidu.com', '_blank')
 }
 
 .main {
-  margin-top: 10px;
-  padding: 30px 20px 10px 20px;
+  padding: 20px 20px 10px 20px;
   background: #fff;
-  .broadcast {
-    margin-bottom: 20px;
-    font-size: 15px;
-    line-height: 15px;
-    color: grey;
-    display: flex;
-    justify-content: space-between;
-    marquee {
-      margin-left: 5px;
-    }
-  }
 }
 </style>

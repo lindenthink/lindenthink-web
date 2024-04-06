@@ -2,8 +2,8 @@
   <a-layout>
     <a-layout-sider></a-layout-sider>
     <a-layout-content>
-      <my-md-editor mode="preview" :content="text" />
-      <my-comment />
+      <MyMdEditor mode="preview" :content="text" />
+      <MyComment />
     </a-layout-content>
     <a-layout-sider></a-layout-sider>
   </a-layout>

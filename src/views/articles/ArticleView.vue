@@ -45,17 +45,15 @@
     </a-layout-sider>
 
     <a-layout-content>
-      <!-- <a-affix offset-top="6"> -->
-        <a-breadcrumb separator=">" style="background-color: #f0f2f5; padding: 10px">
-          <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 文章 </router-link></a-breadcrumb-item>
-          <a-breadcrumb-item>
-            <router-link :to="{ path: '/articles' }">
-              {{ tabName }}
-            </router-link>
-          </a-breadcrumb-item>
-          <a-breadcrumb-item>正文</a-breadcrumb-item>
-        </a-breadcrumb>
-      <!-- </a-affix> -->
+      <a-breadcrumb separator=">" style="background-color: #f0f2f5; padding: 10px">
+        <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 文章 </router-link></a-breadcrumb-item>
+        <a-breadcrumb-item>
+          <router-link :to="{ path: '/articles' }">
+            {{ tabName }}
+          </router-link>
+        </a-breadcrumb-item>
+        <a-breadcrumb-item>正文</a-breadcrumb-item>
+      </a-breadcrumb>
 
       <a-badge-ribbon text="原创" color="blue" style="z-index: 9">
         <div class="article">
@@ -270,7 +268,7 @@ export default {
     }
   },
   mounted() {
-    const els = (this.$refs.editor as any).$el.querySelectorAll('h1,h2,h3,h4,h5,h6')
+    const els = (this.$refs.editor as any).$el.querySelectorAll('h1,h2,h3,h4,h5')
     let id,
       el,
       nextEl,

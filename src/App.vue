@@ -1,10 +1,9 @@
 <template class="app">
-  <my-audio-player id="6991674483" />
+  <MyAudioPlayer id="6991674483" />
   <a-config-provider :locale="locale">
     <a-back-top visibilityHeight="200" />
     <a-layout>
       <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
-        <div class="logo"></div>
         <a-menu v-model:selectedKeys="currentMenu" mode="horizontal" :theme="theam" style="z-index: 100">
           <a-menu-item key="home">
             <template #icon>
@@ -24,7 +23,13 @@
             </template>
             工具
           </a-menu-item>
-          <a-menu-item key="links">
+          <a-menu-item key="bench">
+            <template #icon>
+              <ScheduleOutlined />
+            </template>
+            工作台
+          </a-menu-item>
+          <a-menu-item key="friends">
             <template #icon>
               <link-outlined />
             </template>
@@ -51,15 +56,15 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch, onBeforeMount } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { HomeOutlined, ReadOutlined, LinkOutlined, ToolOutlined, IdcardOutlined } from '@ant-design/icons-vue'
+import { HomeOutlined, ReadOutlined, LinkOutlined, ToolOutlined, IdcardOutlined, ScheduleOutlined } from '@ant-design/icons-vue'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 
-import MyAudioPlayer from './components/MyAudioPlayer.vue'
+import MyAudioPlayer from '@/components/MyAudioPlayer.vue'
 
 const locale = zhCN
-const theam = 'dark'
+const theam = 'light'
 const router = useRouter()
 const currentMenu: any = ref(['/'])
 
@@ -83,13 +88,6 @@ const year = new Date().getFullYear()
 </script>
 
 <style lang="less" scoped>
-.logo {
-  width: 120px;
-  height: 31px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px 24px 16px 0;
-  float: left;
-}
 
 :deep(.ant-layout) {
   position: relative;
@@ -116,6 +114,7 @@ const year = new Date().getFullYear()
 
 :deep(.ant-layout-header) {
   z-index: 100 !important;
+  padding: 0;
 }
 :deep(.vuepress-markdown-body a) {
   color: #1890ff;
