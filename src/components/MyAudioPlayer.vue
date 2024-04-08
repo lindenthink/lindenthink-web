@@ -100,7 +100,8 @@ let props = defineProps({
 
 const playerRef = ref()
 // 也可以使用一言提供的接口：https://developer.hitokoto.cn/sentence/demo/#javascript
-const url = `https://api.i-meto.com/meting/api?server=netease&type=${props.songType}&id=${props.id}&r=${Math.random}`
+// const url = `https://api.i-meto.com/meting/api?server=netease&type=${props.songType}&id=${props.id}&r=${Math.random}`
+const url = `http://localhost:8080/lindenthink/netease/audio/playlist?id=${props.id}`
 
 let ap: any
 onMounted(() => {
