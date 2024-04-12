@@ -25,7 +25,7 @@
           </a-menu-item>
           <a-menu-item key="bench">
             <template #icon>
-              <ScheduleOutlined />
+              <schedule-outlined />
             </template>
             工作台
           </a-menu-item>
