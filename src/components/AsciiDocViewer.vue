@@ -3,12 +3,11 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, nextTick } from 'vue';
-import asciidoctor from '@asciidoctor/core';
-import kroki from 'asciidoctor-kroki';
-import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-dark.css'; // 引入高亮主题样式
-
+import { ref, watch, onMounted, nextTick } from 'vue'
+import asciidoctor from '@asciidoctor/core'
+import kroki from 'asciidoctor-kroki'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/atom-one-dark.css' // 引入高亮主题样式
 
 // 定义 props
 const props = defineProps({
@@ -20,16 +19,16 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-});
+})
 
 // 初始化 Asciidoctor
-const asciidoc = asciidoctor();
+const asciidoc = asciidoctor()
 
 // 启用 Kroki 插件以支持 PlantUML
-kroki.register(asciidoc.Extensions);
+kroki.register(asciidoc.Extensions)
 
 // 渲染后的内容
-const renderedContent = ref('');
+const renderedContent = ref('')
 
 // 渲染 AsciiDoc 内容
 const renderContent = () => {
@@ -42,67 +41,68 @@ const renderContent = () => {
         'source-highlighter': 'highlightjs', // 启用代码高亮
       },
       ...props.options, // 合并传入的选项
-    });
+    })
 
     // 渲染完成后处理代码块
     nextTick(() => {
-      const codeBlocks = document.querySelectorAll('.asciidoc-viewer pre code');
+      const codeBlocks = document.querySelectorAll('.asciidoc-viewer pre code')
       codeBlocks.forEach((block) => {
-          // 检查是否已经添加了行号
+        // 检查是否已经添加了行号
         if (block.parentNode.querySelector('.code-with-line-numbers')) {
-          return;
+          return
         }
-  
+
         // 高亮代码
-        hljs.highlightBlock(block);
+        hljs.highlightBlock(block)
 
         // 添加行号
-        const lines = block.innerHTML.split('\n');
-        const numberedLines = lines.map((line, index) => `<span class="line-number">${index + 1}</span> ${line}`).join('\n');
-        block.innerHTML = `<div class="code-with-line-numbers">${numberedLines}</div>`;
+        const lines = block.innerHTML.split('\n')
+        const numberedLines = lines
+          .map((line, index) => `<span class="line-number">${index + 1}</span> ${line}`)
+          .join('\n')
+        block.innerHTML = `<div class="code-with-line-numbers">${numberedLines}</div>`
 
         // 获取语言
-        const language = block.className.split('-')[1].split(' ')[0] || 'text';
+        const language = block.className.split('-')[1].split(' ')[0] || 'text'
 
         // 创建工具栏
-        const toolbar = document.createElement('div');
-        toolbar.className = 'code-toolbar';
+        const toolbar = document.createElement('div')
+        toolbar.className = 'code-toolbar'
         toolbar.innerHTML = `
           <div class="toolbar-content">
             <span class="language">${language}</span>
             <button class="copy-button">Copy</button>
           </div>
-        `;
+        `
 
         // 插入工具栏
-        block.parentNode.insertBefore(toolbar, block);
+        block.parentNode.insertBefore(toolbar, block)
 
         // 绑定复制事件
-        const copyButton = toolbar.querySelector('.copy-button');
+        const copyButton = toolbar.querySelector('.copy-button')
         copyButton.addEventListener('click', () => {
           navigator.clipboard.writeText(block.textContent).then(() => {
-            copyButton.textContent = 'Copied!';
+            copyButton.textContent = 'Copied!'
             setTimeout(() => {
-              copyButton.textContent = 'Copy';
-            }, 2000);
-          });
-        });
-      });
-      
-    });
+              copyButton.textContent = 'Copy'
+            }, 2000)
+          })
+        })
+      })
+    })
   } catch (error) {
-    console.error('Failed to render AsciiDoc:', error);
-    renderedContent.value = '<p>Error rendering AsciiDoc content.</p>';
+    console.error('Failed to render AsciiDoc:', error)
+    renderedContent.value = '<p>Error rendering AsciiDoc content.</p>'
   }
-};
+}
 
 // 监听 content 变化，重新渲染
-watch(() => props.content, renderContent, { immediate: true });
+watch(() => props.content, renderContent, { immediate: true })
 
 // 组件挂载后初始化高亮
 onMounted(() => {
-  renderContent();
-});
+  renderContent()
+})
 </script>
 
 <style>
@@ -111,9 +111,9 @@ onMounted(() => {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.6;
   color: #333;
-  max-width: 80%;
-  margin: 0 auto;
-  padding: 20px;
+  max-width: 90%;
+  margin: 0 auto 4em auto;
+  padding: 0 20px;
 }
 
 /* 标题样式 */
@@ -174,7 +174,6 @@ onMounted(() => {
 .asciidoc-viewer code {
   font-family: 'Courier New', Courier, monospace;
 }
-
 
 .line-number {
   display: inline-block;

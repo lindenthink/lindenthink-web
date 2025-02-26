@@ -4,44 +4,30 @@
     <a-back-top visibilityHeight="200" />
     <a-layout>
       <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
-        <a-menu v-model:selectedKeys="currentMenu" mode="horizontal" :theme="theam" style="z-index: 100">
-          <a-menu-item key="home">
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 99%">
+          <div>
+            <img src="/logo.jpg" width="48" style="margin: 0 1.5em" />
+            <img src="/title.png" width="130" />
+          </div>
+          <a-menu v-model:selectedKeys="currentMenu" mode="horizontal" :theme="theam">
+            <a-menu-item key="home"> 首页 </a-menu-item>
+            <a-menu-item key="articles"> 文章 </a-menu-item>
+            <a-menu-item key="tools"> 工具 </a-menu-item>
+            <a-menu-item key="workbench"> 工作台 </a-menu-item>
+            <a-menu-item key="about"> 关于 </a-menu-item>
+          </a-menu>
+          <a-input-search
+            placeholder="搜索..."
+            enter-button
+            @search="onSearch"
+            style="max-width: 300px; margin-right: 16px"
+          />
+          <a-avatar>
             <template #icon>
-              <home-outlined />
+              <UserOutlined />
             </template>
-            首页
-          </a-menu-item>
-          <a-menu-item key="articles">
-            <template #icon>
-              <read-outlined />
-            </template>
-            文章
-          </a-menu-item>
-          <a-menu-item key="tools">
-            <template #icon>
-              <tool-outlined />
-            </template>
-            工具
-          </a-menu-item>
-          <a-menu-item key="workbench">
-            <template #icon>
-              <schedule-outlined />
-            </template>
-            工作台
-          </a-menu-item>
-          <!-- <a-menu-item key="friends">
-            <template #icon>
-              <link-outlined />
-            </template>
-            友链
-          </a-menu-item> -->
-          <a-menu-item key="about">
-            <template #icon>
-              <idcard-outlined />
-            </template>
-            关于
-          </a-menu-item>
-        </a-menu>
+          </a-avatar>
+        </div>
       </a-layout-header>
 
       <a-layout-content :style="{ padding: '10px', marginTop: '64px', minWidth: '680px' }">
@@ -49,7 +35,7 @@
       </a-layout-content>
 
       <a-layout-footer :style="{ textAlign: 'center', margin: '36px 0 24px 0' }">
-        菩提思 ©{{ year }} 版权所有
+        <a href="mailto:844449541@qq.com">菩提思</a>©2023-{{ new Date().getFullYear() }}版权所有
       </a-layout-footer>
     </a-layout>
   </a-config-provider>
@@ -58,10 +44,18 @@
 <script lang="ts" setup>
 import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { HomeOutlined, ReadOutlined, LinkOutlined, ToolOutlined, IdcardOutlined, ScheduleOutlined } from '@ant-design/icons-vue'
+import {
+  HomeOutlined,
+  ReadOutlined,
+  LinkOutlined,
+  ToolOutlined,
+  IdcardOutlined,
+  ScheduleOutlined,
+  UserOutlined,
+} from '@ant-design/icons-vue'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 
-import MyAudioPlayer from '@/components/MyAudioPlayer.vue'
+// import MyAudioPlayer from '@/components/MyAudioPlayer.vue'
 
 const locale = zhCN
 const theam = 'light'
@@ -82,18 +76,22 @@ onMounted(() => {
     router.push({ name: menu })
   })
 })
-const searchKey = ''
-const onSearch = () => {}
-const year = new Date().getFullYear()
+const searchKey = ref('')
+const onSearch = (value: string) => {
+  console.log('搜索内容:', value)
+}
 </script>
 
 <style lang="less" scoped>
-
 :deep(.ant-layout) {
   position: relative;
   min-width: 0;
   background: #f0f2f5;
   transition: all 0.2s;
+}
+
+:deep(.ant-layout-header) {
+  background: #ffffff;
 }
 
 :deep(.ant-layout-sider) {
@@ -107,7 +105,7 @@ const year = new Date().getFullYear()
 }
 
 :deep(.ant-layout-content) {
-  flex: 1 1 60%;
+  flex: 1 1 55%;
   transition: all 0.2s;
   min-width: 780px;
 }
@@ -116,19 +114,7 @@ const year = new Date().getFullYear()
   z-index: 100 !important;
   padding: 0;
 }
-:deep(.vuepress-markdown-body a) {
-  color: #1890ff;
-  font-weight: 400;
-  background-color: transparent;
-  outline: none;
-  cursor: pointer;
-  transition: color 0.3s;
-  -webkit-text-decoration-skip: objects;
-  &:hover {
-  text-decoration: none;
-  color: #50a6f7;
-  }
-}
+
 .ant-back-top {
   box-sizing: border-box;
   margin: 0;

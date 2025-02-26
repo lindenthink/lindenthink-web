@@ -1,6 +1,6 @@
 <template>
   <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="listData">
-    <!-- <template #header>
+    <!--<template #header>
       <a-form layout="inline">
         <a-form-item>
           <a-select
@@ -31,14 +31,14 @@
           <template #icon><SearchOutlined /></template>
         </a-button>
       </a-form>
-    </template> -->
+    </template>-->
     <template #renderItem="{ item }">
       <a-list-item key="item.title">
         <a-list-item-meta>
           <template #description>
             <span>
               <EditOutlined style="margin-right: 8px" />
-              流年
+              菩提思
             </span>
             <a-divider type="vertical"></a-divider>
             <span>
@@ -67,7 +67,7 @@
           </span>
         </template>
         <template #extra>
-          <img width="320" alt="logo" src="/2.jpg" />
+          <img width="64" alt="logo" src="logo.jpg" />
         </template>
       </a-list-item>
     </template>

@@ -1,16 +1,15 @@
 <template>
- <a-layout>
+  <a-layout>
     <a-layout-sider></a-layout-sider>
     <a-layout-content>
-        <AsciiDocViewer :content="asciidocContent" />
+      <AsciiDocViewer :content="asciidocContent" />
     </a-layout-content>
     <a-layout-sider></a-layout-sider>
   </a-layout>
-  
 </template>
 
 <script setup>
-import AsciiDocViewer from '@/components/AsciiDocViewer.vue';
+import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 
 const asciidocContent = `
 = Hello, AsciiDoc!
@@ -155,5 +154,5 @@ CompletedState --|> State
 @enduml
 ----
 
-`;
+`
 </script>

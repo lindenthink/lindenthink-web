@@ -3,15 +3,14 @@
     <a-layout-sider>
       <div class="article-toc">
         <a-tabs v-model:activeKey="activeKey" centered>
-          <a-tab-pane key="1" tab="系列总览">
+          <a-tab-pane key="1" tab="系列">
             <div class="article-toc-content">
-              <div v-for="item in series" style="border-bottom: 1px #f0f2f5 solid">
+              <div v-for="(item, index) in series" :key="index" style="border-bottom: 1px #f0f2f5 solid">
                 <FileOutlined :style="{ color: 'grey' }" /> <a>{{ item }}</a>
               </div>
             </div>
           </a-tab-pane>
-          <a-tab-pane key="2" tab="本文目录">
-            <!-- <h4 style="text-align: center; font-weight: bold">文章目录</h4> -->
+          <a-tab-pane key="2" tab="目录">
             <div class="article-toc-content">
               <a-anchor :affix="false" :offsetTop="40" showInkInFixed>
                 <a-anchor-link
@@ -55,7 +54,7 @@
         <a-breadcrumb-item>正文</a-breadcrumb-item>
       </a-breadcrumb>
 
-      <a-badge-ribbon text="原创" color="blue" style="z-index: 9">
+      <a-badge-ribbon text="原创" color="green" style="z-index: 9;">
         <div class="article">
           <div class="article-head">
             <h1 class="article-head-title">解放C盘</h1>
@@ -69,14 +68,14 @@
               ><a-divider type="vertical"></a-divider> <MessageOutlined style="margin-right: 5px" />
               <span>评论数：20</span><br />
             </div>
-            <a-typography style="text-align: left; padding: 0rem 2.5rem">
-              <blockquote style="letter-spacing: 0.3em; font-weight: 150">
+            <a-typography style="text-align: left; padding: 0rem 3rem">
+              <blockquote style="letter-spacing: 0.2em; font-weight: 100">
                 C盘一般都是作为系统盘来使用，相对空间会小一些。由于大多软件默认都是安装到这个磁盘，而且我们平时使用的应用依赖的配置或者缓存文件也同样存到这个磁盘中，所以它的空间很容易被占满。
               </blockquote>
             </a-typography>
           </div>
 
-          <AsciiDocViewer :content="asciidocContent" ref="viewerRef"/>
+          <AsciiDocViewer :content="asciidocContent" ref="viewerRef" />
 
           <div class="article-foot">
             <div style="text-align: center"></div>
@@ -156,7 +155,7 @@ import {
   EditOutlined,
 } from '@ant-design/icons-vue'
 import MyComment from '@/components/MyComment.vue'
-import AsciiDocViewer from '@/components/AsciiDocViewer.vue';
+import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 import { TagColors, showMessage, bindTip } from '@/static/linden'
 
 const tabNameMap = new Map([
@@ -197,7 +196,7 @@ const series = [
 // onUnmounted(() => clearInterval(recommendInterval))
 
 const asciidocContent = `
-= Hello, AsciiDoc!
+= Hello, AsciiDoc!gitlab.hd123.com
 
 - https://gitlab.hd123.com/huzexiong/im-h6-doc/-/blob/master/cloud-fund/multi-batch-settle-logic.adoc[多批次结算流程]
 - https://gitlab.hd123.com/pay/pay-doc/-/blob/develop/%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/cloudfund/%E8%AF%84%E4%BC%B0/%E9%9C%80%E6%B1%82%E8%AF%84%E4%BC%B0/%E5%AD%98%E9%87%8F%E7%BD%91%E5%95%86%E5%95%86%E6%88%B7%E5%88%87%E5%A4%9A%E6%89%B9%E6%AC%A1%E8%AF%84%E4%BC%B0.adoc[存量网商商户切多批次评估]
@@ -339,7 +338,8 @@ CompletedState --|> State
 @enduml
 ----
 
-`;
+
+`
 
 // const clickPraise = () => {
 //   isPraise.value = !isPraise.value
@@ -362,21 +362,19 @@ export default {
     }
   },
   mounted() {
-    const els = this.$refs.viewerRef.$el.querySelectorAll('h1,h2,h3,h4,h5')
-    let id,
-      el,
+    const els = this.$refs.viewerRef.$el.querySelectorAll('h1,h2,h3')
+    let el,
       nextEl,
       parentAnchors = [], // 正在处理的父锚点集合
       parentAnchor
     for (let i = 0; i < els.length; i++) {
       el = els[i]
       nextEl = els.length === i + 1 ? null : els[i + 1]
-      id = 'toc-' + (i + 1)
-      el.id = id
+      el.id = 'toc-' + (i + 1)
       let anchor: any = {
-        id: id,
+        id: el.id,
         title: el.innerText.trim(),
-        href: '#' + id,
+        href: '#' + el.id,
         tagName: el.tagName,
         hasChildren: el.tagName < nextEl?.tagName,
         children: [],
@@ -421,10 +419,10 @@ export default {
   margin-top: 40px;
   text-align: center;
   .article-head-title {
-    font-size: 2em;
+    font-size: 2.2em;
   }
   .article-head-meta {
-    margin: 3px 0 10px 0;
+    // margin: 0 0 10px 0;
     color: #999;
     font-family: 'Lato', 'PingFang SC', 'Microsoft YaHei', sans-serif;
     font-size: 12px;
@@ -454,7 +452,7 @@ export default {
   margin-right: 10px;
   padding: 10px 0px 0px 0px;
   max-width: 200px;
-  left: 8%;
+  left: 12%;
   .article-toc-content {
     padding: 0 10px 10px 10px;
     max-height: 80vh;
