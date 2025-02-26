@@ -34,9 +34,9 @@ const routes = [
     component: () => import('@/views/About.vue'),
   },
   {
-    path: '/bench',
-    name: 'bench',
-    component: () => import('@/views/About.vue'),
+    path: '/workbench',
+    name: 'workbench',
+    component: () => import('@/views/Workbench.vue'),
   },
   {
     path: '/friends',

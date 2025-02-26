@@ -1,5 +1,5 @@
 <template class="app">
-  <MyAudioPlayer id="6991674483" />
+  <!-- <MyAudioPlayer id="6991674483" /> -->
   <a-config-provider :locale="locale">
     <a-back-top visibilityHeight="200" />
     <a-layout>
@@ -23,18 +23,18 @@
             </template>
             工具
           </a-menu-item>
-          <a-menu-item key="bench">
+          <a-menu-item key="workbench">
             <template #icon>
               <schedule-outlined />
             </template>
             工作台
           </a-menu-item>
-          <a-menu-item key="friends">
+          <!-- <a-menu-item key="friends">
             <template #icon>
               <link-outlined />
             </template>
             友链
-          </a-menu-item>
+          </a-menu-item> -->
           <a-menu-item key="about">
             <template #icon>
               <idcard-outlined />

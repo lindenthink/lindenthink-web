@@ -23,7 +23,7 @@ let props = defineProps({
   // 音频自动播放
   autoplay: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   // 主题色
   theme: {
@@ -61,7 +61,7 @@ let props = defineProps({
   // 音频循环顺序
   order: {
     type: String,
-    default: 'list',
+    default: 'random',
     validator: (value: 'list' | 'random') => {
       return value === 'list' || value === 'random'
     },

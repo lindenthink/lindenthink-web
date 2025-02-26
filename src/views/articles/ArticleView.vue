@@ -76,7 +76,7 @@
             </a-typography>
           </div>
 
-          <my-md-editor mode="preview" :content="text" ref="editor" />
+          <AsciiDocViewer :content="asciidocContent" ref="viewerRef"/>
 
           <div class="article-foot">
             <div style="text-align: center"></div>
@@ -155,8 +155,8 @@ import {
   FileOutlined,
   EditOutlined,
 } from '@ant-design/icons-vue'
-import MyMdEditor from '@/components/MyMdEditor.vue'
 import MyComment from '@/components/MyComment.vue'
+import AsciiDocViewer from '@/components/AsciiDocViewer.vue';
 import { TagColors, showMessage, bindTip } from '@/static/linden'
 
 const tabNameMap = new Map([
@@ -173,6 +173,7 @@ const tabName = tabNameMap.get(tabKey)
 const isPraise = ref(false)
 const curUrl = location.href
 const commentRef: any = ref()
+const viewerRef: any = ref()
 const likeRef: any = ref()
 const activeKey = ref('2')
 const series = [
@@ -189,70 +190,163 @@ const series = [
   'Los Angeles battles huge wildfires.',
 ]
 
-onMounted(() => {
-  bindTip()
-})
-const recommendInterval = setInterval(() => showMessage('这篇文章怎么样啊，记得点赞和评论喔(*^_^*)', 4000), 100000)
-onUnmounted(() => clearInterval(recommendInterval))
+// onMounted(() => {
+//   bindTip()
+// })
+// const recommendInterval = setInterval(() => showMessage('这篇文章怎么样啊，记得点赞和评论喔(*^_^*)', 4000), 100000)
+// onUnmounted(() => clearInterval(recommendInterval))
 
-const text = `
-# Markdown Editor
+const asciidocContent = `
+= Hello, AsciiDoc!
 
-<p align="left">
-  <a href="https://npmcharts.com/compare/@kangc/v-md-editor?minimal=true"><img src="https://img.shields.io/npm/dm/@kangc/v-md-editor.svg?sanitize=true" alt="Downloads"></a>
-  <a href="https://www.npmjs.com/package/@kangc/v-md-editor"><img src="https://img.shields.io/npm/v/@kangc/v-md-editor.svg?sanitize=true" alt="Version"></a>
-  <a href="https://www.npmjs.com/package/@kangc/v-md-editor"><img src="https://img.shields.io/npm/l/@kangc/v-md-editor.svg?sanitize=true" alt="License"></a>
-</p>
+- https://gitlab.hd123.com/huzexiong/im-h6-doc/-/blob/master/cloud-fund/multi-batch-settle-logic.adoc[多批次结算流程]
+- https://gitlab.hd123.com/pay/pay-doc/-/blob/develop/%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/cloudfund/%E8%AF%84%E4%BC%B0/%E9%9C%80%E6%B1%82%E8%AF%84%E4%BC%B0/%E5%AD%98%E9%87%8F%E7%BD%91%E5%95%86%E5%95%86%E6%88%B7%E5%88%87%E5%A4%9A%E6%89%B9%E6%AC%A1%E8%AF%84%E4%BC%B0.adoc[存量网商商户切多批次评估]
 
-## Links
+== Introduction
+This is a simple AsciiDoc example with PlantUML support and syntax highlighting.
 
-- [Demo](https://code-farmer-i.github.io/vue-markdown-editor/examples/base-editor.html)
-- [Documentation](https://code-farmer-i.github.io/vue-markdown-editor/)
-- [Changelog](https://code-farmer-i.github.io/vue-markdown-editor/changelog.html)
+|===
+|类型|译名|用途|说明|参考
 
-## Install
+|Received payment details report|来款明细| | | https://docs.adyen.com/reporting/received-payment-details-report[详情参见>>]
+|Payment accounting report|支付账户报表| | | https://docs.adyen.com/reporting/invoice-reconciliation/payment-accounting-report[详情参见>>]
+|Settlement details report|结算明细报表| | | https://docs.adyen.com/reporting/settlement-detail-report[详情参见>>]
+|Monthly invoice|月度发票| | | https://docs.adyen.com/reporting/invoice-reconciliation/payment-processing-invoice[详情参见>>]
+|===
 
-\`\`\`bash
-# use npm
-npm i @kangc/v-md-editor -S
+== PlantUML Diagram
 
-# use yarn
-yarn add @kangc/v-md-editor
-\`\`\`
+[plantuml]
+----
+@startuml
+Alice -> Bob: Hello
+Bob --> Alice: Hi!
+@enduml
+----
 
-## Quick Start
+== Code Example
 
-\`\`\`js
-import Vue from 'vue';
-import VueMarkdownEditor from '@kangc/v-md-editor';
-import '@kangc/v-md-editor/lib/style/base-editor.css';
-import vuepressTheme from '@kangc/v-md-editor/lib/theme/vuepress.js';
+[source,java]
+----
+@ApiModel("总部资金账户类型")
+public enum HqAccountAttributeEnum {
+    HQ('普通账户', true, "SH"),
+    HQ_PAYER('支出账户', true, "00"),
+    HQ_TAKEOUT('外卖结算专户', true, "SH"),
+    HQ_FEEBACK('营销补贴专户', true, "00"),
+    HQ_BANK_CRO_ACCOUNT('银企直连账户', false, "00");
 
-VueMarkdownEditor.use(vuepressTheme);
-
-Vue.use(VueMarkdownEditor);
-\`\`\`
-### Start2
-
-## Usage
-
-\`\`\`html
-<template>
-  <v-md-editor v-model="text" height="400px"></v-md-editor>
-</template>
-\`\`\`
-
-## Refrence
-- [ElementUi Scrollbar Component](https://github.com/ElemeFE/element/tree/dev/packages/scrollbar)
-- [vuepress-plugin-container](https://vuepress.github.io/zh/plugins/container/)
-`
-
-const clickPraise = () => {
-  isPraise.value = !isPraise.value
-  if (isPraise.value) {
-    showMessage('谢谢点赞，你的支持是对作者最大的鼓励！', 5000)
-  }
+    HqAccountAttributeEnum(String desc, boolean needCreate, String memberProperty) {
+        this.desc = desc;
+        this.needCreate = needCreate;
+        this.memberProperty = memberProperty;
+    }
+    private String desc;
+    private boolean needCreate;
+    private String memberProperty;
 }
+----
+
+[source,python]
+----
+# 此处str()的作用：把数值变成了字符串
+a = str(input("输入一个数字："))
+print(a)
+b = str(input("输入一个数字："))
+print(b)
+print("打印两个数字相加：%s " % (a + "+" + b))
+----
+
+[plantuml]
+----
+@startuml
+title 多批次结算处理状态模式类图
+skin rose
+actor 商户
+participant 云资金
+participant 平安见证宝
+participant 平安云收款
+
+autonumber 1.1
+==开户==
+商户->云资金++:进件申请\\nfundaccount/open
+云资金->平安见证宝++:注册开户\\n（KFEJZB6248）
+return 开户结果\\n（子账户账号）
+
+return 申请结果
+loop 开户异常
+    云资金->平安见证宝++:查询会员子账号\\n（KFEJZB6092）
+    return 开户结果\\n（子账户账号）
+end
+云资金->平安见证宝++: 登记行为记录\\n（KFEJZB6244）
+return 登记结果
+alt 平安收单
+    云资金->平安云收款++:门店商户进件\\n（3.1）
+    return 申请结果
+end
+==绑卡==
+autonumber 2.1
+商户->云资金++:绑定提现账户\\nfundaccount/bankcard/bind
+云资金->平安见证宝++:操作绑卡\\n（KFEJZB6240）
+平安见证宝->平安见证宝:小额打款
+平安见证宝-->商户:短信通知客户打款金额+指令
+return 操作结果
+return 操作结果
+商户->云资金++:输入打款金额+指令\\nfundaccount/bankcard/verify
+云资金->平安见证宝++: 回填打款金额+指令\\n（KFEJZB6241）
+return 校验结果
+return 绑定结果
+@enduml
+----
+
+
+[plantuml]
+----
+@startuml
+title 多批次结算处理状态模式类图
+
+abstract class State {
+    +void handle(Contex context)
+}
+
+class InitialState {
+    +void handle(Contex context)
+}
+
+class ProcessingState {
+    +void handle(Contex context)
+}
+
+class CompletedState {
+    +void handle(Contex context)
+}
+
+class Context {
+    -State state
+    +void setState(State state)
+    +void request()
+}
+
+Context *-- State
+Context o-- "1" InitialState
+Context o-- "1" ProcessingState
+Context o-- "1" CompletedState
+
+InitialState --|> State
+ProcessingState --|> State
+CompletedState --|> State
+
+@enduml
+----
+
+`;
+
+// const clickPraise = () => {
+//   isPraise.value = !isPraise.value
+//   if (isPraise.value) {
+//     showMessage('谢谢点赞，你的支持是对作者最大的鼓励！', 5000)
+//   }
+// }
 
 const clickComment = () => {
   commentRef.value.scrollToReply()
@@ -268,7 +362,7 @@ export default {
     }
   },
   mounted() {
-    const els = (this.$refs.editor as any).$el.querySelectorAll('h1,h2,h3,h4,h5')
+    const els = this.$refs.viewerRef.$el.querySelectorAll('h1,h2,h3,h4,h5')
     let id,
       el,
       nextEl,
@@ -366,10 +460,6 @@ export default {
     max-height: 80vh;
     overflow-y: auto;
   }
-}
-
-:deep(.vuepress-markdown-body:not(.custom)) {
-  padding: 1rem 2.5rem 2rem 2.5rem;
 }
 
 .mixin-fixed-btn(@index) {
