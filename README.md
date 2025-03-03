@@ -23,8 +23,7 @@ yarn dev
   - Less
   - ant-design-vue
 - 后端
-  - python
-  - jango
+  - java
 
 
 ## 感谢

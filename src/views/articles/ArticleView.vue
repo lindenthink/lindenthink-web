@@ -69,7 +69,7 @@
               <span>评论数：20</span><br />
             </div>
             <a-typography style="text-align: left; padding: 0rem 3rem">
-              <blockquote style="letter-spacing: 0.2em; font-weight: 100">
+              <blockquote style="letter-spacing: 0.2em; font-weight: 50; font-style: italic">
                 C盘一般都是作为系统盘来使用，相对空间会小一些。由于大多软件默认都是安装到这个磁盘，而且我们平时使用的应用依赖的配置或者缓存文件也同样存到这个磁盘中，所以它的空间很容易被占满。
               </blockquote>
             </a-typography>

@@ -7,7 +7,14 @@ import { ref, watch, onMounted, nextTick } from 'vue'
 import asciidoctor from '@asciidoctor/core'
 import kroki from 'asciidoctor-kroki'
 import hljs from 'highlight.js'
-import 'highlight.js/styles/atom-one-dark.css' // 引入高亮主题样式
+/**
+ * 参考：https://github.com/highlightjs/highlight.js/tree/main/src/styles 
+ * 暗色：vs2015.css github-dark.css atom-one-dark.css night-owl.css
+ * 浅色: default.css docco.css foundation.css panda-syntax-light.css
+ */
+import 'highlight.js/styles/vs2015.css' 
+
+
 
 // 定义 props
 const props = defineProps({
@@ -55,7 +62,8 @@ const renderContent = () => {
         // 高亮代码
         hljs.highlightBlock(block)
 
-        // 添加行号
+        // 添加行号，先暂存当前文本内容供复制使用
+        const textContent = block.textContent
         const lines = block.innerHTML.split('\n')
         const numberedLines = lines
           .map((line, index) => `<span class="line-number">${index + 1}</span> ${line}`)
@@ -81,7 +89,7 @@ const renderContent = () => {
         // 绑定复制事件
         const copyButton = toolbar.querySelector('.copy-button')
         copyButton.addEventListener('click', () => {
-          navigator.clipboard.writeText(block.textContent).then(() => {
+          navigator.clipboard.writeText(textContent).then(() => {
             copyButton.textContent = 'Copied!'
             setTimeout(() => {
               copyButton.textContent = 'Copy'
@@ -261,4 +269,19 @@ onMounted(() => {
 .asciidoc-viewer a:hover {
   text-decoration: underline;
 }
+
+.asciidoc-viewer .content img {
+  text-align: center;
+}
+
+/* 图片父元素居中 */
+.asciidoc-viewer .imageblock {
+  text-align: center;
+}
+
+.asciidoc-viewer img {
+  max-width: 100%;
+  height: auto;
+}
+
 </style>
