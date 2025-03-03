@@ -45,12 +45,7 @@
 
     <a-layout-content>
       <a-breadcrumb separator=">" style="background-color: #f0f2f5; padding: 10px">
-        <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 文章 </router-link></a-breadcrumb-item>
-        <a-breadcrumb-item>
-          <router-link :to="{ path: '/articles' }">
-            {{ tabName }}
-          </router-link>
-        </a-breadcrumb-item>
+        <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 列表 </router-link></a-breadcrumb-item>
         <a-breadcrumb-item>正文</a-breadcrumb-item>
       </a-breadcrumb>
 
@@ -126,7 +121,7 @@
         </div>
       </a-badge-ribbon>
 
-      <MyComment ref="commentRef" target="1" />
+      <Comment ref="commentRef" target="1" />
     </a-layout-content>
     <a-layout-sider>
       <div class="fixed-praise" @click="clickPraise" :style="{ 'background-color': isPraise ? '#1890ff' : '' }">
@@ -154,8 +149,8 @@ import {
   FileOutlined,
   EditOutlined,
 } from '@ant-design/icons-vue'
-import MyComment from '@/components/MyComment.vue'
-import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
+import Comment from '@/components/common/Comment.vue'
+import AsciiDocViewer from '@/components/common/AsciiDocViewer.vue'
 import { TagColors, showMessage, bindTip } from '@/static/linden'
 
 const tabNameMap = new Map([

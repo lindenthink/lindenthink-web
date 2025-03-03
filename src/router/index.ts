@@ -16,9 +16,9 @@ const routes = [
     },
   },
   {
-    path: '/:tab/article/:id',
+    path: '/article/:id',
     name: 'article',
-    component: () => import('@/views/articles/ArticleView.vue'),
+    component: () => import('@/components/article/ArticleView.vue'),
   },
   {
     path: '/tools',

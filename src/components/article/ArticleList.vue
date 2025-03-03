@@ -1,37 +1,5 @@
 <template>
   <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="listData">
-    <!--<template #header>
-      <a-form layout="inline">
-        <a-form-item>
-          <a-select
-            v-model:value="tagFilter"
-            mode="tags"
-            style="width: 100%; min-width: 200px"
-            placeholder="选择标签"
-            :allowClear="true"
-            :options="options"
-          >
-          </a-select>
-        </a-form-item>
-
-        <a-form-item>
-          <a-tree-select
-            v-model:value="categoryFilter"
-            show-search
-            style="width: 100%; min-width: 200px"
-            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-            placeholder="选择分类"
-            allow-clear
-            tree-default-expand-all
-            :tree-data="treeData"
-          >
-          </a-tree-select>
-        </a-form-item>
-        <a-button shape="circle" html-type="submit">
-          <template #icon><SearchOutlined /></template>
-        </a-button>
-      </a-form>
-    </template>-->
     <template #renderItem="{ item }">
       <a-list-item key="item.title">
         <a-list-item-meta>
@@ -47,7 +15,7 @@
             </span>
           </template>
           <template #title>
-            <router-link :to="{ path: `/list/article/${item.id}` }"> {{ item.title }} </router-link>
+            <router-link :to="{ path: `/article/${item.id}` }"> {{ item.title }} </router-link>
           </template>
           <template #avatar><a-avatar :src="item.avatar" /></template>
         </a-list-item-meta>
@@ -77,7 +45,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { EyeOutlined, LikeOutlined, MessageOutlined, CalendarOutlined, EditOutlined } from '@ant-design/icons-vue'
-import type { SelectProps, TreeSelectProps } from 'ant-design-vue'
 
 const listData: Record<string, any>[] = []
 
@@ -102,44 +69,6 @@ const pagination = {
   pageSize: 5,
 }
 
-const tagFilter = ref([])
-const options = ref<SelectProps['options']>([])
-
-for (let i = 10; i < 36; i++) {
-  const value = i.toString(36) + i
-  options.value!.push({
-    label: `Label: ${value}`,
-    value,
-  })
-}
-
-const categoryFilter = ref(null)
-const treeData = ref<TreeSelectProps['treeData']>([
-  {
-    title: 'parent 1',
-    value: 'parent 1',
-    children: [
-      {
-        title: 'parent 1-0',
-        value: 'parent 1-0',
-        children: [
-          {
-            title: 'my leaf',
-            value: 'leaf1',
-          },
-          {
-            title: 'your leaf',
-            value: 'leaf2',
-          },
-        ],
-      },
-      {
-        title: 'parent 1-1',
-        value: 'parent 1-1',
-      },
-    ],
-  },
-])
 </script>
 
 <style scoped lang="less">

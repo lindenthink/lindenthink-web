@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
+import AsciiDocViewer from '@/components/common/AsciiDocViewer.vue'
 
 const asciidocContent = `
 
