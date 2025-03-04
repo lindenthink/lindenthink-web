@@ -1,16 +1,17 @@
 <template class="app">
-  <!-- <MyAudioPlayer id="6991674483" /> -->
+  <!-- <AudioPlayer id="6991674483" /> -->
   <a-config-provider :locale="locale">
     <a-back-top visibilityHeight="200" />
     <a-layout>
-      <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%'}">
+      <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
         <div style="display: flex; align-items: center; justify-content: space-between; width: 99%">
           <div>
             <img src="/logo.jpg" width="42" style="margin: 0 1.5em" />
             <img src="/title.png" width="130" />
           </div>
           <div class="menu-container">
-            <a-menu v-if="!isMobile" v-model:selectedKeys="currentMenu" mode="horizontal" :theme="theam" :style="{ fontSize: '16px' }">
+            <a-menu v-if="!isMobile" v-model:selectedKeys="currentMenu" mode="horizontal" :theme="theam"
+              :style="{ fontSize: '16px' }">
               <a-menu-item key="home"> 首页 </a-menu-item>
               <a-menu-item key="articles"> 文章 </a-menu-item>
               <a-menu-item key="tools"> 工具 </a-menu-item>
@@ -22,7 +23,7 @@
           <a-input-search placeholder="搜索..." enter-button @search="onSearch" style="max-width: 300px" />
           <a-dropdown>
             <a style="margin-right: 2em;" @click.prevent>
-              <a-avatar :size="40" >
+              <a-avatar :size="40">
                 <template #icon>
                   <UserOutlined />
                 </template>
@@ -84,7 +85,7 @@ import {
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import { useMediaQuery } from '@vueuse/core'
 
-// import MyAudioPlayer from '@/components/MyAudioPlayer.vue'
+// import MyAudioPlayer from '@/components/common/AudioPlayer.vue'
 
 const locale = zhCN
 const theam = 'light'
@@ -165,4 +166,7 @@ const onSearch = (value: string) => {
   cursor: pointer;
 }
 
+.ant-avatar:hover {
+  background-color: #1890ff;
+}
 </style>

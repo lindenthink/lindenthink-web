@@ -13,26 +13,12 @@
           <a-tab-pane key="2" tab="目录">
             <div class="article-toc-content">
               <a-anchor :affix="false" :offsetTop="40" showInkInFixed>
-                <a-anchor-link
-                  :href="anchor.href"
-                  :title="anchor.title"
-                  :key="index"
-                  v-for="(anchor, index) in anchors"
-                >
-                  <a-anchor-link
-                    :href="anchor2.href"
-                    :title="anchor2.title"
-                    :key="index2"
-                    v-for="(anchor2, index2) in anchor.children"
-                    v-if="anchor.hasChildren"
-                  >
-                    <a-anchor-link
-                      :href="anchor3.href"
-                      :title="anchor3.title"
-                      :key="index3"
-                      v-for="(anchor3, index3) in anchor2.children"
-                      v-if="anchor2.hasChildren"
-                    >
+                <a-anchor-link :href="anchor.href" :title="anchor.title" :key="index"
+                  v-for="(anchor, index) in anchors">
+                  <a-anchor-link :href="anchor2.href" :title="anchor2.title" :key="index2"
+                    v-for="(anchor2, index2) in anchor.children" v-if="anchor.hasChildren">
+                    <a-anchor-link :href="anchor3.href" :title="anchor3.title" :key="index3"
+                      v-for="(anchor3, index3) in anchor2.children" v-if="anchor2.hasChildren">
                     </a-anchor-link>
                   </a-anchor-link>
                 </a-anchor-link>
@@ -57,15 +43,16 @@
               <EditOutlined style="margin-right: 5px" />
               <span>作者：Linden</span>
               <a-divider type="vertical"></a-divider>
-              <CalendarOutlined style="margin-right: 5px" /><span>发表于：2022-04-24</span
-              ><a-divider type="vertical"></a-divider> <EyeOutlined style="margin-right: 5px" /><span>浏览数：202</span
-              ><a-divider type="vertical"></a-divider> <LikeOutlined style="margin-right: 5px" /><span>点赞数：202</span
-              ><a-divider type="vertical"></a-divider> <MessageOutlined style="margin-right: 5px" />
+              <CalendarOutlined style="margin-right: 5px" /><span>发表于：2022-04-24</span><a-divider
+                type="vertical"></a-divider>
+              <EyeOutlined style="margin-right: 5px" /><span>浏览数：202</span><a-divider type="vertical"></a-divider>
+              <LikeOutlined style="margin-right: 5px" /><span>点赞数：202</span><a-divider type="vertical"></a-divider>
+              <MessageOutlined style="margin-right: 5px" />
               <span>评论数：20</span><br />
             </div>
             <a-typography style="text-align: left; padding: 0rem 3rem">
               <blockquote style="letter-spacing: 0.2em; font-weight: 50; font-style: italic">
-                C盘一般都是作为系统盘来使用，相对空间会小一些。由于大多软件默认都是安装到这个磁盘，而且我们平时使用的应用依赖的配置或者缓存文件也同样存到这个磁盘中，所以它的空间很容易被占满。
+                导语：C盘一般都是作为系统盘来使用，相对空间会小一些。由于大多软件默认都是安装到这个磁盘，而且我们平时使用的应用依赖的配置或者缓存文件也同样存到这个磁盘中，所以它的空间很容易被占满。
               </blockquote>
             </a-typography>
           </div>
@@ -82,9 +69,8 @@
               </li>
               <li>
                 <strong>版权声明：</strong>本博客所有文章除特别声明外，均采用
-                <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"
-                  ><copyright-outlined />BY-NC-SA</a
-                >
+                <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener"
+                  target="_blank"><copyright-outlined />BY-NC-SA</a>
                 许可协议。转载请注明出处！
               </li>
             </ul>
@@ -124,19 +110,19 @@
       <Comment ref="commentRef" target="1" />
     </a-layout-content>
     <a-layout-sider>
-      <div class="fixed-praise" @click="clickPraise" :style="{ 'background-color': isPraise ? '#1890ff' : '' }">
+      <!-- <div class="fixed-praise" @click="clickPraise" :style="{ 'background-color': isPraise ? '#1890ff' : '' }">
         <LikeOutlined class="fixed-btn-icon" ref="likeRef" />
       </div>
       <div class="fixed-comment" @click="clickComment">
         <MessageOutlined class="fixed-btn-icon" />
-      </div>
+      </div> -->
     </a-layout-sider>
   </a-layout>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
+// import { useRouter } from 'vue-router'
 import {
   CopyrightOutlined,
   LeftOutlined,
@@ -151,24 +137,13 @@ import {
 } from '@ant-design/icons-vue'
 import Comment from '@/components/common/Comment.vue'
 import AsciiDocViewer from '@/components/common/AsciiDocViewer.vue'
-import { TagColors, showMessage, bindTip } from '@/static/linden'
+// import { TagColors, showMessage, bindTip } from '@/static/linden'
 
-const tabNameMap = new Map([
-  ['list', '列表'],
-  ['series', '系列'],
-  ['archive', '归档'],
-])
-const tagColors = TagColors
-
-const router = useRouter()
-const routeParams: any = router.currentRoute.value.params
-const tabKey = routeParams['tab']
-const tabName = tabNameMap.get(tabKey)
-const isPraise = ref(false)
+// const isPraise = ref(false)
 const curUrl = location.href
 const commentRef: any = ref()
 const viewerRef: any = ref()
-const likeRef: any = ref()
+// const likeRef: any = ref()
 const activeKey = ref('2')
 const series = [
   'Racing car .',
@@ -346,54 +321,47 @@ CompletedState --|> State
 const clickComment = () => {
   commentRef.value.scrollToReply()
 }
+
+// 构造目录锚点
+const anchors = ref<{ id: string; title: string; href: string; tagName: string; hasChildren: boolean; children: any[] }[]>([])
+nextTick(() => {
+  let hList = viewerRef.value.$el.querySelectorAll('h1,h2,h3')
+  let el,
+    nextEl,
+    parentAnchors = [], // 正在处理的父锚点集合
+    parentAnchor
+  for (let i = 0; i < hList.length; i++) {
+    el = hList[i]
+    nextEl = hList.length === i + 1 ? null : hList[i + 1]
+    el.id = 'toc-' + (i + 1)
+    let anchor: any = {
+      id: el.id,
+      title: el.innerText.trim(),
+      href: '#' + el.id,
+      tagName: el.tagName,
+      hasChildren: el.tagName < nextEl?.tagName,
+      children: [],
+    }
+    if (parentAnchors.length > 0) {
+      parentAnchor = parentAnchors[parentAnchors.length - 1]
+      parentAnchor.children.push(anchor)
+    } else {
+      anchors.value.push(anchor)
+    }
+    if (anchor.hasChildren) {
+      parentAnchors.push(anchor)
+    } else {
+      while (true) {
+        if (parentAnchors.length === 0 || parentAnchor.tagName < nextEl?.tagName) {
+          break
+        }
+        parentAnchors.pop()
+      }
+    }
+  }
+})
 </script>
 
-<script lang="ts">
-// 处理锚点
-export default {
-  data() {
-    return {
-      anchors: [],
-    }
-  },
-  mounted() {
-    const els = this.$refs.viewerRef.$el.querySelectorAll('h1,h2,h3')
-    let el,
-      nextEl,
-      parentAnchors = [], // 正在处理的父锚点集合
-      parentAnchor
-    for (let i = 0; i < els.length; i++) {
-      el = els[i]
-      nextEl = els.length === i + 1 ? null : els[i + 1]
-      el.id = 'toc-' + (i + 1)
-      let anchor: any = {
-        id: el.id,
-        title: el.innerText.trim(),
-        href: '#' + el.id,
-        tagName: el.tagName,
-        hasChildren: el.tagName < nextEl?.tagName,
-        children: [],
-      }
-      if (parentAnchors.length > 0) {
-        parentAnchor = parentAnchors[parentAnchors.length - 1]
-        parentAnchor.children.push(anchor)
-      } else {
-        this.anchors.push(anchor)
-      }
-      if (anchor.hasChildren) {
-        parentAnchors.push(anchor)
-      } else {
-        while (true) {
-          if (parentAnchors.length === 0 || parentAnchor.tagName < nextEl?.tagName) {
-            break
-          }
-          parentAnchors.pop()
-        }
-      }
-    }
-  },
-}
-</script>
 
 <style lang="less" scoped>
 .ant-layout-content {
@@ -413,9 +381,11 @@ export default {
 .article-head {
   margin-top: 40px;
   text-align: center;
+
   .article-head-title {
     font-size: 2.2em;
   }
+
   .article-head-meta {
     // margin: 0 0 10px 0;
     color: #999;
@@ -424,14 +394,17 @@ export default {
     text-align: center;
   }
 }
+
 .article-foot {
   padding: 0rem 2.5rem;
+
   .article-foot-copyright {
     padding: 0.5em 1em;
     border: 1px solid #91d5ff;
     background-color: #e6f7ff;
     list-style: none;
   }
+
   .article-foot-nav {
     display: flex;
     justify-content: space-between;
@@ -448,6 +421,7 @@ export default {
   padding: 10px 0px 0px 0px;
   max-width: 200px;
   left: 12%;
+
   .article-toc-content {
     padding: 0 10px 10px 10px;
     max-height: 80vh;
@@ -455,38 +429,37 @@ export default {
   }
 }
 
-.mixin-fixed-btn(@index) {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-size: 14px;
-  font-variant: tabular-nums;
-  line-height: 1.5715;
-  font-feature-settings: 'tnum';
-  position: fixed;
-  right: 15vw;
-  z-index: 10;
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  cursor: pointer;
-  background-color: rgba(0, 0, 0, 0.45);
-  bottom: calc(14vh + @index * 50px);
-  text-align: center;
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-  .fixed-btn-icon {
-    font-size: 24px;
-    color: white;
-    line-height: 40px;
-  }
-}
+// .mixin-fixed-btn(@index) {
+//   box-sizing: border-box;
+//   margin: 0;
+//   padding: 0;
+//   font-size: 14px;
+//   font-variant: tabular-nums;
+//   line-height: 1.5715;
+//   font-feature-settings: 'tnum';
+//   position: fixed;
+//   right: 15vw;
+//   z-index: 10;
+//   width: 40px;
+//   height: 40px;
+//   border-radius: 20px;
+//   cursor: pointer;
+//   background-color: rgba(0, 0, 0, 0.45);
+//   bottom: calc(14vh + @index * 50px);
+//   text-align: center;
+//   &:hover {
+//     background-color: rgba(0, 0, 0, 0.8);
+//   }
+//   .fixed-btn-icon {
+//     font-size: 24px;
+//     color: white;
+//     line-height: 40px;
+//   }
+// }
 
-.fixed-praise {
-  .mixin-fixed-btn(2);
-}
-.fixed-comment {
-  .mixin-fixed-btn(1);
-}
-</style>
+// .fixed-praise {
+//   .mixin-fixed-btn(2);
+// }
+// .fixed-comment {
+//   .mixin-fixed-btn(1);
+// }</style>

@@ -166,8 +166,6 @@ const scrollToReply = () => {
   setTimeout(() => textareaRef.value.focus(), 500)
 }
 
-onMounted(() => console.log(props.target))
-
 defineExpose({ scrollToReply })
 </script>
 
