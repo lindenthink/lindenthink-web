@@ -40,7 +40,9 @@ const renderedContent = ref('')
 // 渲染 AsciiDoc 内容
 const renderContent = () => {
   try {
-    renderedContent.value = asciidoc.convert(props.content, {
+    // 过滤掉不支持的关键字
+    const filteredContent = props.content.replace(/opts=\"inline\"/g, '')
+    renderedContent.value = asciidoc.convert(filteredContent, {
       safe: 'safe', // 安全模式
       attributes: {
         showtitle: true, // 显示标题
