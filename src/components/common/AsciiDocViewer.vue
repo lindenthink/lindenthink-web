@@ -183,6 +183,14 @@ onMounted(() => {
   font-family: 'Courier New', Courier, monospace;
 }
 
+.asciidoc-viewer p code {
+  color: #d63384; /* 代码文本颜色 */
+  background-color: #eaecf1; /* 代码背景颜色 */
+  padding: 2px 4px; /* 内边距 */
+  border-radius: 4px; /* 圆角 */
+  font-family: 'Courier New', Courier, monospace; /* 字体 */
+}
+
 .line-number {
   display: inline-block;
   width: 2em;
