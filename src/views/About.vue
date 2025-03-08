@@ -3,6 +3,7 @@
     <a-layout-sider></a-layout-sider>
     <a-layout-content>
       <AsciiDocViewer :content="asciidocContent" />
+      <Comment ref="commentRef" target="1" />
     </a-layout-content>
     <a-layout-sider></a-layout-sider>
   </a-layout>
@@ -10,6 +11,8 @@
 
 <script lang="ts" setup>
 import AsciiDocViewer from '@/components/common/AsciiDocViewer.vue'
+import Comment from '@/components/common/Comment.vue'
+
 
 const asciidocContent = `
 

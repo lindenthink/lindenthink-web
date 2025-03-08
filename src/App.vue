@@ -1,7 +1,7 @@
 <template class="app">
   <!-- <AudioPlayer id="6991674483" /> -->
   <a-config-provider :locale="locale">
-    <a-back-top visibilityHeight="200" />
+    <a-back-top visibilityHeight=200 />
     <a-layout>
       <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
         <div style="display: flex; align-items: center; justify-content: space-between; width: 99%">
@@ -97,12 +97,11 @@ const isMobile = useMediaQuery('(max-width: 768px)')
 onMounted(() => {
   let pathname = location.pathname
   let routeName = pathname === '/' ? 'home' : pathname.replace('/', '')
-  if (routeName.includes('/article')) {
+  if (routeName.includes('article\/')) {
     currentMenu.value = ['articles']
   } else {
     currentMenu.value = [routeName]
   }
-
   watch(currentMenu, (newValue: any, oldValue: any) => {
     let menu = newValue[0]
     router.push({ name: menu })
@@ -115,16 +114,29 @@ const onSearch = (value: string) => {
 </script>
 
 <style lang="less" scoped>
-:deep(.ant-layout) {
+.ant-layout {
   position: relative;
-  min-width: 0;
-  background: #f0f2f5;
+  background: #f0f2f5 !important;
   transition: all 0.2s;
 }
 
-:deep(.ant-layout-header) {
+.ant-layout-header {
   background: #ffffff;
   min-width: 1000px;
+  z-index: 10 !important;
+  padding: 0;
+}
+
+:deep(.ant-layout-content) {
+  position: relative;
+  min-width: 0;
+  background: #ffffff;
+  transition: all 0.2s;
+  min-width: 1000px;
+  flex: 1 1 55%;
+  margin: 10px;
+  border-radius: 5px;
+  padding: 0 !important;;
 }
 
 :deep(.ant-layout-sider) {
@@ -135,17 +147,6 @@ const onSearch = (value: string) => {
   background: #f0f2f5;
   transition: all 0.2s;
   flex: 1 1 20% !important;
-}
-
-:deep(.ant-layout-content) {
-  flex: 1 1 55%;
-  transition: all 0.2s;
-  min-width: 780px;
-}
-
-:deep(.ant-layout-header) {
-  z-index: 100 !important;
-  padding: 0;
 }
 
 .ant-back-top {

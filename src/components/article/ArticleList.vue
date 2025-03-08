@@ -35,7 +35,7 @@
           </span>
         </template>
         <template #extra>
-          <img width="64" alt="logo" src="logo.jpg" />
+          <img width="64" alt="logo" src="/logo.jpg" />
         </template>
       </a-list-item>
     </template>

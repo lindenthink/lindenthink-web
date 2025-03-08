@@ -86,13 +86,6 @@ const clickLink = (item: any) => window.open('https://www.baidu.com', '_blank')
 :deep(.ant-row) {
   justify-content: space-between;
 }
-.ant-layout-content {
-  position: relative;
-  min-width: 0;
-  background: #f0f2f5;
-  transition: all 0.2s;
-  min-width: 780px;
-}
 
 .main {
   padding: 20px 20px 10px 20px;

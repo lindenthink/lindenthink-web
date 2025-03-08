@@ -78,7 +78,7 @@ let props = defineProps({
   volume: {
     type: Number,
     default: 0.7,
-    validator: (value: Number) => {
+    validator: (value: number) => {
       return value >= 0 && value <= 1
     },
   },

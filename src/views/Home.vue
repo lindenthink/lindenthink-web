@@ -13,34 +13,37 @@
             <right-circle-outlined />
           </div>
         </template>
-        <div><h3>1</h3></div>
-        <div><h3>2</h3></div>
-        <div><h3>3</h3></div>
-        <div><h3>4</h3></div>
+
+        <div class="carousel-slide" v-for="img in carouselImgs" :key="img.id">
+          <img :src="img.url" class="carousel-image" />
+          <div class="carousel-caption">{{ img.desc }}</div>
+        </div>
       </a-carousel>
 
-       <!-- 内容模块 -->
+      <!-- 内容模块 -->
       <div class="content-section">
         <!-- 最新动态模块 -->
-        <div class="section latest-news">
+        <div class="section">
           <h2>最新动态</h2>
-          <div class="news">
-            <div class="news-item" v-for="news in latestNews" :key="news.id">
-              <h3>{{ news.title }}</h3>
-              <p>{{ news.summary }}</p>
-            </div>
-          </div>
+          <a-row gutter="16">
+            <a-col :span="8" v-for="news in latestNews" :key="news.id">
+              <a-card :title="news.title" hoverable>
+                <p class="card-summary">{{ news.summary }}</p>
+              </a-card>
+            </a-col>
+          </a-row>
         </div>
 
         <!-- 热门文章模块 -->
-        <div class="section popular-articles">
+        <div class="section">
           <h2>热门文章</h2>
-          <div class="articles">
-            <div class="article" v-for="article in popularArticles" :key="article.id">
-              <h3>{{ article.title }}</h3>
-              <p>{{ article.summary }}</p>
-            </div>
-          </div>
+          <a-row gutter="16">
+            <a-col :span="8" v-for="article in popularArticles" :key="article.id">
+              <a-card :title="article.title" hoverable>
+                <p class="card-summary">{{ article.summary }}</p>
+              </a-card>
+            </a-col>
+          </a-row>
         </div>
       </div>
     </a-layout-content>
@@ -53,26 +56,69 @@ import { reactive } from 'vue'
 import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
 
 const popularArticles = reactive([
-  { id: 1, title: '热门文章1', summary: '这是热门文章1的摘要...'},
-  { id: 2, title: '热门文章2', summary: '这是热门文章2的摘要...'},
-  { id: 3, title: '热门文章3', summary: '这是热门文章3的摘要...'},
+  { id: 1, title: '热门文章1', summary: '这是热门文章1的摘要...' },
+  { id: 2, title: '热门文章2', summary: '这是热门文章2的摘要...' },
+  { id: 3, title: '热门文章3', summary: '这是热门文章3的摘要...' },
 ]);
 
 const latestNews = reactive([
-  { id: 1, title: '最新动态1', summary: '这是最新动态1的摘要...'},
-  { id: 2, title: '最新动态2', summary: '这是最新动态2的摘要...'},
-  { id: 3, title: '最新动态3', summary: '这是最新动态3的摘要...'},
+  { id: 1, title: '最新动态1', summary: '这是最新动态1的摘要...' },
+  { id: 2, title: '最新动态2', summary: '这是最新动态2的摘要...' },
+  { id: 3, title: '最新动态3', summary: '这是最新动态3的摘要...' },
 ]);
+
+const carouselImgs = reactive([
+  { id: 1, desc: '清明时节雨纷纷，路上行人欲断魂。—— 『清明』', url: '/1.png' },
+  { id: 2, desc: '图片2的说明文字', url: '/2.png' },
+  { id: 3, desc: '图片3的说明文字', url: '/3.png' },
+])
 
 </script>
 
 <style scoped lang="less">
+.carousel-caption {
+  position: absolute;
+  top: 320px;
+  /* 将文字放在图片更低的位置 */
+  height: 150px;
+  line-height: 150px;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  white-space: normal;
+  /* 支持换行 */
+  font-size: larger;
+}
+
+.ant-carousel {
+  padding: 23px;
+}
+
 .ant-carousel :deep(.slick-slide) {
   text-align: center;
-  height: 280px;
-  line-height: 280px;
+  height: 360px;
+  /* 调整高度到360px */
+  line-height: 360px;
+  /* 调整行高到360px */
   background: #364d79;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.carousel-slide {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  /* 确保 .carousel-caption 绝对定位有效 */
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .ant-carousel :deep(.slick-arrow.custom-slick-arrow) {
@@ -84,46 +130,58 @@ const latestNews = reactive([
   opacity: 0.3;
   z-index: 1;
 }
+
 .ant-carousel :deep(.custom-slick-arrow:before) {
   display: none;
 }
+
 .ant-carousel :deep(.custom-slick-arrow:hover) {
   opacity: 0.5;
 }
 
-.ant-carousel :deep(.slick-slide h3) {
-  color: #fff;
-}
-
 .content-section {
   display: flex;
-  justify-content: space-between;
-  margin: 20px 0;
+  flex-direction: column;
+  margin: 0 10px 10px 10px;
 }
 
 .section {
-  flex: 1;
-  margin: 0 10px;
+  margin: 10px;
 }
 
-.articles, .news {
+.section h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.card-summary {
+  font-size: 14px;
+  color: #666;
+}
+
+.articles,
+.news {
   display: flex;
   flex-direction: column;
 }
 
-.article, .news-item {
+.article,
+.news-item {
   background: #f0f2f5;
   padding: 10px;
   margin: 10px 0;
   border-radius: 4px;
 }
 
-.article h3, .news-item h3 {
+.article h3,
+.news-item h3 {
   margin: 0 0 10px 0;
 }
 
-.article p, .news-item p {
+.article p,
+.news-item p {
   margin: 0;
 }
-
 </style>

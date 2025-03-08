@@ -176,6 +176,7 @@ defineExpose({ scrollToReply })
   border: 1px dotted rgb(222, 222, 222);
 }
 .comment {
+  border-top: 10px solid #f0f2f5;
   z-index: 9;
   padding: 2rem 2.5rem;
   margin-top: 10px;

@@ -30,82 +30,83 @@
     </a-layout-sider>
 
     <a-layout-content>
-      <a-breadcrumb separator=">" style="background-color: #f0f2f5; padding: 10px">
-        <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 列表 </router-link></a-breadcrumb-item>
-        <a-breadcrumb-item>正文</a-breadcrumb-item>
-      </a-breadcrumb>
+      <a-badge-ribbon text="原创" color="blue" style="z-index: 9;">
+        <a-breadcrumb separator=">" style="margin:0 20px;padding:10px 0; border-bottom:1px #f0f2f5 solid">
+          <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 列表 </router-link></a-breadcrumb-item>
+          <a-breadcrumb-item>正文</a-breadcrumb-item>
+        </a-breadcrumb>
+      </a-badge-ribbon>
 
-      <a-badge-ribbon text="原创" color="green" style="z-index: 9;">
-        <div class="article">
-          <div class="article-head">
-            <h1 class="article-head-title">解放C盘</h1>
-            <div class="article-head-meta">
-              <EditOutlined style="margin-right: 5px" />
-              <span>作者：Linden</span>
-              <a-divider type="vertical"></a-divider>
-              <CalendarOutlined style="margin-right: 5px" /><span>发表于：2022-04-24</span><a-divider
-                type="vertical"></a-divider>
-              <EyeOutlined style="margin-right: 5px" /><span>浏览数：202</span><a-divider type="vertical"></a-divider>
-              <LikeOutlined style="margin-right: 5px" /><span>点赞数：202</span><a-divider type="vertical"></a-divider>
-              <MessageOutlined style="margin-right: 5px" />
-              <span>评论数：20</span><br />
-            </div>
-            <a-typography style="text-align: left; padding: 0rem 3rem">
-              <blockquote style="letter-spacing: 0.2em; font-weight: 50; font-style: italic">
-                导语：C盘一般都是作为系统盘来使用，相对空间会小一些。由于大多软件默认都是安装到这个磁盘，而且我们平时使用的应用依赖的配置或者缓存文件也同样存到这个磁盘中，所以它的空间很容易被占满。
-              </blockquote>
-            </a-typography>
+
+      <div class="article">
+        <div class="article-head">
+          <h1 class="article-head-title">解放C盘</h1>
+          <div class="article-head-meta">
+            <EditOutlined style="margin-right: 5px" />
+            <span>作者：Linden</span>
+            <a-divider type="vertical"></a-divider>
+            <CalendarOutlined style="margin-right: 5px" /><span>发表于：2022-04-24</span><a-divider
+              type="vertical"></a-divider>
+            <EyeOutlined style="margin-right: 5px" /><span>浏览数：202</span><a-divider type="vertical"></a-divider>
+            <LikeOutlined style="margin-right: 5px" /><span>点赞数：202</span><a-divider type="vertical"></a-divider>
+            <MessageOutlined style="margin-right: 5px" />
+            <span>评论数：20</span><br />
           </div>
+          <a-typography style="text-align: left; padding: 0rem 3rem">
+            <blockquote style="letter-spacing: 0.2em; font-weight: 50; font-style: italic">
+              导语：C盘一般都是作为系统盘来使用，相对空间会小一些。由于大多软件默认都是安装到这个磁盘，而且我们平时使用的应用依赖的配置或者缓存文件也同样存到这个磁盘中，所以它的空间很容易被占满。
+            </blockquote>
+          </a-typography>
+        </div>
 
-          <AsciiDocViewer :content="asciidocContent" ref="viewerRef" />
+        <AsciiDocViewer :content="asciidocContent" ref="viewerRef" />
 
-          <div class="article-foot">
-            <div style="text-align: center"></div>
-            <ul class="article-foot-copyright">
-              <li><strong>本文作者：</strong>流年</li>
-              <li>
-                <strong>本文链接：</strong>
-                <a href="{{curUrl}}" title="解放C盘">{{ curUrl }}</a>
-              </li>
-              <li>
-                <strong>版权声明：</strong>本博客所有文章除特别声明外，均采用
-                <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener"
-                  target="_blank"><copyright-outlined />BY-NC-SA</a>
-                许可协议。转载请注明出处！
-              </li>
-            </ul>
-            <div style="display: flex; justify-content: space-between">
-              <span>分类：JAVA</span>
-              <div>
-                标签：
-                <a-tag>
-                  <template #icon>
-                    <tag-outlined />
-                  </template>
-                  JAVA
-                </a-tag>
-                <a-tag>
-                  <template #icon> <tag-outlined /> </template>
-                  HTML
-                </a-tag>
-                <a-tag>
-                  <template #icon> <tag-outlined /> </template>
-                  CSS
-                </a-tag>
-              </div>
+        <div class="article-foot">
+          <div style="text-align: center"></div>
+          <ul class="article-foot-copyright">
+            <li><strong>本文作者：</strong>流年</li>
+            <li>
+              <strong>本文链接：</strong>
+              <a href="{{curUrl}}" title="解放C盘">{{ curUrl }}</a>
+            </li>
+            <li>
+              <strong>版权声明：</strong>本博客所有文章除特别声明外，均采用
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener"
+                target="_blank"><copyright-outlined />BY-NC-SA</a>
+              许可协议，转载请注明出处！
+            </li>
+          </ul>
+          <div style="display: flex; justify-content: space-between">
+            <span>分类：JAVA</span>
+            <div>
+              标签：
+              <a-tag>
+                <template #icon>
+                  <tag-outlined />
+                </template>
+                JAVA
+              </a-tag>
+              <a-tag>
+                <template #icon> <tag-outlined /> </template>
+                HTML
+              </a-tag>
+              <a-tag>
+                <template #icon> <tag-outlined /> </template>
+                CSS
+              </a-tag>
             </div>
-            <a-divider :style="{ color: 'lightgrey' }">•</a-divider>
-            <div class="article-foot-nav">
-              <div>
-                <a href="#"><left-outlined /> 文章1文章1文章1</a>
-              </div>
-              <div>
-                <a href="#">文章2文章2文章2文章2 <right-outlined /></a>
-              </div>
+          </div>
+          <a-divider :style="{ color: 'lightgrey' }">•</a-divider>
+          <div class="article-foot-nav">
+            <div>
+              <a href="#"><left-outlined /> 文章1文章1文章1</a>
+            </div>
+            <div>
+              <a href="#">文章2文章2文章2文章2 <right-outlined /></a>
             </div>
           </div>
         </div>
-      </a-badge-ribbon>
+      </div>
 
       <Comment ref="commentRef" target="1" />
     </a-layout-content>
@@ -364,14 +365,6 @@ nextTick(() => {
 
 
 <style lang="less" scoped>
-.ant-layout-content {
-  position: relative;
-  min-width: 0;
-  background: #f0f2f5;
-  transition: all 0.2s;
-  min-width: 780px;
-}
-
 .article {
   background-color: white;
   margin-top: 5px;
@@ -379,11 +372,11 @@ nextTick(() => {
 }
 
 .article-head {
-  margin-top: 40px;
   text-align: center;
-
   .article-head-title {
+    color: #2c3e50;
     font-size: 2.2em;
+    font-weight: 600;
   }
 
   .article-head-meta {
