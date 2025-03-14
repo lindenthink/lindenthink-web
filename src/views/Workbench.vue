@@ -22,8 +22,8 @@
 <script setup>
 import { ref } from 'vue'
 
-import TodoList from '@/components/work/TodoList.vue'
-import GanttChart from '@/components/work/GanttChart.vue'
+import TodoList from '@/views/work/TodoList.vue'
+import GanttChart from '@/views/work/GanttChart.vue'
 const activeKey = ref('1');
 </script>
 

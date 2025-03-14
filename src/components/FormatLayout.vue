@@ -23,6 +23,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { CopyOutlined, CheckOutlined } from '@ant-design/icons-vue'
 import { useClipboard } from '@vueuse/core'
+import { useFormat } from '@/composables/useFormat'
 
 const props = defineProps({
     lang: String,
@@ -30,8 +31,7 @@ const props = defineProps({
 
 const input = ref('')
 const inputRef = ref(null)
-const formatted = ref('')
-const output = ref('')
+const { formatted, output, highlight } = useFormat()
 
 const showCopy = ref(false)
 const showCopied = ref(false)
@@ -43,30 +43,7 @@ onMounted(() => {
 const { copy, isSupported } = useClipboard({ output })
 
 watch(input, (newValue) => {
-    switch (props.lang) {
-        case 'json':
-            try {
-                formatted.value = JSON.parse(newValue)
-            } catch (e) {
-                formatted.value = { error: `无效的 ${props.lang}` }
-            }
-            output.value = JSON.stringify(formatted.value, null, 2)
-            break
-        case 'sql':
-            Promise.all([
-                import('sql-formatter'),
-                import('highlight.js/lib/core'),
-                import('highlight.js/lib/languages/sql'),])
-                .then(([{ format }, hljs, sql]) => {
-                    const temp = format(newValue)
-                    hljs.default.registerLanguage('sql', sql.default)
-                    formatted.value = hljs.default.highlight(temp, { language: 'sql' }).value
-                    output.value = temp
-                })
-            break
-        default:
-            formatted.value = { error: `不支持的 ${props.lang}` }
-    }
+  highlight(newValue, props.lang)
 })
 
 const onCopy = () => {

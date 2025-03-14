@@ -84,7 +84,7 @@ import { DownOutlined } from '@ant-design/icons-vue'
 
 const router = useRouter()
 onMounted(() => {
-  router.push({ path: '/tools/format-sql' })
+  router.push({ path: '/tools/format-xml' })
 })
 
 </script>

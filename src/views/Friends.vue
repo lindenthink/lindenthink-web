@@ -70,7 +70,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-import Comment from '@/components/common/Comment.vue'
+import Comment from '@/components/Comment.vue'
 
 const showApplyModel = ref(false)
 const data = [1, 2, 3, 4]

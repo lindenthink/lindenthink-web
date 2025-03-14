@@ -18,7 +18,7 @@ const routes = [
   {
     path: '/articles/:id',
     name: 'article-view',
-    component: () => import('@/components/article/ArticleView.vue'),
+    component: () => import('@/views/article/ArticleView.vue'),
     props: true,
   },
   {
@@ -28,19 +28,23 @@ const routes = [
     children: [
       {
         path: '',
-        component: () => import('@/components/tools/FormatJson.vue'),
-      },{
+        component: () => import('@/views/tools/FormatJson.vue'),
+      }, {
         path: 'format-json',
         name: 'format-json',
-        component: () => import('@/components/tools/FormatJson.vue'),
-      },{
+        component: () => import('@/views/tools/FormatJson.vue'),
+      }, {
         path: 'format-sql',
         name: 'format-sql',
-        component: () => import('@/components/tools/FormatSql.vue'),
-      },{
+        component: () => import('@/views/tools/FormatSql.vue'),
+      }, {
+        path: 'format-xml',
+        name: 'format-xml',
+        component: () => import('@/views/tools/FormatXml.vue'),
+      }, {
         path: 'encode-base64',
-        name: 'base64-json',
-        component: () => import('@/components/tools/EncodeBase64.vue'),
+        name: 'encode-base64',
+        component: () => import('@/views/tools/EncodeBase64.vue'),
       }
     ]
 

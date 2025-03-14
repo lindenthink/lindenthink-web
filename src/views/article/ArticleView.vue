@@ -136,8 +136,8 @@ import {
   FileOutlined,
   EditOutlined,
 } from '@ant-design/icons-vue'
-import Comment from '@/components/common/Comment.vue'
-import AsciiDocViewer from '@/components/common/AsciiDocViewer.vue'
+import Comment from '@/components/Comment.vue'
+import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 // import { TagColors, showMessage, bindTip } from '@/static/linden'
 
 defineProps({

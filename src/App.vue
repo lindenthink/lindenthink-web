@@ -66,9 +66,7 @@
           菩提思 ©2023-{{ new Date().getFullYear() }} 版权所有
         </div>
         <div>
-          <a href="/about" target="_blank">关于</a>
-          <a-divider type="vertical" />
-          <a href="mailto:844449541@qq.com">联系我</a>
+          <a href="/about" target="_blank">关于本站</a>
           <a-divider type="vertical" />
           <a href="/friends" target="_blank">友情链接</a>
         </div>

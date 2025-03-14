@@ -1,19 +1,19 @@
 <template>
-    <FormatterLayout lang="sql">
+    <FormatLayout lang="xml">
         <template #default="{ formatted }">
-            <pre class="formatted-sql" v-html="formatted"></pre>
+            <pre class="formatted-xml" v-html="formatted"></pre>
         </template>
-    </FormatterLayout>
+    </FormatLayout>
 </template>
 
 <script setup>
-import FormatterLayout from '@/components/common/FormatterLayout.vue'
+import FormatLayout from '@/components/FormatLayout.vue'
 import 'highlight.js/styles/foundation.css'
 
 </script>
 
 <style scoped>
-.formatted-sql {
+.formatted-xml {
     white-space: pre-wrap;
     word-wrap: break-word;
 }

@@ -11,7 +11,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import ArticleList from '@/components/article/ArticleList.vue'
+import ArticleList from '@/views/article/ArticleList.vue'
 const router = useRouter()
 
 </script>
