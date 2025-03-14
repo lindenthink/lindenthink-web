@@ -140,6 +140,10 @@ import Comment from '@/components/common/Comment.vue'
 import AsciiDocViewer from '@/components/common/AsciiDocViewer.vue'
 // import { TagColors, showMessage, bindTip } from '@/static/linden'
 
+defineProps({
+  id: String
+})
+
 // const isPraise = ref(false)
 const curUrl = location.href
 const commentRef: any = ref()

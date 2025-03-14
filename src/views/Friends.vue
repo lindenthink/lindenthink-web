@@ -62,7 +62,7 @@
           </template>
         </a-list>
       </div>
-      <MyComment />
+      <Comment />
     </a-layout-content>
     <a-layout-sider></a-layout-sider>
   </a-layout>
@@ -70,7 +70,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-import MyComment from '@/components/MyComment.vue'
+import Comment from '@/components/common/Comment.vue'
 
 const showApplyModel = ref(false)
 const data = [1, 2, 3, 4]

@@ -19,14 +19,31 @@ const routes = [
     path: '/article/:id',
     name: 'article',
     component: () => import('@/components/article/ArticleView.vue'),
+    props: true,
   },
   {
     path: '/tools',
     name: 'tools',
     component: () => import('@/views/Tools.vue'),
-    meta: {
-      keepAlive: true,
-    },
+    children: [
+      {
+        path: '',
+        component: () => import('@/components/tools/FormatJson.vue'),
+      },{
+        path: 'format-json',
+        name: 'format-json',
+        component: () => import('@/components/tools/FormatJson.vue'),
+      },{
+        path: 'format-sql',
+        name: 'format-sql',
+        component: () => import('@/components/tools/FormatSql.vue'),
+      },{
+        path: 'encode-base64',
+        name: 'base64-json',
+        component: () => import('@/components/tools/EncodeBase64.vue'),
+      }
+    ]
+
   },
   {
     path: '/about',
@@ -37,6 +54,9 @@ const routes = [
     path: '/workbench',
     name: 'workbench',
     component: () => import('@/views/Workbench.vue'),
+    meta: {
+      keepAlive: true,
+    },
   },
   {
     path: '/friends',

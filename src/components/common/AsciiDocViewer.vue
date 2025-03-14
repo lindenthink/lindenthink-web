@@ -236,10 +236,9 @@ onMounted(() => {
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.875em;
-}
-
-.copy-button:hover {
-  background-color: #0d94e7;
+  &:hover {
+    background-color: #6c757d;
+  }
 }
 
 /* 表格样式 */

@@ -15,7 +15,6 @@ import Comment from '@/components/common/Comment.vue'
 
 
 const asciidocContent = `
-
 = 关于我
 
 一个有几年经验的后端开发人员，有着远大的理想抱负但总三天打鱼两天晒网，平凡缺不甘于平凡。每天在和自己做抗争，不想这么虚度光阴，希望自己的人生是充实的。  
@@ -68,6 +67,7 @@ const asciidocContent = `
 * https://www.antdv.com/docs/vue/introduce-cn[Ant Design of Vue]
 * https://github.com/hankcs/HanLP/tree/1.x[HanLP]
 * https://highlightjs.readthedocs.io/en/latest/[highlightjs]
+* https://github.com/leezng/vue-json-pretty/blob/dev/README.zh_CN.md[vue-json-pretty]
 `
 </script>
 

@@ -12,11 +12,10 @@
           <div class="menu-container">
             <a-menu v-if="!isMobile" v-model:selectedKeys="currentMenu" mode="horizontal" :theme="theam"
               :style="{ fontSize: '16px' }">
-              <a-menu-item key="home"> 首页 </a-menu-item>
-              <a-menu-item key="articles"> 文章 </a-menu-item>
-              <a-menu-item key="tools"> 工具 </a-menu-item>
-              <a-menu-item key="workbench"> 工作台 </a-menu-item>
-              <a-menu-item key="about"> 关于 </a-menu-item>
+              <a-menu-item key="home">首页</a-menu-item>
+              <a-menu-item key="articles">文章</a-menu-item>
+              <a-menu-item key="tools">工具</a-menu-item>
+              <a-menu-item key="workbench">工作台</a-menu-item>
             </a-menu>
             <a-button v-else @click="drawerVisible = true" icon="menu" />
           </div>
@@ -55,7 +54,6 @@
           <a-menu-item key="articles"> 文章 </a-menu-item>
           <a-menu-item key="tools"> 工具 </a-menu-item>
           <a-menu-item key="workbench"> 工作台 </a-menu-item>
-          <a-menu-item key="about"> 关于 </a-menu-item>
         </a-menu>
       </a-drawer>
 
@@ -64,7 +62,16 @@
       </a-layout-content>
 
       <a-layout-footer :style="{ textAlign: 'center', margin: '36px 0 24px 0' }">
-        <a href="mailto:844449541@qq.com">菩提思</a> ©2023-{{ new Date().getFullYear() }} 版权所有
+        <div>
+          菩提思 ©2023-{{ new Date().getFullYear() }} 版权所有
+        </div>
+        <div>
+          <a href="/about" target="_blank">关于</a>
+          <a-divider type="vertical" />
+          <a href="mailto:844449541@qq.com">联系我</a>
+          <a-divider type="vertical" />
+          <a href="/friends" target="_blank">友情链接</a>
+        </div>
       </a-layout-footer>
     </a-layout>
   </a-config-provider>
@@ -99,6 +106,8 @@ onMounted(() => {
   let routeName = pathname === '/' ? 'home' : pathname.replace('/', '')
   if (routeName.includes('article\/')) {
     currentMenu.value = ['articles']
+  } else if(routeName.includes('tools')) {
+    currentMenu.value = ['tools']
   } else {
     currentMenu.value = [routeName]
   }
@@ -136,7 +145,7 @@ const onSearch = (value: string) => {
   flex: 1 1 55%;
   margin: 10px;
   border-radius: 5px;
-  padding: 0 !important;;
+  padding: 0 !important;
 }
 
 :deep(.ant-layout-sider) {

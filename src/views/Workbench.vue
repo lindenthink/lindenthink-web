@@ -2,28 +2,36 @@
   <a-layout>
     <a-layout-sider></a-layout-sider>
     <a-layout-content>
-      <!-- 今日待办模块 -->
-      <div class="section">
-        <h2>今日待办</h2>
-        <TodoList />
-      </div>
-
-      <!-- 项目进展模块 -->
-      <div class="section">
-        <h2>项目进展</h2>
-        <GanttChart />
-      </div>
+      <a-tabs v-model:activeKey="activeKey" animated type="card">
+        <a-tab-pane key="1" tab="待办列表">
+          <div class="section">
+            <TodoList />
+          </div>
+        </a-tab-pane>
+        <a-tab-pane key="2" tab="项目进度">
+          <div class="section">
+            <GanttChart />
+          </div>
+        </a-tab-pane>
+      </a-tabs>
     </a-layout-content>
     <a-layout-sider></a-layout-sider>
   </a-layout>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
 import TodoList from '@/components/work/TodoList.vue'
 import GanttChart from '@/components/work/GanttChart.vue'
+const activeKey = ref('1');
 </script>
 
 <style scoped lang="less">
+.ant-tabs   {
+  margin: 10px 20px;
+}
+
 .section {
   margin: 20px 0;
 }
