@@ -1,17 +1,20 @@
 <template>
-    <FormatterLayout lang="json">
+    <FormatterLayout lang="sql">
         <template #default="{ formatted }">
-            <vue-json-pretty :data="formatted" :deep="1" :showIcon="true" />
+            <pre class="formatted-sql" v-html="formatted"></pre>
         </template>
     </FormatterLayout>
 </template>
 
 <script setup>
-import VueJsonPretty from 'vue-json-pretty'
-import 'vue-json-pretty/lib/styles.css'
-
 import FormatterLayout from '@/components/common/FormatterLayout.vue'
+import 'highlight.js/styles/foundation.css'
 
 </script>
 
-<style scoped></style>
+<style scoped>
+.formatted-sql {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+</style>

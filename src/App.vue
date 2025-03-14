@@ -104,7 +104,7 @@ const isMobile = useMediaQuery('(max-width: 768px)')
 onMounted(() => {
   let pathname = location.pathname
   let routeName = pathname === '/' ? 'home' : pathname.replace('/', '')
-  if (routeName.includes('article\/')) {
+  if (routeName.includes('articles')) {
     currentMenu.value = ['articles']
   } else if(routeName.includes('tools')) {
     currentMenu.value = ['tools']

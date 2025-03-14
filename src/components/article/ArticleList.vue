@@ -15,7 +15,7 @@
             </span>
           </template>
           <template #title>
-            <router-link :to="{ path: `/article/${item.id}` }"> {{ item.title }} </router-link>
+            <router-link :to="{ path: `/articles/${item.id}` }"> {{ item.title }} </router-link>
           </template>
           <template #avatar><a-avatar :src="item.avatar" /></template>
         </a-list-item-meta>

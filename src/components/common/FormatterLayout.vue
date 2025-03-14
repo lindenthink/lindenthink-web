@@ -1,13 +1,15 @@
 <template>
     <div class="formatter">
         <div class="input-container">
-            <a-textarea v-model:value="input" :placeholder="'请输入 ' + lang + ' 字符串'" allowClear :rows="25" />
+            <a-textarea v-model:value="input" :placeholder="'请输入 ' + lang + ' 文本'" allowClear :rows="25"
+                ref="inputRef" />
         </div>
-        <div class="output-container" @mouseover="showCopyButton = !showCopied" @mouseleave="showCopyButton = false">
+        <div class="output-container" @mouseover=" showCopy = isSupported && !showCopied"
+            @mouseleave="showCopy = false">
             <div class="output">
                 <slot :formatted="formatted"></slot>
             </div>
-            <a v-if="showCopyButton" @click="onCopy">
+            <a v-if="showCopy" @click="onCopy()">
                 <CopyOutlined />
             </a>
             <a v-if="showCopied" class="success">
@@ -18,40 +20,63 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { message } from 'ant-design-vue'
+import { onMounted, ref, watch } from 'vue'
 import { CopyOutlined, CheckOutlined } from '@ant-design/icons-vue'
+import { useClipboard } from '@vueuse/core'
 
 const props = defineProps({
     lang: String,
 })
 
 const input = ref('')
+const inputRef = ref(null)
 const formatted = ref('')
-const showCopyButton = ref(false)
+const output = ref('')
+
+const showCopy = ref(false)
 const showCopied = ref(false)
 
+onMounted(() => {
+    inputRef.value.focus()
+})
+
+const { copy, isSupported } = useClipboard({ output })
 
 watch(input, (newValue) => {
-    try {
-        formatted.value = JSON.parse(newValue)
-    } catch (e) {
-        formatted.value = { error: `无效的 ${props.lang}` }
+    switch (props.lang) {
+        case 'json':
+            try {
+                formatted.value = JSON.parse(newValue)
+            } catch (e) {
+                formatted.value = { error: `无效的 ${props.lang}` }
+            }
+            output.value = JSON.stringify(formatted.value, null, 2)
+            break
+        case 'sql':
+            Promise.all([
+                import('sql-formatter'),
+                import('highlight.js/lib/core'),
+                import('highlight.js/lib/languages/sql'),])
+                .then(([{ format }, hljs, sql]) => {
+                    const temp = format(newValue)
+                    hljs.default.registerLanguage('sql', sql.default)
+                    formatted.value = hljs.default.highlight(temp, { language: 'sql' }).value
+                    output.value = temp
+                })
+            break
+        default:
+            formatted.value = { error: `不支持的 ${props.lang}` }
     }
 })
 
 const onCopy = () => {
-    const output = JSON.stringify(formatted.value, null, 2)
-    navigator.clipboard.writeText(output).then(() => {
-        showCopyButton.value = false
-        showCopied.value = true
-        setTimeout(() => {
-            showCopied.value = false
-        }, 2000)
-    }).catch(err => {
-        message.error('复制失败')
-    })
+    copy(output.value)
+    showCopied.value = true
+    setTimeout(() => {
+        showCopied.value = false
+    }, 2000)
 }
+
 </script>
 
 <style scoped lang="less">
