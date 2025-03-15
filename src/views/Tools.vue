@@ -44,7 +44,10 @@ import { DownOutlined } from '@ant-design/icons-vue'
 
 const router = useRouter()
 onMounted(() => {
-  router.push({ path: '/tools' })
+  const pathname = location.pathname
+  if (!pathname.includes('tools\/')) {
+    router.push({ path: '/tools' })
+  }
 })
 
 const tools = [
