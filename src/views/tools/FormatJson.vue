@@ -10,7 +10,7 @@
 import VueJsonPretty from 'vue-json-pretty'
 import 'vue-json-pretty/lib/styles.css'
 
-import FormatLayout from '@/components/FormatLayout.vue'
+import FormatLayout from './FormatLayout.vue'
 
 </script>
 

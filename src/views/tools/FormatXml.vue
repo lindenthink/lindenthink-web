@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import FormatLayout from '@/components/FormatLayout.vue'
+import FormatLayout from './FormatLayout.vue'
 import 'highlight.js/styles/foundation.css'
 
 </script>
