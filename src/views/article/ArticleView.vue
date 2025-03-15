@@ -31,7 +31,7 @@
 
     <a-layout-content>
       <a-badge-ribbon text="原创" color="blue" style="z-index: 9;">
-        <a-breadcrumb  style="margin:0 20px;padding:10px 0; border-bottom:1px #f0f2f5 solid">
+        <a-breadcrumb style="margin:0 20px;padding:10px 0; border-bottom:1px #f0f2f5 solid">
           <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 列表 </router-link></a-breadcrumb-item>
           <a-breadcrumb-item>正文</a-breadcrumb-item>
         </a-breadcrumb>
@@ -377,6 +377,7 @@ nextTick(() => {
 
 .article-head {
   text-align: center;
+
   .article-head-title {
     color: #2c3e50;
     font-size: 2.2em;
@@ -384,7 +385,6 @@ nextTick(() => {
   }
 
   .article-head-meta {
-    // margin: 0 0 10px 0;
     color: #999;
     font-family: 'Lato', 'PingFang SC', 'Microsoft YaHei', sans-serif;
     font-size: 12px;
@@ -425,38 +425,4 @@ nextTick(() => {
     overflow-y: auto;
   }
 }
-
-// .mixin-fixed-btn(@index) {
-//   box-sizing: border-box;
-//   margin: 0;
-//   padding: 0;
-//   font-size: 14px;
-//   font-variant: tabular-nums;
-//   line-height: 1.5715;
-//   font-feature-settings: 'tnum';
-//   position: fixed;
-//   right: 15vw;
-//   z-index: 10;
-//   width: 40px;
-//   height: 40px;
-//   border-radius: 20px;
-//   cursor: pointer;
-//   background-color: rgba(0, 0, 0, 0.45);
-//   bottom: calc(14vh + @index * 50px);
-//   text-align: center;
-//   &:hover {
-//     background-color: rgba(0, 0, 0, 0.8);
-//   }
-//   .fixed-btn-icon {
-//     font-size: 24px;
-//     color: white;
-//     line-height: 40px;
-//   }
-// }
-
-// .fixed-praise {
-//   .mixin-fixed-btn(2);
-// }
-// .fixed-comment {
-//   .mixin-fixed-btn(1);
-// }</style>
+</style>
