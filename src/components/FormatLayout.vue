@@ -1,4 +1,8 @@
 <template>
+    <a-breadcrumb>
+        <a-breadcrumb-item>当前功能：格式化</a-breadcrumb-item>
+        <a-breadcrumb-item>{{ lang.toUpperCase() }}</a-breadcrumb-item>
+    </a-breadcrumb>
     <div class="formatter">
         <div class="input-container">
             <a-textarea v-model:value="input" :placeholder="'请输入 ' + lang + ' 文本'" allowClear :rows="25"
@@ -40,10 +44,10 @@ onMounted(() => {
     inputRef.value.focus()
 })
 
-const { copy, isSupported } = useClipboard({ output })
+const { copy, isSupported } = useClipboard({ source: output })
 
 watch(input, (newValue) => {
-  highlight(newValue, props.lang)
+    highlight(newValue, props.lang)
 })
 
 const onCopy = () => {
@@ -53,11 +57,11 @@ const onCopy = () => {
         showCopied.value = false
     }, 2000)
 }
-
 </script>
 
 <style scoped lang="less">
 .formatter {
+    margin-top: 10px;
     display: flex;
     gap: 20px;
 

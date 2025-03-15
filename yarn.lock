@@ -2242,6 +2242,11 @@ vite@2.5.4:
   optionalDependencies:
     fsevents "~2.3.2"
 
+vkbeautify@^0.99.3:
+  version "0.99.3"
+  resolved "http://maven.qianfan123.com/repository/npm-public/vkbeautify/-/vkbeautify-0.99.3.tgz#4769b3238c5d772c6ea967545dd1df5582f23297"
+  integrity sha512-2ozZEFfmVvQcHWoHLNuiKlUfDKlhh4KGsy54U0UrlLMR1SO+XKAIDqBxtBwHgNrekurlJwE8A9K6L49T78ZQ9Q==
+
 void-elements@^3.1.0:
   version "3.1.0"
   resolved "https://registry.npmmirror.com/void-elements/-/void-elements-3.1.0.tgz"

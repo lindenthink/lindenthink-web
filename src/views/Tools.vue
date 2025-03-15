@@ -11,12 +11,16 @@
               <DownOutlined />
             </a>
             <template #overlay>
-              <a-menu @click="onClick">
-                <a-menu-item key="1">JSON</a-menu-item>
-                <a-menu-item key="2">SQL</a-menu-item>
-                <a-menu-item key="3">XML</a-menu-item>
-                <a-menu-item key="4">HTML</a-menu-item>
-                <a-menu-item key="5">CSS</a-menu-item>
+              <a-menu>
+                <a-menu-item key="1">
+                  <router-link to="/tools/format-json">JSON</router-link>
+                </a-menu-item>
+                <a-menu-item key="2">
+                  <router-link to="/tools/format-xml">XML</router-link>
+                </a-menu-item>
+                <a-menu-item key="3">
+                  <router-link to="/tools/format-sql">SQL</router-link>
+                </a-menu-item>
               </a-menu>
             </template>
           </a-dropdown>
@@ -27,7 +31,7 @@
               <DownOutlined />
             </a>
             <template #overlay>
-              <a-menu @click="onClick">
+              <a-menu>
                 <a-menu-item key="1">Base64</a-menu-item>
                 <a-menu-item key="2">Unicode</a-menu-item>
                 <a-menu-item key="3">URL</a-menu-item>
@@ -84,7 +88,7 @@ import { DownOutlined } from '@ant-design/icons-vue'
 
 const router = useRouter()
 onMounted(() => {
-  router.push({ path: '/tools/format-xml' })
+  router.push({ path: '/tools' })
 })
 
 </script>

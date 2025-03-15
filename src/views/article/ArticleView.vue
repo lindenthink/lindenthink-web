@@ -31,7 +31,7 @@
 
     <a-layout-content>
       <a-badge-ribbon text="原创" color="blue" style="z-index: 9;">
-        <a-breadcrumb separator=">" style="margin:0 20px;padding:10px 0; border-bottom:1px #f0f2f5 solid">
+        <a-breadcrumb  style="margin:0 20px;padding:10px 0; border-bottom:1px #f0f2f5 solid">
           <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 列表 </router-link></a-breadcrumb-item>
           <a-breadcrumb-item>正文</a-breadcrumb-item>
         </a-breadcrumb>

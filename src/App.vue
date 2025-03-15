@@ -104,7 +104,7 @@ onMounted(() => {
   let routeName = pathname === '/' ? 'home' : pathname.replace('/', '')
   if (routeName.includes('articles')) {
     currentMenu.value = ['articles']
-  } else if(routeName.includes('tools')) {
+  } else if (routeName.includes('tools')) {
     currentMenu.value = ['tools']
   } else {
     currentMenu.value = [routeName]
