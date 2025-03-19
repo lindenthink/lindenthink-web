@@ -45,6 +45,42 @@ const routes = [
         path: 'encode-base64',
         name: 'encode-base64',
         component: () => import('@/views/tools/EncodeBase64.vue'),
+      }, {
+        path: 'encrypt-aes',
+        name: 'encrypt-aes',
+        component: () => import('@/views/tools/EncryptAes.vue'),
+      },{
+        path: 'encrypt-rsa',
+        name: 'encrypt-rsa',
+        component: () => import('@/views/tools/EncryptRsa.vue'),
+      }, {
+        path: 'image-qrcode',
+        name: 'image-qrcode',
+        component: () => import('@/views/tools/ImageQrcode.vue'),
+      }, {
+        path: 'image-base64',
+        name: 'image-base64',
+        component: () => import('@/views/tools/ImageBase64.vue'),
+      }, {
+        path: 'convert-timestamp',
+        name: 'convert-timestamp',
+        component: () => import('@/views/tools/ConvertTimestamp.vue'),
+      },{
+        path: 'convert-cron',
+        name: 'convert-cron',
+        component: () => import('@/views/tools/ConvertCron.vue'),
+      },{
+        path: 'digest-md5',
+        name: 'digest-md5',
+        component: () => import('@/views/tools/DigestMd5.vue'),
+      }, {
+        path: 'password-generator',
+        name: 'password-generator',
+        component: () => import('@/views/tools/PasswordGenerator.vue'),
+      }, {
+        path: 'password-manager',
+        name: 'password-manager',
+        component: () => import('@/views/tools/PasswordManager.vue'),
       }
     ]
 

@@ -62,27 +62,33 @@ const tools = [
   {
     title: '编解码',
     children: [
-      { title: 'Base64', path: '/tools/encode-base64', quickEntry: true, quickName: 'Base64编解码' },
-      { title: 'Unicode', path: '/tools/encode-unicode' },
+      { title: 'BASE64', path: '/tools/encode-base64', quickEntry: true, quickName: 'BASE64编解码' },
       { title: 'URL', path: '/tools/encode-url' },
+      { title: 'Unicode', path: '/tools/encode-unicode' },
       { title: 'Ascii', path: '/tools/encode-ascii' },
     ],
   },
   {
     title: '加解密',
     children: [
-      { title: 'AES', path: '/tools/encrypt-aes' },
-      { title: 'DES', path: '/tools/encrypt-des' },
       { title: 'RSA', path: '/tools/encrypt-rsa', quickEntry: true, quickName: `RSA加解密` },
-      { title: 'SM', path: '/tools/encrypt-sm' },
+      { title: 'AES', path: '/tools/encrypt-aes' },
     ],
+  },
+  {
+    title: '摘要',
+    children: [
+      { title: 'MD5', path: '/tools/digest-md5', quickEntry: true, quickName: 'MD5' },
+      { title: 'SHA1', path: '/tools/digest-sha1' },
+      { title: 'SHA256', path: '/tools/digest-sha256' },
+      { title: 'HMAC', path: '/tools/digest-hmac' },
+    ]
   },
   {
     title: '转换',
     children: [
       { title: '时间戳', path: '/tools/convert-timestamp', quickEntry: true, quickName: '时间戳转换' },
-      { title: 'Cron表达式', path: '/tools/convert-cron', quickEntry: true, quickName: 'Cron表达式转换' },
-      { title: '进制', path: '/tools/convert-radix' },
+      { title: 'Cron表达式', path: '/tools/convert-cron', quickEntry: true, quickName: 'Cron校验解释' },
     ],
   },
   {
@@ -91,6 +97,13 @@ const tools = [
       { title: 'BASE64', path: '/tools/image-base64' },
       { title: '二维码', path: '/tools/image-qrcode', quickEntry: true, quickName: '二维码生成' },
     ],
+  },
+  {
+    title: '密码', // 密码生成，密码管理
+    children: [
+      { title: '密码生成', path: '/tools/password-generator', quickEntry: true, quickName: '密码生成' },
+      { title: '密码管理', path: '/tools/password-manager', },
+    ]
   },
 ]
 const quickEntries = tools.flatMap(tool => tool.children.filter(child => child.quickEntry))

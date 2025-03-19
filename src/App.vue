@@ -13,8 +13,8 @@
             <a-menu v-if="!isMobile" v-model:selectedKeys="currentMenu" mode="horizontal" :theme="theam"
               :style="{ fontSize: '16px' }">
               <a-menu-item key="home">首页</a-menu-item>
-              <a-menu-item key="articles">文章</a-menu-item>
-              <a-menu-item key="tools">工具</a-menu-item>
+              <a-menu-item key="articles">知识库</a-menu-item>
+              <a-menu-item key="tools">工具箱</a-menu-item>
               <a-menu-item key="workbench">工作台</a-menu-item>
             </a-menu>
             <a-button v-else @click="drawerVisible = true" icon="menu" />
@@ -51,8 +51,8 @@
       <a-drawer v-model:visible="drawerVisible" placement="left" :width="250">
         <a-menu v-model:selectedKeys="currentMenu" mode="vertical" :theme="theam">
           <a-menu-item key="home"> 首页 </a-menu-item>
-          <a-menu-item key="articles"> 文章 </a-menu-item>
-          <a-menu-item key="tools"> 工具 </a-menu-item>
+          <a-menu-item key="articles"> 知识库 </a-menu-item>
+          <a-menu-item key="tools"> 百宝箱 </a-menu-item>
           <a-menu-item key="workbench"> 工作台 </a-menu-item>
         </a-menu>
       </a-drawer>
