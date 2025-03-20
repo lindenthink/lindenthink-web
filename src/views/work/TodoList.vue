@@ -1,23 +1,31 @@
 <template>
   <a-row :gutter="24">
-    <!-- 左侧日历区 -->
-    <a-col :span="14">
-      <a-card title="日历视图">
-        <a-calendar v-model:value="currentDate">
-          <template #dateCellRender="{ current }">
-            <div v-for="todo in getTodosByDate(current)" :key="todo.id" class="calendar-todo-marker"
-              :class="{ overdue: isOverdue(todo) }">
-              {{ todo.text }}
-            </div>
-          </template>
-        </a-calendar>
-      </a-card>
-    </a-col>
+    <a-col :span="24">
+      <a-card title="待办列表">
+        <template #extra>
+          <a-space>
+            <a-button-group>
+              <a-button :type="selectedFilter === 'all' ? 'primary' : ''" @click="selectedFilter = 'all'">全部</a-button>
+              <a-button :type="selectedFilter === 'yesterday' ? 'primary' : ''"
+                @click="selectedFilter = 'yesterday'">昨日</a-button>
+              <a-button :type="selectedFilter === 'today' ? 'primary' : ''"
+                @click="selectedFilter = 'today'">今日</a-button>
+              <a-button :type="selectedFilter === 'tomorrow' ? 'primary' : ''"
+                @click="selectedFilter = 'tomorrow'">明日</a-button>
+            </a-button-group>
+            <a-button type="primary" @click="createNewTodo">
+              <template #icon><plus-outlined /></template>
+              新增
+            </a-button>
+            <a-button @click="showTrash = true">
+              <template #icon><rest-outlined /></template>
+              回收站
+            </a-button>
 
-    <!-- 右侧待办列表 -->
-    <a-col :span="10">
-      <a-card title="待办事项" :extra="`剩余待办：${pendingCount}`">
-        <a-list :data-source="sortedTodos" class="todo-list">
+          </a-space>
+        </template>
+
+        <a-list :data-source="filteredTodos" class="todo-list">
           <template #renderItem="{ item }">
             <a-list-item :class="getTodoItemClass(item)">
               <template #actions>
@@ -34,7 +42,7 @@
               </template>
               <a-list-item-meta>
                 <template #title>
-                  <a-checkbox v-model:checked="item.completed">
+                  <a-checkbox v-model:checked="item.completed" @change="() => handleCheckChange(item)">
                     <span :class="{ completed: item.completed }">{{ item.text }}</span>
                   </a-checkbox>
                 </template>
@@ -45,11 +53,9 @@
                       {{ formatDueDate(item.dueDate) }}
                     </a-tag>
                     <a-tag :color="colorMap[item.priority]">
-                      <template #icon>
-                        <exclamation-circle-filled v-if="item.priority === 'high'" />
-                        <warning-filled v-else-if="item.priority === 'medium'" />
-                        <info-circle-filled v-else />
-                      </template>
+                      <exclamation-circle-filled v-if="item.priority === 'high'" />
+                      <warning-filled v-else-if="item.priority === 'medium'" />
+                      <info-circle-filled v-else />
                       {{ labelMap[item.priority] }}
                     </a-tag>
                   </div>
@@ -58,37 +64,47 @@
             </a-list-item>
           </template>
         </a-list>
-
-        <!-- 新增/编辑表单 -->
-        <a-drawer :title="editingTodo ? '编辑待办' : '新建待办'" :visible="showEdit" @close="showEdit = false" width="400">
-          <a-form layout="vertical">
-            <a-form-item label="事项内容" required>
-              <a-textarea v-model:value="editingTodo.text" placeholder="输入待办事项内容" />
-            </a-form-item>
-            <a-form-item label="截止时间" required>
-              <a-date-picker v-model:value="editingTodo.dueDate" show-time format="YYYY-MM-DD HH:mm" />
-            </a-form-item>
-            <a-form-item label="优先级">
-              <a-select v-model:value="editingTodo.priority">
-                <a-select-option v-for="(val, key) in labelMap" :key="key">{{ val }}</a-select-option>
-              </a-select>
-            </a-form-item>
-            <a-form-item>
-              <a-button type="primary" @click="saveTodo">保存</a-button>
-              <a-button style="margin-left: 8px" @click="showEdit = false">取消</a-button>
-            </a-form-item>
-          </a-form>
-        </a-drawer>
-
-        <!-- 新增按钮 -->
-        <div class="add-button">
-          <a-button type="primary" shape="circle" size="large" @click="createNewTodo">
-            <template #icon><plus-outlined /></template>
-          </a-button>
-        </div>
       </a-card>
     </a-col>
   </a-row>
+
+  <a-drawer :title="editingTodo ? '编辑待办' : '新建待办'" :visible="showEdit" @close="showEdit = false" width="400">
+    <a-form layout="vertical">
+      <a-form-item label="事项内容" required>
+        <a-textarea v-model:value="editingTodo.text" placeholder="输入待办事项内容" />
+      </a-form-item>
+      <a-form-item label="截止时间" required>
+        <a-date-picker v-model:value="editingTodo.dueDate" show-time format="YYYY-MM-DD HH:mm" />
+      </a-form-item>
+      <a-form-item label="优先级">
+        <a-select v-model:value="editingTodo.priority">
+          <a-select-option v-for="(val, key) in labelMap" :key="key">{{ val }}</a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item>
+        <a-button type="primary" @click="saveTodo">保存</a-button>
+        <a-button style="margin-left: 8px" @click="showEdit = false">取消</a-button>
+      </a-form-item>
+    </a-form>
+  </a-drawer>
+
+  <a-drawer title="回收站" :visible="showTrash" @close="showTrash = false">
+    <a-list :data-source="deletedTodos">
+      <template #renderItem="{ item }">
+        <a-list-item>
+          <a-list-item-meta :title="item.text" :description="formatDueDate(item.dueDate)" />
+          <template #actions>
+            <a-button @click="restoreTodo(item)" style="margin-right: 8px">恢复</a-button>
+            <a-popconfirm title="确定永久删除该待办吗？" @confirm="deleteFromTrash(item.id)">
+              <a-button danger type="link">
+                <delete-outlined />
+              </a-button>
+            </a-popconfirm>
+          </template>
+        </a-list-item>
+      </template>
+    </a-list>
+  </a-drawer>
 </template>
 
 <script setup>
@@ -103,7 +119,8 @@ import {
   ClockCircleOutlined,
   ExclamationCircleFilled,
   WarningFilled,
-  InfoCircleFilled
+  InfoCircleFilled,
+  RestOutlined
 } from '@ant-design/icons-vue';
 
 
@@ -124,15 +141,43 @@ const labelMap = {
 // 待办数据
 const todos = ref(JSON.parse(localStorage.getItem('todos')) || []);
 const editingTodo = ref(null);
-const currentDate = ref(dayjs());
 const showEdit = ref(false);
+const selectedFilter = ref('all');
+const showTrash = ref(false);
 
-// 计算属性
-const pendingCount = computed(() => todos.value.filter(t => !t.completed).length);
+const handleCheckChange = (item) => {
+  const index = todos.value.findIndex(t => t.id === item.id);
+  if (index > -1) {
+    todos.value.splice(index, 1, item);
+    persistData();
+  }
+};
+
+const deleteFromTrash = (id) => {
+  deletedTodos.value = deletedTodos.value.filter(t => t.id !== id);
+  persistData();
+  message.success('已永久删除');
+};
+
+const deletedTodos = ref(JSON.parse(localStorage.getItem('deletedTodos')) || []);
+
 const sortedTodos = computed(() => [...todos.value].sort((a, b) =>
   dayjs(a.dueDate).unix() - dayjs(b.dueDate).unix()
 ));
 
+const filteredTodos = computed(() => {
+  const now = dayjs();
+  return sortedTodos.value.filter(todo => {
+    if (selectedFilter.value === 'all') return true;
+    const dueDate = dayjs(todo.dueDate);
+    switch (selectedFilter.value) {
+      case 'today': return dueDate.isSame(now, 'day');
+      case 'yesterday': return dueDate.isSame(now.subtract(1, 'day'), 'day');
+      case 'tomorrow': return dueDate.isSame(now.add(1, 'day'), 'day');
+      default: return true;
+    }
+  });
+});
 // 提醒逻辑
 let checkInterval;
 onMounted(() => {
@@ -147,30 +192,28 @@ const checkReminders = () => {
       if (dueTime <= 30 && dueTime > 0) {
         showNotification(todo);
         todo.reminded = true;
+        persistData();
       }
     }
   });
 };
 
 const showNotification = (todo) => {
-  // if (Notification.permission === 'granted') {
-  new Notification(`待办事项提醒: ${todo.text}`, {
-    icon: `${location.href.replace('workbench', '')}/logo.jpg`,
-    body: `将在30分钟内到期: ${formatDueDate(todo.dueDate)}`,
-    onclick: () => {
-      // 显示浏览器
-      window.focus();
-      this.close();
-    }
-  });
-  // }
+  if (Notification.permission === 'granted') {
+    new Notification(`待办事项提醒: ${todo.text}`, {
+      icon: `${location.href.replace('workbench', '')}/logo.jpg`,
+      body: `将在30分钟内到期: ${formatDueDate(todo.dueDate)}`,
+      onclick: () => {
+        // 显示浏览器
+        window.focus();
+        this.close();
+      }
+    });
+  }
 };
 
 // 日期处理
 const formatDueDate = (date) => dayjs(date).format('MM-DD HH:mm');
-const getTodosByDate = (date) => todos.value.filter(todo =>
-  dayjs(todo.dueDate).isSame(date, 'day')
-);
 
 // 样式处理
 const getDueDateColor = (todo) => {
@@ -191,7 +234,7 @@ const createNewTodo = () => {
   editingTodo.value = {
     id: dayjs().unix(),
     text: '',
-    dueDate: dayjs(),
+    dueDate: dayjs().add(1, 'day'),
     priority: 'medium',
     completed: false
   };
@@ -203,7 +246,7 @@ const saveTodo = () => {
     message.error('请输入事项内容');
     return;
   }
-
+  editingTodo.value.reminded = false;
   const index = todos.value.findIndex(t => t.id === editingTodo.value.id);
   if (index === -1) {
     todos.value.push(editingTodo.value);
@@ -232,8 +275,21 @@ const editTodo = (item) => {
 };
 
 const deleteTodo = (id) => {
+  const todo = todos.value.find(t => t.id === id);
+  deletedTodos.value.push({ ...todo, deletedAt: dayjs().format() });
   todos.value = todos.value.filter(t => t.id !== id);
+  persistData();
+};
+
+const restoreTodo = (item) => {
+  todos.value.push(item);
+  deletedTodos.value = deletedTodos.value.filter(t => t.id !== item.id);
+  persistData();
+};
+
+const persistData = () => {
   localStorage.setItem('todos', JSON.stringify(todos.value));
+  localStorage.setItem('deletedTodos', JSON.stringify(deletedTodos.value));
 };
 </script>
 
@@ -252,28 +308,19 @@ const deleteTodo = (id) => {
   opacity: 0.6;
 }
 
-.calendar-todo-marker {
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 2px 4px;
-  margin: 2px;
-  border-radius: 2px;
-  background: #f0f0f0;
-}
-
-.add-button {
-  position: fixed;
-  bottom: 40px;
-  right: 40px;
-  z-index: 1000;
-}
-
 .todo-meta {
   margin-top: 8px;
   display: flex;
   gap: 8px;
   align-items: center;
+}
+
+.ant-btn-group {
+  margin-right: 16px;
+}
+
+.trash-button {
+  margin-left: auto;
+  padding-right: 24px;
 }
 </style>
