@@ -49,8 +49,7 @@
 
           <div class="gantt-header" ref="header">
             <div class="info-columns">
-              <div class="info-cell task-name">任务名称</div>
-              <div class="info-cell assignees">参与人</div>
+              <div class="info-cell task-name">任务详情（任务名称-人员列表）</div>
             </div>
             <div class="time-scale" :style="{ width: timelineWidth + 'px' }">
               <div v-for="(date, index) in timeline" :key="index" class="time-cell">
@@ -64,8 +63,7 @@
               <div v-for="(item, index) in visibleTasks" :key="item.id" class="gantt-row"
                 :style="getRowStyle(item, index)">
                 <div class="info-columns">
-                  <div class="info-cell task-name">{{ item.title }}</div>
-                  <div class="info-cell assignees">{{ item.assignees.join(', ') }}</div>
+                  <div class="info-cell task-name">{{ item.title }}-{{ item.assignees.join(', ') }}</div>
                 </div>
                 <div class="task-bar">
                   <div class="progress" :style="{
@@ -526,21 +524,16 @@ function handleEdit(task) {
 
 .info-cell {
   display: flex;
-  padding: 0 12px;
+  padding: 0 5px;
   line-height: 40px;
-  border-right: 1px solid #e8e8e8;
   align-items: center;
-  justify-content: center;
+  justify-content: right;
   white-space: nowrap;
   text-overflow: ellipsis;
 
   &.task-name {
-    width: 100px;
+    width: 180px;
     font-weight: 500;
-  }
-
-  &.assignees {
-    width: 80px;
   }
 }
 </style>
