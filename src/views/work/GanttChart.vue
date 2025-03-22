@@ -1,115 +1,546 @@
 <template>
-  <div class="gantt-chart">
-    <table>
-      <thead>
-        <tr>
-          <th>任务</th>
-          <th>开始日期</th>
-          <th>结束日期</th>
-          <th>进度</th>
-          <th>处理人</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="task in tasks" :key="task.id">
-          <td>{{ task.name }}</td>
-          <td>{{ task.startDate }}</td>
-          <td>{{ task.endDate }}</td>
-          <td>
-            <div class="progress-bar">
-              <div class="progress" :style="{ width: task.progress + '%' }"></div>
-            </div>
-          </td>
-          <td>{{ task.assignee }}</td>
-          <td>
-            <button @click="editTask(task)">编辑</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <a-row :gutter="24">
+    <!-- 左侧项目树 -->
+    <a-col :span="8">
+      <a-card title="项目列表">
+        <template #extra>
+          <a-button type="primary" @click="handleAddRoot">
+            <template #icon><plus-outlined /></template>
+            新增
+          </a-button>
+        </template>
 
-    <div v-if="editingTask" class="edit-form">
-      <input v-model="editingTask.name" placeholder="任务名称" />
-      <input type="date" v-model="editingTask.startDate" />
-      <input type="date" v-model="editingTask.endDate" />
-      <input type="number" v-model="editingTask.progress" placeholder="进度" />
-      <input v-model="editingTask.assignee" placeholder="处理人" />
-      <button @click="saveTask">保存</button>
-      <button @click="cancelEdit">取消</button>
-    </div>
-  </div>
+        <a-tree :tree-data="projects" :fieldNames="{ children: 'children', title: 'title', key: 'id' }"
+          @select="handleSelectProject" showLine blockNode>
+          <template #title="{ dataRef }">
+            <div class="project-node">
+              <span>{{ dataRef.title }}</span>
+              <a-space>
+                <a-tooltip v-if="dataRef.level === 1" title="添加子任务">
+                  <a-button size="small" type="link" @click.stop="handleAddChild(dataRef)">
+                    <template #icon><plus-outlined :style="{ color: '#52c41a' }" /></template>
+                  </a-button>
+                </a-tooltip>
+                <a-tooltip title="编辑">
+                  <a-button size="small" type="link" @click.stop="handleEdit(dataRef)">
+                    <template #icon><edit-outlined /></template>
+                  </a-button>
+                </a-tooltip>
+                <a-tooltip title="删除">
+                  <a-button danger size="small" type="link" @click.stop="handleDelete(dataRef)">
+                    <template #icon><delete-outlined /></template>
+                  </a-button>
+                </a-tooltip>
+              </a-space>
+            </div>
+          </template>
+        </a-tree>
+      </a-card>
+    </a-col>
+
+    <!-- 右侧甘特图 -->
+    <a-col :span="16">
+      <a-card :title="`排期进度 - ${selectedProject?.title || '未选择项目'}`">
+        <template #extra>
+          <a-select v-model:value="selectedAssignees" mode="multiple" placeholder="选择参与人过滤" style="width: 300px"
+            :options="assigneeOptions" />
+        </template>
+        <div class="gantt-container">
+
+          <div class="gantt-header" ref="header">
+            <div class="info-columns">
+              <div class="info-cell task-name">任务名称</div>
+              <div class="info-cell assignees">参与人</div>
+            </div>
+            <div class="time-scale" :style="{ width: timelineWidth + 'px' }">
+              <div v-for="(date, index) in timeline" :key="index" class="time-cell">
+                {{ date }}
+              </div>
+            </div>
+          </div>
+
+          <div class="gantt-body" @scroll="syncScroll">
+            <template v-if="selectedProject">
+              <div v-for="(item, index) in visibleTasks" :key="item.id" class="gantt-row"
+                :style="getRowStyle(item, index)">
+                <div class="info-columns">
+                  <div class="info-cell task-name">{{ item.title }}</div>
+                  <div class="info-cell assignees">{{ item.assignees.join(', ') }}</div>
+                </div>
+                <div class="task-bar">
+                  <div class="progress" :style="{
+                    width: item.progress + '%',
+                    backgroundColor: item.progressColor
+                  }" />
+                  <div class="date-range">
+                    {{ formatDate(item.startDate) }} - {{ formatDate(item.endDate) }}
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </a-card>
+    </a-col>
+
+    <!-- 项目编辑弹窗 -->
+    <a-modal v-model:visible="showModal" :title="`${formData.id ? '编辑' : '新建'}${formData.level === 1 ? '项目' : '任务'}`"
+      @ok="handleSave">
+      <a-form layout="vertical">
+        <a-form-item label="任务名称" required>
+          <a-input v-model:value="formData.title" />
+        </a-form-item>
+        <a-form-item label="日期范围" required>
+          <a-range-picker v-model:value="dateRange" :disabledDate="disabledDate" />
+        </a-form-item>
+        <a-form-item label="参与人">
+          <a-select v-model:value="formData.assignees" mode="tags" placeholder="输入或选择参与人"
+            :options="existingAssignees" />
+        </a-form-item>
+        <a-form-item label="进度">
+          <a-slider v-model:value="formData.progress" :marks="{ 0: '0%', 50: '50%', 100: '100%' }" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+  </a-row>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue';
+import dayjs from 'dayjs';
+import minMax from 'dayjs/plugin/minMax';
+import { message } from 'ant-design-vue';
+import { useLocalStorage } from '@vueuse/core'
+import {
+  DeleteOutlined,
+  PlusOutlined,
+  EditOutlined,
+} from '@ant-design/icons-vue';
 
-const tasks = ref([
-  { id: 1, name: '需求分析', startDate: '2023-01-01', endDate: '2023-01-10', progress: 100, assignee: '张三' },
-  { id: 2, name: '设计', startDate: '2023-01-11', endDate: '2023-01-20', progress: 80, assignee: '李四' },
-  { id: 3, name: '开发', startDate: '2023-01-21', endDate: '2023-02-10', progress: 60, assignee: '王五' },
-  { id: 4, name: '测试', startDate: '2023-02-11', endDate: '2023-02-20', progress: 40, assignee: '赵六' },
-])
+dayjs.extend(minMax);
 
-const editingTask = ref(null)
+// 配置参数
+const CELL_WIDTH = 60;
+const ROW_HEIGHT = 40;
 
-const editTask = (task) => {
-  editingTask.value = { ...task }
-}
-
-const saveTask = () => {
-  const index = tasks.value.findIndex(task => task.id === editingTask.value.id)
-  if (index !== -1) {
-    tasks.value[index] = { ...editingTask.value }
+const selectedProject = ref(null);
+const showModal = ref(false);
+const formData = ref(initFormData());
+const dateRange = ref([]);
+const selectedAssignees = ref([]);
+const projects = useLocalStorage('projects', [], {
+  deep: true,
+  serializer: {
+    read: (v) => v ? JSON.parse(v) : [],
+    write: (v) => JSON.stringify(v)
   }
-  editingTask.value = null
+});
+
+
+// 计算属性
+const timeline = computed(() => {
+  if (!selectedProject.value?.startDate) return [];
+
+  const start = dayjs(selectedProject.value.startDate);
+  const end = dayjs(selectedProject.value.endDate);
+  const days = end.diff(start, 'day') + 1;
+
+  return Array.from({ length: days }, (_, i) =>
+    start.add(i, 'day').format('MM/DD')
+  );
+});
+
+// 添加现有参与人选项
+const existingAssignees = computed(() =>
+  projects.value.flatMap(p => p.assignees)
+    .filter((v, i, a) => a.indexOf(v) === i)
+    .map(a => ({ value: a }))
+);
+
+const timelineWidth = computed(() => timeline.value.length * CELL_WIDTH);
+
+const visibleTasks = computed(() => {
+  if (!selectedProject.value) return [];
+
+  // 获取二级结构数据
+  const tasks = [
+    selectedProject.value,
+    ...(selectedProject.value.children || []).map(child => ({
+      ...child,
+      level: 2
+    }))
+  ];
+
+  // 参与人过滤
+  return tasks.filter(task => {
+    const hasAssignee = selectedAssignees.value.length === 0 ||
+      task.assignees.some(a => selectedAssignees.value.includes(a));
+    return task.startDate && task.endDate && hasAssignee;
+  });
+});
+
+// 参与人选项计算
+const assigneeOptions = computed(() => {
+  const allAssignees = visibleTasks.value.flatMap(t => t.assignees);
+  return [...new Set(allAssignees)].map(a => ({ label: a, value: a }));
+});
+
+// 初始化表单数据
+function initFormData() {
+  return {
+    id: '',
+    title: '',
+    startDate: null,
+    endDate: null,
+    assignees: [], // 改为数组存储
+    progress: 0,
+    progressColor: '#1890ff',
+    children: [],
+    level: 1 // 1-项目 2-子任务
+  };
 }
 
-const cancelEdit = () => {
-  editingTask.value = null
+function handleSelectProject(keys, { node }) {
+  const task = node.dataRef;
+  selectedProject.value = task;
+
+  // 初始化编辑表单
+  if (task.id) {
+    formData.value = {
+      ...task,
+      assignees: [...task.assignees]
+    };
+    dateRange.value = [
+      dayjs(task.startDate),
+      dayjs(task.endDate)
+    ];
+  }
+}
+
+function handleAddRoot() {
+  formData.value = initFormData(); // 重置表单数据
+  dateRange.value = [dayjs(), dayjs().add(3, 'day')];
+  showModal.value = true;
+}
+
+function handleAddChild(parent) {
+  formData.value = {
+    ...initFormData(),
+    parentId: parent.id,
+    level: 2
+  };
+  dateRange.value = [dayjs(parent.startDate), dayjs(parent.endDate)];
+  showModal.value = true;
+}
+
+async function handleSave() {
+  if (!validateForm()) return;
+
+  const isEditMode = !!formData.value.id;
+  const newItem = {
+    ...formData.value,
+    id: formData.value.id || Date.now().toString(),
+    startDate: dateRange.value[0].format('YYYY-MM-DD'),
+    endDate: dateRange.value[1].format('YYYY-MM-DD'),
+    progressColor: getProgressColor(formData.value.progress),
+    assignees: formData.value.assignees.filter(Boolean)
+  };
+
+  if (newItem.parentId) {
+    const parent = findProject(projects.value, newItem.parentId);
+    if (parent) {
+      if (isEditMode) {
+        const index = parent.children.findIndex(c => c.id === newItem.id);
+        if (index > -1) {
+          parent.children.splice(index, 1, newItem);
+        }
+      } else {
+        parent.children = parent.children ? [...parent.children, newItem] : [newItem];
+      }
+    }
+  } else {
+    if (isEditMode) {
+      const index = projects.value.findIndex(p => p.id === newItem.id);
+      if (index > -1) {
+        projects.value.splice(index, 1, newItem);
+      }
+    } else {
+      projects.value = [...projects.value, newItem];
+    }
+  }
+
+  // 强制触发响应式更新
+  projects.value = JSON.parse(JSON.stringify(projects.value));
+  updateProjectDates();
+  resetForm();
+  message.success(isEditMode ? '更新成功' : '创建成功');
+}
+
+function handleDelete(node) {
+  const deleteNode = (nodes) => {
+    return nodes.filter((n) => {
+      if (n.id === node.id) return false;
+      if (n.children) {
+        n.children = deleteNode(n.children);
+      }
+      return true;
+    });
+  };
+
+  // 使用新数组触发响应式更新
+  const newProjects = deleteNode(projects.value);
+  projects.value = JSON.parse(JSON.stringify(newProjects));
+
+  // 强制刷新选中项目
+  if (selectedProject.value?.id === node.id) {
+    selectedProject.value = newProjects[0] || null;
+  }
+
+  updateProjectDates()
+  message.success('删除成功');
+}
+
+function getProgressColor(progress) {
+  if (progress < 30) return '#ff4d4f';
+  if (progress < 70) return '#faad14';
+  return '#52c41a';
+}
+
+function updateProjectDates() {
+  const update = (nodes) => {
+    return nodes.map(node => {
+      if (node.children?.length) {
+        const newChildren = update(node.children);
+        const dates = newChildren.flatMap(c => [dayjs(c.startDate), dayjs(c.endDate)]);
+        return {
+          ...node,
+          startDate: dayjs.min(dates).format('YYYY-MM-DD'),
+          endDate: dayjs.max(dates).format('YYYY-MM-DD'),
+          children: newChildren
+        };
+      }
+      return node;
+    });
+  };
+
+  projects.value = update(projects.value);
+}
+
+function validateForm() {
+  // 基础验证
+  if (!formData.value.title?.trim()) {
+    message.error('任务名称不能为空');
+    return false;
+  }
+
+  if (!dateRange.value[0] || !dateRange.value[1]) {
+    message.error('请选择完整的时间范围');
+    return false;
+  }
+
+  // 时间顺序验证
+  if (dateRange.value[0].isAfter(dateRange.value[1])) {
+    message.error('开始时间不能晚于结束时间');
+    return false;
+  }
+
+  // 子任务时间范围验证
+  if (formData.value.parentId) {
+    const parent = findProject(projects.value, formData.value.parentId);
+    const parentStart = dayjs(parent.startDate);
+    const parentEnd = dayjs(parent.endDate);
+
+    if (
+      dateRange.value[0].isBefore(parentStart) ||
+      dateRange.value[1].isAfter(parentEnd)
+    ) {
+      message.error('子任务时间必须在父任务时间范围内');
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function resetForm() {
+  showModal.value = false;
+  formData.value = initFormData();
+  dateRange.value = [];
+}
+
+function findProject(nodes, id) {
+  for (const node of nodes) {
+    if (node.id === id) return node;
+    if (node.children) {
+      const found = findProject(node.children, id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+function getRowStyle(item, index) {
+  if (!item.startDate || !item.endDate) return { display: 'none' };
+
+  const baseDate = dayjs(selectedProject.value.startDate);
+  const startDate = dayjs(item.startDate);
+  const endDate = dayjs(item.endDate);
+
+  // 计算相对于项目开始日期的偏移
+  const startOffset = startDate.diff(baseDate, 'day') * CELL_WIDTH;
+  // 计算实际显示宽度
+  const durationDays = endDate.diff(startDate, 'day') + 1;
+
+  return {
+    height: ROW_HEIGHT + 'px',
+    width: `${durationDays * CELL_WIDTH}px`,
+    left: `${startOffset}px`,
+    position: 'absolute',
+    top: `${ROW_HEIGHT * index}px`,
+    backgroundColor: item.level === 1 ? '#fafafa' : 'transparent',
+  };
+}
+
+function syncScroll(e) {
+  const header = document.querySelector('.gantt-header');
+  if (header) {
+    header.scrollLeft = e.target.scrollLeft;
+  }
+}
+
+function formatDate(date) {
+  return dayjs(date).format('MM/DD');
+}
+
+function disabledDate(current) {
+  return current && current < dayjs(selectedProject.value?.startDate).startOf('day');
+}
+
+function handleEdit(task) {
+  formData.value = {
+    ...task,
+    assignees: [...task.assignees]
+  };
+  dateRange.value = [
+    dayjs(task.startDate),
+    dayjs(task.endDate)
+  ];
+  showModal.value = true;
 }
 </script>
 
 <style scoped>
-.gantt-chart table {
+.project-node {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  border-collapse: collapse;
-}
-
-.gantt-chart th, .gantt-chart td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-
-.gantt-chart th {
-  background-color: #f0f2f5;
-}
-
-.progress-bar {
-  background-color: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
-  height: 20px;
 }
 
 .progress {
-  background-color: #1890ff;
-  height: 100%;
+  min-width: 5px;
+  /* 保证进度条可见 */
 }
 
-.edit-form {
+.gantt-container {
+  height: 60vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.gantt-header {
+  color: rgb(95, 94, 94);
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 2;
+  overflow: hidden;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.time-scale {
   display: flex;
-  flex-direction: column;
-  margin-top: 20px;
+  height: 40px;
+  background: #fafafa;
+  margin-left: 180px;
 }
 
-.edit-form input {
-  margin-bottom: 10px;
-  padding: 5px;
+.time-cell {
+  flex: 0 0 v-bind(CELL_WIDTH + 'px');
+  line-height: 40px;
+  text-align: center;
+  border-right: 1px solid #e8e8e8;
+  font-size: 12px;
 }
 
-.edit-form button {
-  margin-right: 10px;
+.gantt-body {
+  height: calc(100% - 40px);
+  overflow: auto;
+  position: relative;
+}
+
+.gantt-row {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s;
+  padding: 4px 0;
+}
+
+.task-bar {
+  min-width: 100%;
+  position: relative;
+  z-index: 1;
+  margin-left: 180px;
+  height: 24px;
+  background: rgba(24, 144, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  transition: width 0.3s;
+}
+
+.date-range {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
+}
+
+.info-columns {
+  position: absolute;
+  left: 0;
+  width: 180px;
+  display: flex;
+  z-index: 3;
+  background: white;
+  border-right: 1px solid #f0f0f0;
+  font-size: 12px;
+}
+
+.info-cell {
+  display: flex;
+  padding: 0 12px;
+  line-height: 40px;
+  border-right: 1px solid #e8e8e8;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  &.task-name {
+    width: 100px;
+    font-weight: 500;
+  }
+
+  &.assignees {
+    width: 80px;
+  }
 }
 </style>

@@ -25,7 +25,7 @@
         <!-- 最新动态模块 -->
         <div class="section">
           <h2>最新动态</h2>
-          <a-row gutter="16">
+          <a-row :gutter="16">
             <a-col :span="8" v-for="news in latestNews" :key="news.id">
               <a-card :title="news.title" hoverable>
                 <p class="card-summary">{{ news.summary }}</p>
@@ -37,7 +37,7 @@
         <!-- 热门文章模块 -->
         <div class="section">
           <h2>热门文章</h2>
-          <a-row gutter="16">
+          <a-row :gutter="16">
             <a-col :span="8" v-for="article in popularArticles" :key="article.id">
               <a-card :title="article.title" hoverable>
                 <p class="card-summary">{{ article.summary }}</p>

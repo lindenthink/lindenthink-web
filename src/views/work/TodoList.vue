@@ -68,7 +68,7 @@
     </a-col>
   </a-row>
 
-  <a-drawer :title="editingTodo ? '编辑待办' : '新建待办'" :visible="showEdit" @close="showEdit = false" width="400">
+  <a-modal :title="isNew ? '新增待办' : '编辑待办'" v-model:visible="showEdit" @ok="saveTodo">
     <a-form layout="vertical">
       <a-form-item label="事项内容" required>
         <a-textarea v-model:value="editingTodo.text" placeholder="输入待办事项内容" />
@@ -81,12 +81,8 @@
           <a-select-option v-for="(val, key) in labelMap" :key="key">{{ val }}</a-select-option>
         </a-select>
       </a-form-item>
-      <a-form-item>
-        <a-button type="primary" @click="saveTodo">保存</a-button>
-        <a-button style="margin-left: 8px" @click="showEdit = false">取消</a-button>
-      </a-form-item>
     </a-form>
-  </a-drawer>
+  </a-modal>
 
   <a-drawer title="回收站" :visible="showTrash" @close="showTrash = false">
     <a-list :data-source="deletedTodos">
@@ -111,7 +107,6 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { message } from 'ant-design-vue';
 import dayjs from 'dayjs'
-import 'dayjs/locale/zh-cn' // 导入本地化语言
 import {
   EditOutlined,
   DeleteOutlined,
@@ -123,8 +118,6 @@ import {
   RestOutlined
 } from '@ant-design/icons-vue';
 
-
-dayjs.locale('zh-cn') // 使用本地化语言
 
 const colorMap = {
   high: 'red',
@@ -207,13 +200,13 @@ const showNotification = (todo) => {
         // 显示浏览器
         window.focus();
         this.close();
-      }
+      },
     });
   }
 };
 
 // 日期处理
-const formatDueDate = (date) => dayjs(date).format('MM-DD HH:mm');
+const formatDueDate = (date) => dayjs(date).format('YYYY-MM-DD HH:mm');
 
 // 样式处理
 const getDueDateColor = (todo) => {
@@ -230,7 +223,9 @@ const getTodoItemClass = (todo) => ({
 // 核心功能
 const isOverdue = (todo) => !todo.completed && dayjs(todo.dueDate).isBefore(dayjs());
 
+const isNew = ref(false)
 const createNewTodo = () => {
+  isNew.value = true
   editingTodo.value = {
     id: dayjs().unix(),
     text: '',
@@ -253,7 +248,6 @@ const saveTodo = () => {
   } else {
     todos.value.splice(index, 1, editingTodo.value);
   }
-
   localStorage.setItem('todos', JSON.stringify(todos.value));
   showEdit.value = false;
   Notification.requestPermission().then((permission) => {
@@ -269,6 +263,7 @@ const saveTodo = () => {
 
 
 const editTodo = (item) => {
+  isNew.value = false
   editingTodo.value = { ...item };
   editingTodo.value.dueDate = dayjs(editingTodo.value.dueDate);
   showEdit.value = true;
@@ -301,6 +296,7 @@ const persistData = () => {
 
 .overdue-item {
   background-color: #fff1f0;
+  padding-left: 3px;
   border-left: 3px solid #ff4d4f;
 }
 
