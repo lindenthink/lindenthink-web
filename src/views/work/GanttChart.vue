@@ -109,7 +109,7 @@
     </a-modal>
   </a-row>
 
-  <a-drawer title="回收站" :visible="showTrash" @close="showTrash = false">
+  <a-drawer title="回收站" :visible="showTrash" @close="showTrash = false" width="600">
     <a-table :dataSource="deletedProjects" rowKey="id" :pagination="false">
       <a-table-column title="任务名称" data-index="title" />
       <a-table-column title="删除时间" data-index="deletedAt">
@@ -315,7 +315,7 @@ function handleDelete(node) {
 
   const deletedItem = {
     ...node,
-    deletedAt: formatDate(new Date()),
+    deletedAt: dayjs().format(),
     parentId: findParentId(projects.value, node.id)
   };
 
