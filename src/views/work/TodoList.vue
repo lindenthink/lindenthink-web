@@ -90,11 +90,9 @@
         <a-list-item>
           <a-list-item-meta :title="item.text" :description="formatDueDate(item.dueDate)" />
           <template #actions>
-            <a-button @click="restoreTodo(item)" style="margin-right: 8px">恢复</a-button>
-            <a-popconfirm title="确定永久删除该待办吗？" @confirm="deleteFromTrash(item.id)">
-              <a-button danger type="link">
-                <delete-outlined />
-              </a-button>
+            <a-button @click="restoreTodo(item)" style="margin-right: 8px" type="link">恢复</a-button>
+            <a-popconfirm title="确定永久删除该记录吗？" @confirm="deleteFromTrash(item.id)">
+              <a-button danger type="text">删除</a-button>
             </a-popconfirm>
           </template>
         </a-list-item>

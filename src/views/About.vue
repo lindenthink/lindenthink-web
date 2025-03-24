@@ -55,19 +55,21 @@ const asciidocContent = `
 * vue3
 ** https://router.vuejs.org/
 ** https://cn.vitejs.dev/[vite]
+** https://pinia.vuejs.org/zh/core-concepts[Pinia]
+** https://vueuse.nodejs.cn/[vueuse]
 * https://www.typescriptlang.org/zh/[typescript]
 * https://lesscss.com.cn/[less]
 * https://yarn.bootcss.com/[yarn]
-// * Vben Admin：
 // * https://aplayer.js.org/
 // * https://www.live2d.com/zh-CHS/
-// * https://github.com/fghrsh/live2d_demo
 // * https://hitokoto.cn/[一言]
 // * https://www.jinrishici.com/[今日诗词]
 * https://www.antdv.com/docs/vue/introduce-cn[Ant Design of Vue]
 * https://github.com/hankcs/HanLP/tree/1.x[HanLP]
 * https://highlightjs.readthedocs.io/en/latest/[highlightjs]
 * https://github.com/leezng/vue-json-pretty/blob/dev/README.zh_CN.md[vue-json-pretty]
+* https://dayjs.fenxianglu.cn/[dayjs]
+
 `
 </script>
 
