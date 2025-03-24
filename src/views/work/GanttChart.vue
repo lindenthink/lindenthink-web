@@ -67,8 +67,7 @@
               <div v-for="(item, index) in visibleTasks" :key="item.id" class="gantt-row"
                 :style="getRowStyle(item, index)">
                 <div class="info-columns">
-                  <div class="info-cell task-info">{{ item.assignees.join(', ') }}：{{ item.title }}({{ item.progress
-                  }}%)</div>
+                  <div class="info-cell task-info">{{ item.level === 1 ? '' : item.assignees.join(', ') + '：' }}{{ item.title }}({{ item.progress }}%)</div>
                 </div>
                 <div class="task-bar">
                   <div class="progress" :style="{
@@ -109,7 +108,7 @@
     </a-modal>
   </a-row>
 
-  <a-drawer title="回收站" :visible="showTrash" @close="showTrash = false" width="600">
+  <a-drawer title="回收站" :visible="showTrash" @close="showTrash = false" width="500">
     <a-table :dataSource="deletedProjects" rowKey="id" :pagination="false">
       <a-table-column title="任务名称" data-index="title" />
       <a-table-column title="删除时间" data-index="deletedAt">
