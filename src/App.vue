@@ -1,7 +1,7 @@
 <template class="app">
   <!-- <AudioPlayer id="6991674483" /> -->
   <a-config-provider :locale="locale">
-    <a-back-top visibilityHeight=200 />
+    <a-back-top :visibilityHeight=200 />
     <a-layout>
       <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
         <div style="display: flex; align-items: center; justify-content: space-between; width: 99%">

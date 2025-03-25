@@ -2,34 +2,37 @@
   <a-layout>
     <a-layout-sider></a-layout-sider>
     <a-layout-content>
-      <div class="tools">
-        <div class="tools-menu">
-          <template v-for="(tool, index) in tools" :key="tool.title">
-            <a-dropdown>
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ tool.title }}
-                <DownOutlined />
-              </a>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item v-for="child in tool.children" :key="child.title">
-                    <router-link :to="child.path">{{ child.title }}</router-link>
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
-            <a-divider v-if="index !== tools.length - 1" type="vertical" />
-          </template>
-          <a-divider dashed plain><span style="color: lightgrey;">快捷入口</span></a-divider>
-          <div class="tools-quick-entry">
-            <router-link v-for="child in quickEntries" :key="child.title" :to="child.path" class="quick-entry-link">
-              {{ child.quickName }}
-            </router-link>
-          </div>
+      <div class="tools-container">
+        <!-- 主功能Tab页 -->
+        <a-tabs v-model:activeKey="activeKey" animated>
+          <a-tab-pane v-for="tool in tools" :key="tool.title" :tab="tool.title">
+            <div class="btns">
+              <a-space wrap :size="[12, 12]">
+                <span class="label">{{ tool.title }}</span>
+                <template v-for="child in tool.children" :key="child.title">
+                  <a-button @click="router.push(child.path)" class="sub-tool-btn" type="primary" ghost>
+                    {{ child.title }}
+                  </a-button>
+                </template>
+              </a-space>
+            </div>
+          </a-tab-pane>
+        </a-tabs>
+
+        <!-- 快捷入口按钮组 -->
+        <div class="btns">
+          <a-space wrap :size="[10, 10]">
+            <span class="label">常用</span>
+            <a-button v-for="entry in quickEntries" :key="entry.title" type="primary" ghost shape="round"
+              class="quick-btn" @click="router.push(entry.path)">
+              {{ entry.quickName }}
+            </a-button>
+          </a-space>
         </div>
 
-        <div class="tools-body">
-          <router-view> </router-view>
+        <!-- 内容区域 -->
+        <div class="content-area">
+          <router-view></router-view>
         </div>
       </div>
     </a-layout-content>
@@ -38,11 +41,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { DownOutlined } from '@ant-design/icons-vue'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import {
+  RocketTwoTone,
+  ThunderboltFilled,
+  CodeFilled,
+  LockFilled,
+  SafetyCertificateFilled,
+  ClockCircleFilled,
+  QrcodeOutlined
+} from '@ant-design/icons-vue';
 
 const router = useRouter()
+const activeKey = ref('格式化');
+
 onMounted(() => {
   const pathname = location.pathname
   if (!pathname.includes('tools\/')) {
@@ -53,6 +66,7 @@ onMounted(() => {
 const tools = [
   {
     title: '格式化',
+    icon: CodeFilled,
     children: [
       { title: 'JSON', path: '/tools/format-json', quickEntry: true, quickName: 'JSON格式化' },
       { title: 'XML', path: '/tools/format-xml' },
@@ -106,44 +120,60 @@ const tools = [
     ]
   },
 ]
-const quickEntries = tools.flatMap(tool => tool.children.filter(child => child.quickEntry))
+const quickEntries = tools.flatMap(tool =>
+  tool.children.filter(child => child.quickEntry)
+    .map(child => ({
+      ...child,
+      icon: tool.icon
+    }))
+);
 </script>
 
 <style scoped lang="less">
-.tools {
-  padding: 10px;
-  margin: 10px;
+@tools-color: #1890ff;
 
-  .tools-menu {
-    border: 1px solid #f0f2f5;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
+.btn {
+  height: 26px;
+  padding: 0 12px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+}
 
-  .tools-quick-entry {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+.label {
+  display: inline-block;
+  width: 50px;
+  font-size: 13px;
+  padding-left: 4px;
+  border-left: #1890ff 3px solid;
+}
 
-    .quick-entry-link {
-      padding: 0px 5px;
-      border: 1px solid #afaeae;
-      border-radius: 4px;
-      text-decoration: none;
-      color: #afaeae;
-      transition: background-color 0.3s;
+.tools-container {
+  margin: 10px auto;
+  padding: 0 24px;
+
+  .btns {
+    margin: 12px 0;
+
+    .sub-tool-btn {
+      .btn();
 
       &:hover {
-        color: #1890ff;
-        border-color: #1890ff;
+        transform: translateX(8px);
+        color: @tools-color;
+      }
+    }
+
+    .quick-btn {
+      .btn();
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(@tools-color, 0.2);
       }
     }
   }
-}
-
-.ant-divider-horizontal.ant-divider-with-text {
-  margin: 5px 0;
 }
 </style>
