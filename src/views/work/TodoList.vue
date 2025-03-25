@@ -133,7 +133,7 @@ const labelMap = {
 const todos = ref(JSON.parse(localStorage.getItem('todos')) || []);
 const editingTodo = ref(null);
 const showEdit = ref(false);
-const selectedFilter = ref('all');
+const selectedFilter = ref('today');
 const showTrash = ref(false);
 
 const handleCheckChange = (item) => {

@@ -44,13 +44,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import {
-  RocketTwoTone,
-  ThunderboltFilled,
   CodeFilled,
-  LockFilled,
-  SafetyCertificateFilled,
-  ClockCircleFilled,
-  QrcodeOutlined
 } from '@ant-design/icons-vue';
 
 const router = useRouter()

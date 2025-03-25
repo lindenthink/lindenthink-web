@@ -78,7 +78,7 @@
 </template>
 
 <script setup>
-import { ref, computed, h } from 'vue';
+import { ref} from 'vue';
 import { message } from 'ant-design-vue';
 import { SwapOutlined, CopyOutlined } from '@ant-design/icons-vue';
 
