@@ -66,7 +66,7 @@
             </li>
             <li>
               <strong>版权声明：</strong>本博客所有文章除特别声明外，均采用
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener"
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" rel="noopener"
                 target="_blank"><copyright-outlined />BY-NC-SA</a>
               许可协议，转载请注明出处！
             </li>

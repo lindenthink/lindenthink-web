@@ -55,6 +55,7 @@ onMounted(() => {
   if (!pathname.includes('tools\/')) {
     router.push({ path: '/tools' })
   }
+  activeKey.value = tools.find(tool => tool.children.some(child => child.path === pathname))?.title || '格式化'
 })
 
 const tools = [

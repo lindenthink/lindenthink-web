@@ -79,12 +79,6 @@
 import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import {
-  HomeOutlined,
-  ReadOutlined,
-  LinkOutlined,
-  ToolOutlined,
-  IdcardOutlined,
-  ScheduleOutlined,
   UserOutlined,
 } from '@ant-design/icons-vue'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'

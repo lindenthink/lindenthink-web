@@ -1,5 +1,5 @@
 <template>
-    <EncodeLayout type="url" />
+    <EncodeLayout type="ascii" />
 </template>
 
 <script setup>

@@ -46,6 +46,18 @@ const routes = [
         name: 'encode-base64',
         component: () => import('@/views/tools/EncodeBase64.vue'),
       }, {
+        path: 'encode-url',
+        name: 'encode-url',
+        component: () => import('@/views/tools/EncodeUrl.vue'),
+      }, {
+        path: 'encode-unicode',
+        name: 'encode-unicode',
+        component: () => import('@/views/tools/EncodeUnicode.vue'),
+      }, {
+        path: 'encode-ascii',
+        name: 'encode-ascii',
+        component: () => import('@/views/tools/EncodeAscii.vue'),
+      }, {
         path: 'encrypt-aes',
         name: 'encrypt-aes',
         component: () => import('@/views/tools/EncryptAes.vue'),
