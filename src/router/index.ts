@@ -61,7 +61,7 @@ const routes = [
         path: 'encrypt-aes',
         name: 'encrypt-aes',
         component: () => import('@/views/tools/EncryptAes.vue'),
-      },{
+      }, {
         path: 'encrypt-rsa',
         name: 'encrypt-rsa',
         component: () => import('@/views/tools/EncryptRsa.vue'),
@@ -77,14 +77,26 @@ const routes = [
         path: 'convert-timestamp',
         name: 'convert-timestamp',
         component: () => import('@/views/tools/ConvertTimestamp.vue'),
-      },{
+      }, {
         path: 'convert-cron',
         name: 'convert-cron',
         component: () => import('@/views/tools/ConvertCron.vue'),
-      },{
+      }, {
         path: 'digest-md5',
         name: 'digest-md5',
         component: () => import('@/views/tools/DigestMd5.vue'),
+      }, {
+        path: 'digest-sha1',
+        name: 'digest-sha1',
+        component: () => import('@/views/tools/DigestSha1.vue'),
+      }, {
+        path: 'digest-sha256',
+        name: 'digest-sha256',
+        component: () => import('@/views/tools/DigestSha256.vue'),
+      }, {
+        path: 'digest-hmac',
+        name: 'digest-hmac',
+        component: () => import('@/views/tools/DigestHmac.vue'),
       }, {
         path: 'password-generator',
         name: 'password-generator',
