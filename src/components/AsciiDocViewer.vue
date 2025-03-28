@@ -40,6 +40,9 @@ const renderedContent = ref('')
 // 渲染 AsciiDoc 内容
 const renderContent = () => {
   try {
+    if (!props.content) {
+      return
+    }
     // 过滤掉不支持的关键字
     const filteredContent = props.content.replace(/opts=\"inline\"/g, '')
     renderedContent.value = asciidoc.convert(filteredContent, {

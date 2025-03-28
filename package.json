@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "serve": "vite preview"
+    "test": "vite build --mode test"
   },
   "dependencies": {
     "@ant-design/icons-vue": "6.1.0",
@@ -31,9 +31,11 @@
     "@vue/compiler-sfc": "3.2.6",
     "eslint": "7.32.0",
     "less": "4.1.1",
+    "mockjs": "^1.1.0",
     "prettier": "2.4.1",
     "typescript": "4.3.2",
     "vite": "2.5.4",
+    "vite-plugin-mock": "^3.0.2",
     "vue-tsc": "0.2.2"
   }
 }

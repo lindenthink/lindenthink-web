@@ -10,5 +10,4 @@ declare module '*.vue' {
 
 declare module 'APlayer'
 
-declare module '@/static/linden'
 declare module '@/directives/ripple'

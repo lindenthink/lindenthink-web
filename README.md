@@ -19,7 +19,7 @@ yarn dev
 - 前端
   - Vue
   - Vite
-  - TS
+  - TS & JS
   - Less
   - ant-design-vue
 - 后端

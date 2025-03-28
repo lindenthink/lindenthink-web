@@ -29,8 +29,9 @@
       </div>
     </a-layout-sider>
 
-    <a-layout-content>
-      <a-badge-ribbon text="原创" color="blue" style="z-index: 9;">
+    <a-spin v-if="!article.id" tip="文章加载中..." />
+    <a-layout-content v-else>
+      <a-badge-ribbon :text="article.source" :color="article.source == '原创' ? 'blue' : 'orange'" style="z-index: 9;">
         <a-breadcrumb style="margin:0 20px;padding:10px 0; border-bottom:1px #f0f2f5 solid">
           <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 列表 </router-link></a-breadcrumb-item>
           <a-breadcrumb-item>正文</a-breadcrumb-item>
@@ -40,26 +41,28 @@
 
       <div class="article">
         <div class="article-head">
-          <h1 class="article-head-title">解放C盘</h1>
+          <h1 class="article-head-title">{{ article.title }}</h1>
           <div class="article-head-meta">
             <EditOutlined style="margin-right: 5px" />
-            <span>作者：Linden</span>
+            <span>作者：{{ article.author }}</span>
             <a-divider type="vertical"></a-divider>
-            <CalendarOutlined style="margin-right: 5px" /><span>发表于：2022-04-24</span><a-divider
+            <CalendarOutlined style="margin-right: 5px" /><span>发表于：{{ article.created }}</span><a-divider
               type="vertical"></a-divider>
-            <EyeOutlined style="margin-right: 5px" /><span>浏览数：202</span><a-divider type="vertical"></a-divider>
-            <LikeOutlined style="margin-right: 5px" /><span>点赞数：202</span><a-divider type="vertical"></a-divider>
+            <EyeOutlined style="margin-right: 5px" /><span>浏览数：{{ article.visitCount }}</span><a-divider
+              type="vertical"></a-divider>
+            <LikeOutlined style="margin-right: 5px" /><span>点赞数：{{ article.praiseCount }}</span><a-divider
+              type="vertical"></a-divider>
             <MessageOutlined style="margin-right: 5px" />
-            <span>评论数：20</span><br />
+            <span>评论数：{{ article.commentCount }}</span><br />
           </div>
         </div>
 
-        <AsciiDocViewer :content="asciidocContent" ref="viewerRef" />
+        <AsciiDocViewer :content="article.content" ref="viewerRef" />
 
         <div class="article-foot">
           <div style="text-align: center"></div>
           <ul class="article-foot-copyright">
-            <li><strong>本文作者：</strong>流年</li>
+            <li><strong>本文作者：</strong>{{ article.author }}</li>
             <li>
               <strong>本文链接：</strong>
               <a href="{{curUrl}}" title="解放C盘">{{ curUrl }}</a>
@@ -72,22 +75,14 @@
             </li>
           </ul>
           <div style="display: flex; justify-content: space-between">
-            <span>分类：JAVA</span>
+            <span>分类：{{ article.category }}</span>
             <div>
               标签：
-              <a-tag>
+              <a-tag v-for="tag in article.tags" :key="tag">
                 <template #icon>
                   <tag-outlined />
                 </template>
-                JAVA
-              </a-tag>
-              <a-tag>
-                <template #icon> <tag-outlined /> </template>
-                HTML
-              </a-tag>
-              <a-tag>
-                <template #icon> <tag-outlined /> </template>
-                CSS
+                {{ tag }}
               </a-tag>
             </div>
           </div>
@@ -106,19 +101,13 @@
       <Comment ref="commentRef" target="1" />
     </a-layout-content>
     <a-layout-sider>
-      <!-- <div class="fixed-praise" @click="clickPraise" :style="{ 'background-color': isPraise ? '#1890ff' : '' }">
-        <LikeOutlined class="fixed-btn-icon" ref="likeRef" />
-      </div>
-      <div class="fixed-comment" @click="clickComment">
-        <MessageOutlined class="fixed-btn-icon" />
-      </div> -->
     </a-layout-sider>
   </a-layout>
 </template>
 
-<script lang="ts" setup>
-import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue'
-// import { useRouter } from 'vue-router'
+<script setup>
+import { ref, onMounted, onUnmounted, onBeforeMount, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   CopyrightOutlined,
   LeftOutlined,
@@ -131,19 +120,22 @@ import {
   FileOutlined,
   EditOutlined,
 } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue';
 import Comment from '@/components/Comment.vue'
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
+import { getArticle } from '@/services/articleService'
 // import { TagColors, showMessage, bindTip } from '@/static/linden'
 
-defineProps({
+const props = defineProps({
   id: String
 })
 
-// const isPraise = ref(false)
+
+const article = ref({})
+const anchors = ref([])
 const curUrl = location.href
-const commentRef: any = ref()
-const viewerRef: any = ref()
-// const likeRef: any = ref()
+const commentRef = ref()
+const viewerRef = ref()
 const activeKey = ref('2')
 const series = [
   'Racing car .',
@@ -159,157 +151,28 @@ const series = [
   'Los Angeles battles huge wildfires.',
 ]
 
+onBeforeMount(async () => {  // 更早的生命周期
+  try {
+    const res = await getArticle(props.id)
+    if (res) {
+      article.value = res
+      await nextTick()  // 等待DOM更新
+      generateAnchors() // 生成目录锚点
+    } else {
+      message.warning('文章不存在')
+      useRouter().back()
+    }
+  } catch (e) {
+    message.error(e.message || '加载失败')
+  }
+})
+
 // onMounted(() => {
 //   bindTip()
 // })
 // const recommendInterval = setInterval(() => showMessage('这篇文章怎么样啊，记得点赞和评论喔(*^_^*)', 4000), 100000)
 // onUnmounted(() => clearInterval(recommendInterval))
 
-const asciidocContent = `
-= Hello, AsciiDoc!gitlab.hd123.com
-
-- https://gitlab.hd123.com/huzexiong/im-h6-doc/-/blob/master/cloud-fund/multi-batch-settle-logic.adoc[多批次结算流程]
-- https://gitlab.hd123.com/pay/pay-doc/-/blob/develop/%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/cloudfund/%E8%AF%84%E4%BC%B0/%E9%9C%80%E6%B1%82%E8%AF%84%E4%BC%B0/%E5%AD%98%E9%87%8F%E7%BD%91%E5%95%86%E5%95%86%E6%88%B7%E5%88%87%E5%A4%9A%E6%89%B9%E6%AC%A1%E8%AF%84%E4%BC%B0.adoc[存量网商商户切多批次评估]
-
-== Introduction
-This is a simple AsciiDoc example with PlantUML support and syntax highlighting.
-
-|===
-|类型|译名|用途|说明|参考
-
-|Received payment details report|来款明细| | | https://docs.adyen.com/reporting/received-payment-details-report[详情参见>>]
-|Payment accounting report|支付账户报表| | | https://docs.adyen.com/reporting/invoice-reconciliation/payment-accounting-report[详情参见>>]
-|Settlement details report|结算明细报表| | | https://docs.adyen.com/reporting/settlement-detail-report[详情参见>>]
-|Monthly invoice|月度发票| | | https://docs.adyen.com/reporting/invoice-reconciliation/payment-processing-invoice[详情参见>>]
-|===
-
-== PlantUML Diagram
-
-[plantuml]
-----
-@startuml
-Alice -> Bob: Hello
-Bob --> Alice: Hi!
-@enduml
-----
-
-== Code Example
-
-[source,java]
-----
-@ApiModel("总部资金账户类型")
-public enum HqAccountAttributeEnum {
-    HQ('普通账户', true, "SH"),
-    HQ_PAYER('支出账户', true, "00"),
-    HQ_TAKEOUT('外卖结算专户', true, "SH"),
-    HQ_FEEBACK('营销补贴专户', true, "00"),
-    HQ_BANK_CRO_ACCOUNT('银企直连账户', false, "00");
-
-    HqAccountAttributeEnum(String desc, boolean needCreate, String memberProperty) {
-        this.desc = desc;
-        this.needCreate = needCreate;
-        this.memberProperty = memberProperty;
-    }
-    private String desc;
-    private boolean needCreate;
-    private String memberProperty;
-}
-----
-
-[source,python]
-----
-# 此处str()的作用：把数值变成了字符串
-a = str(input("输入一个数字："))
-print(a)
-b = str(input("输入一个数字："))
-print(b)
-print("打印两个数字相加：%s " % (a + "+" + b))
-----
-
-[plantuml]
-----
-@startuml
-title 多批次结算处理状态模式类图
-skin rose
-actor 商户
-participant 云资金
-participant 平安见证宝
-participant 平安云收款
-
-autonumber 1.1
-==开户==
-商户->云资金++:进件申请\\nfundaccount/open
-云资金->平安见证宝++:注册开户\\n（KFEJZB6248）
-return 开户结果\\n（子账户账号）
-
-return 申请结果
-loop 开户异常
-    云资金->平安见证宝++:查询会员子账号\\n（KFEJZB6092）
-    return 开户结果\\n（子账户账号）
-end
-云资金->平安见证宝++: 登记行为记录\\n（KFEJZB6244）
-return 登记结果
-alt 平安收单
-    云资金->平安云收款++:门店商户进件\\n（3.1）
-    return 申请结果
-end
-==绑卡==
-autonumber 2.1
-商户->云资金++:绑定提现账户\\nfundaccount/bankcard/bind
-云资金->平安见证宝++:操作绑卡\\n（KFEJZB6240）
-平安见证宝->平安见证宝:小额打款
-平安见证宝-->商户:短信通知客户打款金额+指令
-return 操作结果
-return 操作结果
-商户->云资金++:输入打款金额+指令\\nfundaccount/bankcard/verify
-云资金->平安见证宝++: 回填打款金额+指令\\n（KFEJZB6241）
-return 校验结果
-return 绑定结果
-@enduml
-----
-
-
-[plantuml]
-----
-@startuml
-title 多批次结算处理状态模式类图
-
-abstract class State {
-    +void handle(Contex context)
-}
-
-class InitialState {
-    +void handle(Contex context)
-}
-
-class ProcessingState {
-    +void handle(Contex context)
-}
-
-class CompletedState {
-    +void handle(Contex context)
-}
-
-class Context {
-    -State state
-    +void setState(State state)
-    +void request()
-}
-
-Context *-- State
-Context o-- "1" InitialState
-Context o-- "1" ProcessingState
-Context o-- "1" CompletedState
-
-InitialState --|> State
-ProcessingState --|> State
-CompletedState --|> State
-
-@enduml
-----
-
-
-`
 
 // const clickPraise = () => {
 //   isPraise.value = !isPraise.value
@@ -318,13 +181,7 @@ CompletedState --|> State
 //   }
 // }
 
-const clickComment = () => {
-  commentRef.value.scrollToReply()
-}
-
-// 构造目录锚点
-const anchors = ref<{ id: string; title: string; href: string; tagName: string; hasChildren: boolean; children: any[] }[]>([])
-nextTick(() => {
+function generateAnchors() {
   let hList = viewerRef.value.$el.querySelectorAll('h1,h2,h3')
   let el,
     nextEl,
@@ -334,7 +191,7 @@ nextTick(() => {
     el = hList[i]
     nextEl = hList.length === i + 1 ? null : hList[i + 1]
     el.id = 'toc-' + (i + 1)
-    let anchor: any = {
+    let anchor = {
       id: el.id,
       title: el.innerText.trim(),
       href: '#' + el.id,
@@ -359,7 +216,7 @@ nextTick(() => {
       }
     }
   }
-})
+}
 </script>
 
 
