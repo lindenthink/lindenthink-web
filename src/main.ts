@@ -7,9 +7,4 @@ import { createPinia } from 'pinia'
 
 import 'ant-design-vue/dist/antd.css'
 
-const app = createApp(App)
-    .use(Antd)
-    .use(router)
-    .use(createPinia())
-    .directive('ripple', vRipple)
-    .mount('#app')
+createApp(App).use(Antd).use(router).use(createPinia()).directive('ripple', vRipple).mount('#app')

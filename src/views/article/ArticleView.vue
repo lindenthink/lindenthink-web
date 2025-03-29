@@ -2,7 +2,7 @@
   <a-layout>
     <a-layout-sider>
       <div class="article-toc">
-        <a-tabs v-model:activeKey="activeKey" centered>
+        <a-tabs v-model:active-key="activeKey" centered>
           <a-tab-pane key="1" tab="系列">
             <div class="article-toc-content">
               <div v-for="(item, index) in series" :key="index" style="border-bottom: 1px #f0f2f5 solid">
@@ -12,13 +12,27 @@
           </a-tab-pane>
           <a-tab-pane key="2" tab="目录">
             <div class="article-toc-content">
-              <a-anchor :affix="false" :offsetTop="40" showInkInFixed>
-                <a-anchor-link :href="anchor.href" :title="anchor.title" :key="index"
-                  v-for="(anchor, index) in anchors">
-                  <a-anchor-link :href="anchor2.href" :title="anchor2.title" :key="index2"
-                    v-for="(anchor2, index2) in anchor.children" v-if="anchor.hasChildren">
-                    <a-anchor-link :href="anchor3.href" :title="anchor3.title" :key="index3"
-                      v-for="(anchor3, index3) in anchor2.children" v-if="anchor2.hasChildren">
+              <a-anchor :affix="false" :offset-top="40" show-ink-in-fixed>
+                <a-anchor-link
+                  v-for="(anchor, index) in anchors"
+                  :key="index"
+                  :href="anchor.href"
+                  :title="anchor.title"
+                >
+                  <a-anchor-link
+                    v-for="(anchor2, index2) in anchor.children"
+                    v-if="anchor.hasChildren"
+                    :key="index2"
+                    :href="anchor2.href"
+                    :title="anchor2.title"
+                  >
+                    <a-anchor-link
+                      v-for="(anchor3, index3) in anchor2.children"
+                      v-if="anchor2.hasChildren"
+                      :key="index3"
+                      :href="anchor3.href"
+                      :title="anchor3.title"
+                    >
                     </a-anchor-link>
                   </a-anchor-link>
                 </a-anchor-link>
@@ -31,13 +45,12 @@
 
     <a-spin v-if="!article.id" tip="文章加载中..." />
     <a-layout-content v-else>
-      <a-badge-ribbon :text="article.source" :color="article.source == '原创' ? 'blue' : 'orange'" style="z-index: 9;">
-        <a-breadcrumb style="margin:0 20px;padding:10px 0; border-bottom:1px #f0f2f5 solid">
+      <a-badge-ribbon :text="article.source" :color="article.source == '原创' ? 'blue' : 'orange'" style="z-index: 9">
+        <a-breadcrumb style="margin: 0 20px; padding: 10px 0; border-bottom: 1px #f0f2f5 solid">
           <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 列表 </router-link></a-breadcrumb-item>
           <a-breadcrumb-item>正文</a-breadcrumb-item>
         </a-breadcrumb>
       </a-badge-ribbon>
-
 
       <div class="article">
         <div class="article-head">
@@ -46,18 +59,19 @@
             <EditOutlined style="margin-right: 5px" />
             <span>作者：{{ article.author }}</span>
             <a-divider type="vertical"></a-divider>
-            <CalendarOutlined style="margin-right: 5px" /><span>发表于：{{ article.created }}</span><a-divider
-              type="vertical"></a-divider>
-            <EyeOutlined style="margin-right: 5px" /><span>浏览数：{{ article.visitCount }}</span><a-divider
-              type="vertical"></a-divider>
-            <LikeOutlined style="margin-right: 5px" /><span>点赞数：{{ article.praiseCount }}</span><a-divider
-              type="vertical"></a-divider>
+            <CalendarOutlined style="margin-right: 5px" /><span>发表于：{{ article.created }}</span
+            ><a-divider type="vertical"></a-divider> <EyeOutlined style="margin-right: 5px" /><span
+              >浏览数：{{ article.visitCount }}</span
+            ><a-divider type="vertical"></a-divider> <LikeOutlined style="margin-right: 5px" /><span
+              >点赞数：{{ article.praiseCount }}</span
+            ><a-divider type="vertical"></a-divider>
             <MessageOutlined style="margin-right: 5px" />
-            <span>评论数：{{ article.commentCount }}</span><br />
+            <span>评论数：{{ article.commentCount }}</span
+            ><br />
           </div>
         </div>
 
-        <AsciiDocViewer :content="article.content" ref="viewerRef" />
+        <AsciiDocViewer ref="viewerRef" :content="article.content" />
 
         <div class="article-foot">
           <div style="text-align: center"></div>
@@ -69,8 +83,9 @@
             </li>
             <li>
               <strong>版权声明：</strong>本博客所有文章除特别声明外，均采用
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" rel="noopener"
-                target="_blank"><copyright-outlined />BY-NC-SA</a>
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" rel="noopener" target="_blank"
+                ><copyright-outlined />BY-NC-SA</a
+              >
               许可协议，转载请注明出处！
             </li>
           </ul>
@@ -100,13 +115,13 @@
 
       <Comment ref="commentRef" target="1" />
     </a-layout-content>
-    <a-layout-sider>
-    </a-layout-sider>
+
+    <a-layout-sider> </a-layout-sider>
   </a-layout>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, onBeforeMount, nextTick } from 'vue'
+import { ref, onBeforeMount, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   CopyrightOutlined,
@@ -120,17 +135,17 @@ import {
   FileOutlined,
   EditOutlined,
 } from '@ant-design/icons-vue'
-import { message } from 'ant-design-vue';
+import { message } from 'ant-design-vue'
 import Comment from '@/components/Comment.vue'
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 import { getArticle } from '@/services/articleService'
 // import { TagColors, showMessage, bindTip } from '@/static/linden'
 
 const props = defineProps({
-  id: String
+  id: String,
 })
 
-
+const router = useRouter()
 const article = ref({})
 const anchors = ref([])
 const curUrl = location.href
@@ -151,19 +166,21 @@ const series = [
   'Los Angeles battles huge wildfires.',
 ]
 
-onBeforeMount(async () => {  // 更早的生命周期
+onBeforeMount(async () => {
+  // 更早的生命周期
   try {
     const res = await getArticle(props.id)
     if (res) {
       article.value = res
-      await nextTick()  // 等待DOM更新
+      await nextTick() // 等待DOM更新
       generateAnchors() // 生成目录锚点
     } else {
       message.warning('文章不存在')
-      useRouter().back()
+      router.back()
     }
   } catch (e) {
     message.error(e.message || '加载失败')
+    router.back()
   }
 })
 
@@ -173,7 +190,6 @@ onBeforeMount(async () => {  // 更早的生命周期
 // const recommendInterval = setInterval(() => showMessage('这篇文章怎么样啊，记得点赞和评论喔(*^_^*)', 4000), 100000)
 // onUnmounted(() => clearInterval(recommendInterval))
 
-
 // const clickPraise = () => {
 //   isPraise.value = !isPraise.value
 //   if (isPraise.value) {
@@ -182,16 +198,15 @@ onBeforeMount(async () => {  // 更早的生命周期
 // }
 
 function generateAnchors() {
-  let hList = viewerRef.value.$el.querySelectorAll('h1,h2,h3')
-  let el,
-    nextEl,
-    parentAnchors = [], // 正在处理的父锚点集合
-    parentAnchor
+  const hList = viewerRef.value.$el.querySelectorAll('h1,h2,h3')
+  // 正在处理的父锚点集合
+  const parentAnchors = []
+  let el, nextEl, parentAnchor
   for (let i = 0; i < hList.length; i++) {
     el = hList[i]
     nextEl = hList.length === i + 1 ? null : hList[i + 1]
     el.id = 'toc-' + (i + 1)
-    let anchor = {
+    const anchor = {
       id: el.id,
       title: el.innerText.trim(),
       href: '#' + el.id,
@@ -208,10 +223,7 @@ function generateAnchors() {
     if (anchor.hasChildren) {
       parentAnchors.push(anchor)
     } else {
-      while (true) {
-        if (parentAnchors.length === 0 || parentAnchor.tagName < nextEl?.tagName) {
-          break
-        }
+      while (parentAnchors.length > 0 && parentAnchor.tagName > nextEl?.tagName) {
         parentAnchors.pop()
       }
     }
@@ -219,12 +231,10 @@ function generateAnchors() {
 }
 </script>
 
-
 <style lang="less" scoped>
 .article {
   background-color: white;
   margin-top: 5px;
-  padding: 10px;
 }
 
 .article-head {

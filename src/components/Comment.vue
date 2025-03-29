@@ -7,7 +7,7 @@
       :data-source="data"
       :pagination="pagination"
     >
-      <template #renderItem="{ item }" class="comment">
+      <template #renderItem="{ item }">
         <a-list-item>
           <a-comment :author="item.author" :avatar="item.avatar">
             <template #actions>
@@ -31,46 +31,52 @@
         <a-form ref="formRef" :model="user" @finish="handleSubmit">
           <div class="user-info">
             <a-form-item :name="'name'" :rules="[{ required: true, message: '昵称不能为空' }]">
-              <a-input v-model:value="user.name" placeholder="昵称" ref="usernameRef">
-                <template #prefix><UserOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
+              <a-input ref="usernameRef" v-model:value="user.name" placeholder="昵称">
+                <template #prefix>
+                  <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                </template>
               </a-input>
             </a-form-item>
 
             <a-form-item :name="'link'" :rules="[{ type: 'url', message: '链接格式不正确' }]">
               <a-input v-model:value="user.link" placeholder="链接">
-                <template #prefix><LinkOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
+                <template #prefix>
+                  <LinkOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                </template>
               </a-input>
             </a-form-item>
 
             <a-form-item :name="'email'" :rules="[{ type: 'email', message: '邮箱格式不正确' }]">
               <a-input v-model:value="user.email" placeholder="邮箱">
-                <template #prefix><MailOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
+                <template #prefix>
+                  <MailOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                </template>
               </a-input>
             </a-form-item>
           </div>
           <transition name="fade">
-          <div class="comment-quote" v-if="isShowQuote === true">
-            <a-comment :author="quoteItem.author" :avatar="quoteItem.avatar">
-              <template #content> {{ quoteItem.content }} </template>
-              <template #datetime>
-                <a-tooltip :title="date2.format('YYYY-MM-DD HH:mm:ss')">
-                  <span>{{ quoteItem.datetime.fromNow() }}</span>
-                </a-tooltip>
-              </template>
-              <template #actions>
-                <span @click="isShowQuote = false">取消回复</span>
-              </template>
-            </a-comment>
-          </div>
-        </transition>
+            <div v-if="isShowQuote === true" class="comment-quote">
+              <a-comment :author="quoteItem.author" :avatar="quoteItem.avatar">
+                <template #content> {{ quoteItem.content }} </template>
+                <template #datetime>
+                  <a-tooltip :title="date2.format('YYYY-MM-DD HH:mm:ss')">
+                    <span>{{ quoteItem.datetime.fromNow() }}</span>
+                  </a-tooltip>
+                </template>
+                <template #actions>
+                  <span @click="isShowQuote = false">取消回复</span>
+                </template>
+              </a-comment>
+            </div>
+          </transition>
           <a-form-item :rules="[{ required: true, message: '回复内容不能为空' }]">
             <a-textarea
+              ref="textareaRef"
               v-model:value="commentContent"
               :rows="4"
               show-count
               :maxlength="200"
               allow-clear
-              ref="textareaRef"
               placeholder="请输入回复内容"
             />
           </a-form-item>
@@ -83,22 +89,15 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+<script setup>
+import { ref, reactive } from 'vue'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
-import type { FormInstance } from 'ant-design-vue'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import {
-  UserOutlined,
-  LinkOutlined,
-  MailOutlined,
-} from '@ant-design/icons-vue'
+import { UserOutlined, LinkOutlined, MailOutlined } from '@ant-design/icons-vue'
 
 const props = defineProps({
-  target: {
-    type: String,
-  },
+  owner: String,
 })
 
 dayjs.locale('zh-cn')
@@ -124,19 +123,19 @@ const data = [
 ]
 
 const date2 = dayjs().subtract(1, 'days')
-const quoteItem = reactive<any>({})
+const quoteItem = reactive({})
 const textareaRef = ref()
-const commentContent = ref<string>('')
+const commentContent = ref('')
 const submitting = false
-const formRef = ref<FormInstance>()
-const isShowQuote = ref<boolean>(false)
+const formRef = ref()
+const isShowQuote = ref(false)
 
 const handleSubmit = () => {
   console.log(user)
-  formRef.value!.validateFields()
+  formRef.value.validateFields()
 }
 const pagination = {
-  onChange: (page: number) => {
+  onChange: (page) => {
     console.log(page)
   },
   showQuickJumper: true,
@@ -152,7 +151,7 @@ const user = reactive({
   avatar: '',
 })
 
-const clickReply = (item: any) => {
+const clickReply = (item) => {
   quoteItem.author = item.author
   quoteItem.avatar = item.avatar
   quoteItem.content = item.content
@@ -175,12 +174,14 @@ defineExpose({ scrollToReply })
   padding-right: 10px;
   border: 1px dotted rgb(222, 222, 222);
 }
+
 .comment {
   border-top: 10px solid #f0f2f5;
   z-index: 9;
   padding: 2rem 2.5rem;
   margin-top: 10px;
   background-color: white;
+
   .comment-quote {
     display: flex;
     justify-content: space-between;
@@ -190,6 +191,7 @@ defineExpose({ scrollToReply })
     margin-bottom: 5px;
   }
 }
+
 .user-info {
   display: flex;
   justify-content: space-between;

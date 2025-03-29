@@ -15,7 +15,6 @@ export default function useApiFetch() {
 
   // 请求拦截
   const beforeRequest = (url, options) => {
-    console.log('[Request]', url)
     // 可在此处添加 token 等全局参数
     return { url, options }
   }

@@ -42,11 +42,10 @@
   </a-list>
 </template>
 
-<script lang="ts" setup>
-import { ref } from 'vue'
+<script setup>
 import { EyeOutlined, LikeOutlined, MessageOutlined, CalendarOutlined, EditOutlined } from '@ant-design/icons-vue'
 
-const listData: Record<string, any>[] = []
+const listData = []
 
 for (let i = 0; i < 50; i++) {
   listData.push({
@@ -62,13 +61,12 @@ for (let i = 0; i < 50; i++) {
   })
 }
 const pagination = {
-  onChange: (page: number) => {
+  onChange: (page) => {
     console.log(page)
   },
-  showQuickJumper: true,
+  // showQuickJumper: true,
   pageSize: 5,
 }
-
 </script>
 
 <style scoped lang="less">

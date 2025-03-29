@@ -1,24 +1,27 @@
-const baseUrl = '/api/articles';
+const baseUrl = '/api/articles'
+
 export default [
-    {
-        url: `${baseUrl}/:id`,
-        method: 'get',
-        response: (request, params) => {
-            const { id } = request.query
-            return {
-                code: 0,
-                data: {
-                    id,
-                    title: 'Article title',
-                    created: '2021-01-01',
-                    author: 'admin',
-                    category: '后端开发',
-                    source: '原创',
-                    tags: ['Java', 'SpringBoot'],
-                    visitCount: 100,
-                    commentCount: 10,
-                    praiseCount: 20,
-                    content: `
+  {
+    url: `${baseUrl}/:id`,
+    method: 'get',
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    response: (request, params) => {
+      const { id } = request.query
+      return {
+        code: 0,
+        message: 'success',
+        data: {
+          id,
+          title: `标题${id}`,
+          created: '2021-01-01',
+          author: 'admin',
+          category: '后端开发',
+          source: '原创',
+          tags: ['Java', 'SpringBoot'],
+          visitCount: 100,
+          commentCount: 10,
+          praiseCount: 20,
+          content: `
 = Hello, AsciiDoc!gitlab.hd123.com
 
 - https://gitlab.hd123.com/huzexiong/im-h6-doc/-/blob/master/cloud-fund/multi-batch-settle-logic.adoc[多批次结算流程]
@@ -68,103 +71,37 @@ public enum HqAccountAttributeEnum {
     private String memberProperty;
 }
 ----
-
-[source,python]
-----
-# 此处str()的作用：把数值变成了字符串
-a = str(input("输入一个数字："))
-print(a)
-b = str(input("输入一个数字："))
-print(b)
-print("打印两个数字相加：%s " % (a + "+" + b))
-----
-
-[plantuml]
-----
-@startuml
-title 多批次结算处理状态模式类图
-skin rose
-actor 商户
-participant 云资金
-participant 平安见证宝
-participant 平安云收款
-
-autonumber 1.1
-==开户==
-商户->云资金++:进件申请\\nfundaccount/open
-云资金->平安见证宝++:注册开户\\n（KFEJZB6248）
-return 开户结果\\n（子账户账号）
-
-return 申请结果
-loop 开户异常
-    云资金->平安见证宝++:查询会员子账号\\n（KFEJZB6092）
-    return 开户结果\\n（子账户账号）
-end
-云资金->平安见证宝++: 登记行为记录\\n（KFEJZB6244）
-return 登记结果
-alt 平安收单
-    云资金->平安云收款++:门店商户进件\\n（3.1）
-    return 申请结果
-end
-==绑卡==
-autonumber 2.1
-商户->云资金++:绑定提现账户\\nfundaccount/bankcard/bind
-云资金->平安见证宝++:操作绑卡\\n（KFEJZB6240）
-平安见证宝->平安见证宝:小额打款
-平安见证宝-->商户:短信通知客户打款金额+指令
-return 操作结果
-return 操作结果
-商户->云资金++:输入打款金额+指令\\nfundaccount/bankcard/verify
-云资金->平安见证宝++: 回填打款金额+指令\\n（KFEJZB6241）
-return 校验结果
-return 绑定结果
-@enduml
-----
-
-
-[plantuml]
-----
-@startuml
-title 多批次结算处理状态模式类图
-
-abstract class State {
-    +void handle(Contex context)
-}
-
-class InitialState {
-    +void handle(Contex context)
-}
-
-class ProcessingState {
-    +void handle(Contex context)
-}
-
-class CompletedState {
-    +void handle(Contex context)
-}
-
-class Context {
-    -State state
-    +void setState(State state)
-    +void request()
-}
-
-Context *-- State
-Context o-- "1" InitialState
-Context o-- "1" ProcessingState
-Context o-- "1" CompletedState
-
-InitialState --|> State
-ProcessingState --|> State
-CompletedState --|> State
-
-@enduml
-----
-
-
 `,
-                },
-            };
         },
+      }
     },
+  },
+  {
+    url: baseUrl,
+    method: 'post',
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    response: (request, params) => {
+      console.log('request', request)
+      const listData = []
+      for (let i = 0; i < 50; i++) {
+        listData.push({
+          id: i,
+          title: `ant design vue part ${i}`,
+          avatar: `/logo.jpg`,
+          cover: `/logo.jpg`,
+          description:
+            'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
+          createTime: '2024-05-20',
+          visitCount: i * 10,
+          phaiseCount: i * 2,
+          replyCount: i * 5,
+        })
+      }
+      return {
+        code: 0,
+        message: 'success',
+        data: listData,
+      }
+    },
+  },
 ]

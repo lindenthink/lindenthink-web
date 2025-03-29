@@ -8,13 +8,11 @@ import asciidoctor from '@asciidoctor/core'
 import kroki from 'asciidoctor-kroki'
 import hljs from 'highlight.js'
 /**
- * 参考：https://github.com/highlightjs/highlight.js/tree/main/src/styles 
+ * 参考：https://github.com/highlightjs/highlight.js/tree/main/src/styles
  * 暗色：vs2015.css github-dark.css atom-one-dark.css night-owl.css
  * 浅色: default.css docco.css foundation.css panda-syntax-light.css
  */
-import 'highlight.js/styles/vs2015.css' 
-
-
+import 'highlight.js/styles/vs2015.css'
 
 // 定义 props
 const props = defineProps({
@@ -44,7 +42,7 @@ const renderContent = () => {
       return
     }
     // 过滤掉不支持的关键字
-    const filteredContent = props.content.replace(/opts=\"inline\"/g, '')
+    const filteredContent = props.content.replace(/opts="inline"/g, '')
     renderedContent.value = asciidoc.convert(filteredContent, {
       safe: 'safe', // 安全模式
       attributes: {
@@ -65,7 +63,7 @@ const renderContent = () => {
         }
 
         // 高亮代码
-        hljs.highlightBlock(block)
+        hljs.highlightElement(block)
 
         // 添加行号，先暂存当前文本内容供复制使用
         const textContent = block.textContent
@@ -137,7 +135,7 @@ onMounted(() => {
 .asciidoc-viewer h5,
 .asciidoc-viewer h6 {
   color: #2c3e50;
-  margin-top: 1.5em;
+  margin-top: 1em;
   margin-bottom: 0.5em;
   font-weight: 600;
 }
@@ -189,11 +187,16 @@ onMounted(() => {
 }
 
 .asciidoc-viewer p code {
-  color: #d63384; /* 代码文本颜色 */
-  background-color: #eaecf1; /* 代码背景颜色 */
-  padding: 2px 4px; /* 内边距 */
-  border-radius: 4px; /* 圆角 */
-  font-family: 'Courier New', Courier, monospace; /* 字体 */
+  color: #d63384;
+  /* 代码文本颜色 */
+  background-color: #eaecf1;
+  /* 代码背景颜色 */
+  padding: 2px 4px;
+  /* 内边距 */
+  border-radius: 4px;
+  /* 圆角 */
+  font-family: 'Courier New', Courier, monospace;
+  /* 字体 */
 }
 
 .line-number {
@@ -239,6 +242,7 @@ onMounted(() => {
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.875em;
+
   &:hover {
     background-color: #6c757d;
   }
@@ -295,5 +299,4 @@ onMounted(() => {
   max-width: 100%;
   height: auto;
 }
-
 </style>
