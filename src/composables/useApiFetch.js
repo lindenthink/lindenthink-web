@@ -15,7 +15,17 @@ export default function useApiFetch() {
 
   // 请求拦截
   const beforeRequest = (url, options) => {
-    // 可在此处添加 token 等全局参数
+    if (!options) {
+      options = {}
+    }
+    options.headers = { 'Content-Type': 'application/json' }
+    const token = localStorage.getItem('token')
+    if (token) {
+      options.headers = {
+        ...options.headers,
+        Authorization: `Bearer ${token}`,
+      }
+    }
     return { url, options }
   }
 
@@ -25,7 +35,7 @@ export default function useApiFetch() {
     if (response.code > 0) {
       throw new Error(response.message)
     }
-    return response.data
+    return response
   }
 
   return async (url, options) => {
@@ -48,7 +58,7 @@ function handleError(error) {
   // 根据状态码处理
   switch (error.response?.status) {
     case 401:
-      window.location.href = '/login'  // 跳转登录
+      window.location.href = '/login' // 跳转登录
       break
     case 404:
       alert('请求资源不存在')

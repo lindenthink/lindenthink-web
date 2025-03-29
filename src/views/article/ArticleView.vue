@@ -171,7 +171,7 @@ onBeforeMount(async () => {
   try {
     const res = await getArticle(props.id)
     if (res) {
-      article.value = res
+      article.value = res.data
       await nextTick() // 等待DOM更新
       generateAnchors() // 生成目录锚点
     } else {
@@ -179,6 +179,7 @@ onBeforeMount(async () => {
       router.back()
     }
   } catch (e) {
+    console.error(e)
     message.error(e.message || '加载失败')
     router.back()
   }

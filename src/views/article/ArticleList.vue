@@ -1,5 +1,5 @@
 <template>
-  <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="listData">
+  <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="articles" :loading="loading">
     <template #renderItem="{ item }">
       <a-list-item key="item.title">
         <a-list-item-meta>
@@ -23,7 +23,7 @@
         <template #actions>
           <span>
             <EyeOutlined style="margin-right: 8px" />
-            {{ item.starCount }}
+            {{ item.visitCount }}
           </span>
           <span>
             <LikeOutlined style="margin-right: 8px" />
@@ -44,28 +44,37 @@
 
 <script setup>
 import { EyeOutlined, LikeOutlined, MessageOutlined, CalendarOutlined, EditOutlined } from '@ant-design/icons-vue'
+import { ref, onBeforeMount } from 'vue'
+import { getArticles } from '@/services/articleService'
 
-const listData = []
+const articles = ref([])
+const loading = ref(false)
 
-for (let i = 0; i < 50; i++) {
-  listData.push({
-    id: i,
-    title: `ant design vue part ${i}`,
-    avatar: `/logo.jpg`,
-    description:
-      'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-    createTime: '2022-05-20',
-    starCount: 300,
-    phaiseCount: 120,
-    replyCount: 5,
-  })
-}
 const pagination = {
-  onChange: (page) => {
-    console.log(page)
+  onChange: async (page) => {
+    handlePageChange(page)
   },
-  // showQuickJumper: true,
   pageSize: 5,
+}
+
+onBeforeMount(async () => {
+  handlePageChange(1)
+})
+
+function handlePageChange(page) {
+  loading.value = true
+  getArticles({ page, pageSize: pagination.pageSize })
+    .then((res) => {
+      articles.value = res.data
+      pagination.total = res.total
+    })
+    .catch((e) => {
+      console.error(e)
+      message.error(e.message || '加载失败')
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 </script>
 

@@ -6,7 +6,9 @@ export async function getArticle(id) {
 }
 
 export async function getArticles(req) {
-  console.log(req)
   const fetch = useApiFetch()
-  return await fetch('/articles')
+  return await fetch('/articles', {
+    method: 'POST',
+    body: JSON.stringify(req),
+  })
 }

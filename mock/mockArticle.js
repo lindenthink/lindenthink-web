@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const baseUrl = '/api/articles'
 
 export default [
   {
     url: `${baseUrl}/:id`,
     method: 'get',
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     response: (request, params) => {
       const { id } = request.query
       return {
@@ -79,11 +79,10 @@ public enum HqAccountAttributeEnum {
   {
     url: baseUrl,
     method: 'post',
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     response: (request, params) => {
-      console.log('request', request)
+      const { page, pageSize } = request.body
       const listData = []
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 48; i++) {
         listData.push({
           id: i,
           title: `ant design vue part ${i}`,
@@ -100,7 +99,11 @@ public enum HqAccountAttributeEnum {
       return {
         code: 0,
         message: 'success',
-        data: listData,
+        total: listData.length,
+        data: listData.slice(
+          (page - 1) * pageSize,
+          page * pageSize > listData.length ? listData.length : page * pageSize,
+        ),
       }
     },
   },
