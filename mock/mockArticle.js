@@ -85,11 +85,11 @@ public enum HqAccountAttributeEnum {
       for (let i = 0; i < 48; i++) {
         listData.push({
           id: i,
+          author: '菩提思',
           title: `ant design vue part ${i}`,
           avatar: `/logo.jpg`,
           cover: `/logo.jpg`,
-          description:
-            'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
+          outline: 'ant design vue part',
           createTime: '2024-05-20',
           visitCount: i * 10,
           phaiseCount: i * 2,

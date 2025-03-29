@@ -6,7 +6,7 @@
           <template #description>
             <span>
               <EditOutlined style="margin-right: 8px" />
-              菩提思
+              {{ item.author }}
             </span>
             <a-divider type="vertical"></a-divider>
             <span>
@@ -19,7 +19,7 @@
           </template>
           <template #avatar><a-avatar :src="item.avatar" /></template>
         </a-list-item-meta>
-        {{ item.description }}
+        {{ item.outline }}
         <template #actions>
           <span>
             <EyeOutlined style="margin-right: 8px" />
@@ -35,7 +35,7 @@
           </span>
         </template>
         <template #extra>
-          <img width="64" alt="logo" src="/logo.jpg" />
+          <img width="64" alt="logo" :src="item.cover" />
         </template>
       </a-list-item>
     </template>
@@ -45,6 +45,7 @@
 <script setup>
 import { EyeOutlined, LikeOutlined, MessageOutlined, CalendarOutlined, EditOutlined } from '@ant-design/icons-vue'
 import { ref, onBeforeMount } from 'vue'
+import { message } from 'ant-design-vue'
 import { getArticles } from '@/services/articleService'
 
 const articles = ref([])
