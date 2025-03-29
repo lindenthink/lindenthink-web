@@ -1,7 +1,7 @@
 <template>
   <a-layout>
     <a-layout-sider>
-      <div class="article-toc">
+      <div v-if="anchors.length" class="article-toc">
         <a-tabs v-model:active-key="activeKey" centered>
           <a-tab-pane key="1" tab="系列">
             <div class="article-toc-content">
