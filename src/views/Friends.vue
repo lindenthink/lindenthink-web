@@ -63,7 +63,7 @@
           </template>
         </a-list>
       </div>
-      <Comment owner="1" />
+      <Comment owner="2" />
     </a-layout-content>
     <a-layout-sider></a-layout-sider>
   </a-layout>

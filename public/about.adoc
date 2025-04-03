@@ -1,0 +1,30 @@
+
+= 关于本站
+
+[.quote]
+「代码即诗，架构如画」本平台提供各种常用在线工具，同时支持构建个人知识库，为您提供一站式服务！
+
+== 演进历程
+[.timeline]
+2019-06:: 采用 Hexo 搭建初始博客
+2023-08:: 实现 Vue3 迁移
+2024-05:: 从Markdown 迁移至 AsciiDoc
+2025-02:: 增加各种在线工具
+
+== 技术架构
+[cols="1,3"]
+|===
+| 前端 | Vue3 + Vite + Pinia + Ant Design Vue
+| 后端 | Spring Boot + MySQL
+| 工具链 | GitHub Actions + Docker
+|===
+
+== 特别致谢
+[horizontal]
+link:https://antdv.com/[Ant Design Vue]:: 提供企业级 UI 组件
+link:https://hanlp.com/[HanLP]:: 中文自然语言处理支持
+link:https://highlightjs.org/[highlight.js]:: 代码高亮解决方案
+
+== 未来规划
+* 实现 `AI\` 辅助写作功能
+* 开发移动端适配版本

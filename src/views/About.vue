@@ -2,8 +2,8 @@
   <a-layout>
     <a-layout-sider></a-layout-sider>
     <a-layout-content>
-      <AsciiDocViewer :content="asciidocContent" />
-      <Comment ref="commentRef" target="1" />
+      <AsciiDocViewer :content="content" />
+      <Comment ref="commentRef" owner="1" />
     </a-layout-content>
     <a-layout-sider></a-layout-sider>
   </a-layout>
@@ -13,65 +13,38 @@
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 import Comment from '@/components/Comment.vue'
 
-
-const asciidocContent = `
-= 关于我
-
-一个有几年经验的后端开发人员，有着远大的理想抱负但总三天打鱼两天晒网，平凡缺不甘于平凡。每天在和自己做抗争，不想这么虚度光阴，希望自己的人生是充实的。  
-
-喜欢古风，尤其痴迷优美的诗句和歌曲，陶醉其中。为生活奔波忙碌我们，偶尔也要停下脚步欣赏沿途的美好，对未来充满期待脚步才会更加轻快。
+const content = `
 
 = 关于本站
-“知识有两种，一种是你知道的，另一种是你知道在哪里能找到的”，记录博客恰好就是一个整理知识的过程。
 
-开发这个网站之前已经摸索了很长一段时间，对比了很多博客框架后一度认为 \`Hexo\` 满足了我的需要。为此花了很多时间和精力去补充和调整，也在基于Hexo实现的博客网站上写了几篇文章。
+告别切换繁琐！常用工具 + 个人知识库无缝协同，让效率翻倍。
 
-但用了一段时间之后发现静态网站很难扩展而且，所以决定自己来实现个人网站。做起来还是挺难的，前后花了很长时间去搜索相关的实现。过程中碰上Vue3发布就试着用了下，但可参考的文档还比较少，不少概念理解起来比较困难就搁置了一段时间。
+== 演进历程
+[timeline]
+2019-06:: 采用 Hexo 搭建初始博客
+2023-08:: 实现 Vue3 迁移
+2024-05:: 从Markdown 迁移至 AsciiDoc
+2025-02:: 增加各种在线工具
 
-自己实现的念想一直没断过，过了一段事件又拾起来，此时vue3的文档比较全了而且很多框架也都进行升级和更新，因此又开始着手准备。那时为了是实现某个功能每天查资料或者学习到很晚，随着模块很功能的逐渐完善，越来越有成就感，这也是我坚持这么久的原因。
-网站还在不断完善中，希望自己能够更加有动力去学习和记录，也希望能给他人带来些许的参考和帮助。
+== 技术架构
+[cols="1,3"]
+|===
+| 前端 | Vue3 + Vite + Pinia + Ant Design Vue
+| 后端 | Spring Boot + MySQL
+| 工具链 | GitHub Actions + Docker
+|===
 
-努力永远不会太迟！
+== 特别致谢
+link:https://antdv.com/[Ant Design Vue]:: 提供企业级 UI 组件
+link:https://hanlp.com/[HanLP]:: 中文自然语言处理支持
+link:https://highlightjs.org/[highlight.js]:: 代码高亮解决方案
 
-[plantuml,opts="inline"]
-----
-@startmindmap
-* 资金汇总账户/结算专户
-** 功能子台账
-*** 挂账
-*** 利息
-*** 手续费
-** 商户子台账
-*** 门店
-*** 供应商
-*** 预付资金
-*** 营销资金
-@endmindmap
-----
+== 未来规划
+* [ ] 实现 \`AI\` 辅助写作功能
+* [ ] 开发移动端适配版本
 
-= 感谢
-网站的建设离不开很多开源框架以及API等，在这里特别感谢：
-
-* vue3
-** https://router.vuejs.org/
-** https://cn.vitejs.dev/[vite]
-** https://pinia.vuejs.org/zh/core-concepts[Pinia]
-** https://vueuse.nodejs.cn/[vueuse]
-* https://www.typescriptlang.org/zh/[typescript]
-* https://lesscss.com.cn/[less]
-* https://yarn.bootcss.com/[yarn]
-// * https://aplayer.js.org/
-// * https://www.live2d.com/zh-CHS/
-// * https://hitokoto.cn/[一言]
-// * https://www.jinrishici.com/[今日诗词]
-* https://www.antdv.com/docs/vue/introduce-cn[Ant Design of Vue]
-* https://github.com/hankcs/HanLP/tree/1.x[HanLP]
-* https://highlightjs.readthedocs.io/en/latest/[highlightjs]
-* https://github.com/leezng/vue-json-pretty/blob/dev/README.zh_CN.md[vue-json-pretty]
-* https://dayjs.fenxianglu.cn/[dayjs]
+[quote]
+「代码即诗，架构如画」追求功能完善，探索优雅实现。
 
 `
 </script>
-
-<style lang="less" scoped>
-</style>
