@@ -4,13 +4,8 @@
     <a-col :span="12">
       <a-card :title="`${algorithmInfo.name}生成`">
         <div class="config-area">
-          <a-input
-            v-if="showHmacKey"
-            v-model:value="hmacKey"
-            placeholder="输入HMAC密钥"
-            style="margin-bottom: 16px"
-          />
-          
+          <a-input v-if="showHmacKey" v-model:value="hmacKey" placeholder="输入HMAC密钥" style="margin-bottom: 16px" />
+
           <a-textarea
             v-model:value="inputText"
             :placeholder="`输入要生成${algorithmInfo.name}摘要的内容`"
@@ -19,13 +14,7 @@
           />
         </div>
 
-        <a-button 
-          type="primary" 
-          block 
-          size="large"
-          style="margin-top: 16px"
-          @click="generateDigest"
-        >
+        <a-button type="primary" block size="large" style="margin-top: 16px" @click="generateDigest">
           <template #icon><form-outlined /></template>
           生成{{ algorithmInfo.name }}摘要
         </a-button>
@@ -47,12 +36,8 @@
           </template>
         </a-input>
         <div class="result-meta">
-          <a-tag v-if="digestResult" color="blue">
-            长度：{{ digestResult.length }} 字符
-          </a-tag>
-          <a-tag v-if="digestResult" color="green">
-            大写：{{ digestResult.toUpperCase() }}
-          </a-tag>
+          <a-tag v-if="digestResult" color="blue"> 长度：{{ digestResult.length }} 字符 </a-tag>
+          <a-tag v-if="digestResult" color="green"> 大写：{{ digestResult.toUpperCase() }} </a-tag>
         </div>
       </a-card>
     </a-col>
@@ -62,11 +47,7 @@
   <a-collapse style="margin-top: 24px">
     <a-collapse-panel key="1" :header="`${algorithmInfo.name}算法说明`">
       <a-descriptions bordered :column="1">
-        <a-descriptions-item 
-          v-for="(item, index) in algorithmInfo.description" 
-          :key="index"
-          :label="item.label"
-        >
+        <a-descriptions-item v-for="(item, index) in algorithmInfo.description" :key="index" :label="item.label">
           <li v-for="(text, i) in item.items" :key="i">{{ text }}</li>
         </a-descriptions-item>
       </a-descriptions>
@@ -75,22 +56,22 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { message } from 'ant-design-vue';
-import CryptoJS from 'crypto-js';
-import { CopyOutlined, FormOutlined } from '@ant-design/icons-vue';
+import { ref, computed } from 'vue'
+import { message } from 'ant-design-vue'
+import CryptoJS from 'crypto-js'
+import { CopyOutlined, FormOutlined } from '@ant-design/icons-vue'
 
 const props = defineProps({
   type: {
     type: String,
     default: 'md5',
-    validator: value => ['md5', 'sha1', 'sha256', 'hmac'].includes(value)
-  }
-});
+    validator: (value) => ['md5', 'sha1', 'sha256', 'hmac'].includes(value),
+  },
+})
 
-const inputText = ref('');
-const hmacKey = ref('');
-const digestResult = ref('');
+const inputText = ref('')
+const hmacKey = ref('')
+const digestResult = ref('')
 
 const algorithms = {
   md5: {
@@ -99,20 +80,13 @@ const algorithms = {
     description: [
       {
         label: '基本信息',
-        items: [
-          '输出长度：128位（32字符）',
-          '设计者：Ronald Rivest',
-          '首次发布：1992年'
-        ]
+        items: ['输出长度：128位（32字符）', '设计者：Ronald Rivest', '首次发布：1992年'],
       },
       {
         label: '安全建议',
-        items: [
-          '不推荐用于安全敏感场景',
-          '适用于文件完整性校验'
-        ]
-      }
-    ]
+        items: ['不推荐用于安全敏感场景', '适用于文件完整性校验'],
+      },
+    ],
   },
   sha1: {
     name: 'SHA-1',
@@ -120,13 +94,9 @@ const algorithms = {
     description: [
       {
         label: '技术规格',
-        items: [
-          '输出长度：160位（40字符）',
-          '标准化：FIPS PUB 180-4',
-          '首个碰撞：2017年'
-        ]
-      }
-    ]
+        items: ['输出长度：160位（40字符）', '标准化：FIPS PUB 180-4', '首个碰撞：2017年'],
+      },
+    ],
   },
   sha256: {
     name: 'SHA-256',
@@ -134,13 +104,9 @@ const algorithms = {
     description: [
       {
         label: '技术优势',
-        items: [
-          '输出长度：256位（64字符）',
-          '比特币区块链采用算法',
-          '当前推荐的安全标准'
-        ]
-      }
-    ]
+        items: ['输出长度：256位（64字符）', '比特币区块链采用算法', '当前推荐的安全标准'],
+      },
+    ],
   },
   hmac: {
     name: 'HMAC',
@@ -148,56 +114,53 @@ const algorithms = {
     description: [
       {
         label: '核心特性',
-        items: [
-          '基于密钥的哈希消息认证',
-          '需要配合哈希算法使用',
-          '典型应用：API请求签名'
-        ]
-      }
-    ]
-  }
-};
+        items: ['基于密钥的哈希消息认证', '需要配合哈希算法使用', '典型应用：API请求签名'],
+      },
+    ],
+  },
+}
 
 const algorithmInfo = computed(() => ({
   ...algorithms[props.type],
-  name: props.type === 'hmac' ? 'HMAC-SHA256' : algorithms[props.type].name
-}));
+  name: props.type === 'hmac' ? 'HMAC-SHA256' : algorithms[props.type].name,
+}))
 
-const showHmacKey = computed(() => props.type === 'hmac');
+const showHmacKey = computed(() => props.type === 'hmac')
 
 const generateDigest = () => {
   if (!inputText.value.trim()) {
-    message.warning('请输入有效内容');
-    return;
+    message.warning('请输入有效内容')
+    return
   }
 
   try {
-    const text = inputText.value;
-    
+    const text = inputText.value
+
     if (props.type === 'hmac') {
       if (!hmacKey.value.trim()) {
-        message.warning('请输入HMAC密钥');
-        return;
+        message.warning('请输入HMAC密钥')
+        return
       }
-      digestResult.value = algorithms.hmac.method(text, hmacKey.value).toString(CryptoJS.enc.Hex);
+      digestResult.value = algorithms.hmac.method(text, hmacKey.value).toString(CryptoJS.enc.Hex)
     } else {
-      digestResult.value = algorithms[props.type].method(text).toString(CryptoJS.enc.Hex);
+      digestResult.value = algorithms[props.type].method(text).toString(CryptoJS.enc.Hex)
     }
   } catch (error) {
-    message.error(`生成失败: ${error.message}`);
-    digestResult.value = '生成错误';
+    message.error(`生成失败: ${error.message}`)
+    digestResult.value = '生成错误'
   }
-};
+}
 
 const copyResult = (text) => {
   if (!text) {
-    message.warning('没有可复制的内容');
-    return;
+    message.warning('没有可复制的内容')
+    return
   }
-  navigator.clipboard.writeText(text)
+  navigator.clipboard
+    .writeText(text)
     .then(() => message.success('复制成功'))
-    .catch(() => message.error('复制失败'));
-};
+    .catch(() => message.error('复制失败'))
+}
 </script>
 
 <style scoped>

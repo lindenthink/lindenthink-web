@@ -3,5 +3,5 @@
 </template>
 
 <script setup>
-import DigestLayout from './DigestLayout.vue';
+import DigestLayout from './DigestLayout.vue'
 </script>

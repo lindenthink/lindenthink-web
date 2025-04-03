@@ -14,7 +14,7 @@
           </div>
         </template>
 
-        <div class="carousel-slide" v-for="img in carouselImgs" :key="img.id">
+        <div v-for="img in carouselImgs" :key="img.id" class="carousel-slide">
           <img :src="img.url" class="carousel-image" />
           <div class="carousel-caption">{{ img.desc }}</div>
         </div>
@@ -26,7 +26,7 @@
         <div class="section">
           <h2>最新动态</h2>
           <a-row :gutter="16">
-            <a-col :span="8" v-for="news in latestNews" :key="news.id">
+            <a-col v-for="news in latestNews" :key="news.id" :span="8">
               <a-card :title="news.title" hoverable>
                 <p class="card-summary">{{ news.summary }}</p>
               </a-card>
@@ -38,7 +38,7 @@
         <div class="section">
           <h2>热门文章</h2>
           <a-row :gutter="16">
-            <a-col :span="8" v-for="article in popularArticles" :key="article.id">
+            <a-col v-for="article in popularArticles" :key="article.id" :span="8">
               <a-card :title="article.title" hoverable>
                 <p class="card-summary">{{ article.summary }}</p>
               </a-card>
@@ -53,26 +53,25 @@
 
 <script lang="ts" setup>
 import { reactive } from 'vue'
-import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
+import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue'
 
 const popularArticles = reactive([
   { id: 1, title: '热门文章1', summary: '这是热门文章1的摘要...' },
   { id: 2, title: '热门文章2', summary: '这是热门文章2的摘要...' },
   { id: 3, title: '热门文章3', summary: '这是热门文章3的摘要...' },
-]);
+])
 
 const latestNews = reactive([
   { id: 1, title: '最新动态1', summary: '这是最新动态1的摘要...' },
   { id: 2, title: '最新动态2', summary: '这是最新动态2的摘要...' },
   { id: 3, title: '最新动态3', summary: '这是最新动态3的摘要...' },
-]);
+])
 
 const carouselImgs = reactive([
   { id: 1, desc: '清明时节雨纷纷，路上行人欲断魂。—— 『清明』', url: '/1.png' },
   { id: 2, desc: '图片2的说明文字', url: '/2.png' },
   { id: 3, desc: '图片3的说明文字', url: '/3.png' },
 ])
-
 </script>
 
 <style scoped lang="less">

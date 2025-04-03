@@ -4,7 +4,7 @@
     <a-col :span="8">
       <a-card title="项目列表">
         <template #extra>
-          <a-button type="primary" @click="handleAddRoot" style="margin-right: 5px">
+          <a-button type="primary" style="margin-right: 5px" @click="handleAddRoot">
             <template #icon><plus-outlined /></template>
             新增
           </a-button>
@@ -14,8 +14,13 @@
           </a-button>
         </template>
 
-        <a-tree :tree-data="projects" :fieldNames="{ children: 'children', title: 'title', key: 'id' }"
-          @select="handleSelectProject" showLine blockNode>
+        <a-tree
+          :tree-data="projects"
+          :field-names="{ children: 'children', title: 'title', key: 'id' }"
+          show-line
+          block-node
+          @select="handleSelectProject"
+        >
           <template #title="{ dataRef }">
             <div class="project-node">
               <span>{{ dataRef.title }}</span>
@@ -46,12 +51,16 @@
     <a-col :span="16">
       <a-card :title="`排期进度 - ${selectedProject?.title || '未选择项目'}`">
         <template #extra>
-          <a-select v-model:value="selectedAssignees" mode="multiple" placeholder="选择参与人过滤" style="width: 300px"
-            :options="assigneeOptions" />
+          <a-select
+            v-model:value="selectedAssignees"
+            mode="multiple"
+            placeholder="选择参与人过滤"
+            style="width: 300px"
+            :options="assigneeOptions"
+          />
         </template>
         <div class="gantt-container">
-
-          <div class="gantt-header" ref="header">
+          <div ref="header" class="gantt-header">
             <div class="info-columns">
               <div class="info-cell task-info task-title">任务详情</div>
             </div>
@@ -64,19 +73,33 @@
 
           <div class="gantt-body" @scroll="syncScroll">
             <template v-if="selectedProject">
-              <div v-for="(item, index) in visibleTasks" :key="item.id" class="gantt-row"
-                :style="getRowStyle(item, index)">
+              <div
+                v-for="(item, index) in visibleTasks"
+                :key="item.id"
+                class="gantt-row"
+                :style="getRowStyle(item, index)"
+              >
                 <div class="info-columns">
-                  <div class="info-cell task-info">{{ item.level === 1 ? '' : item.assignees.join(', ') + '：' }}{{ item.title }}({{ item.progress }}%)</div>
+                  <div class="info-cell task-info">
+                    {{ item.level === 1 ? '' : item.assignees.join(', ') + '：' }}{{ item.title }}({{ item.progress }}%)
+                  </div>
                 </div>
                 <div class="task-bar">
-                  <div class="progress" :style="{
-                    width: item.progress + '%',
-                    backgroundColor: item.progressColor
-                  }" />
+                  <div
+                    class="progress"
+                    :style="{
+                      width: item.progress + '%',
+                      backgroundColor: item.progressColor,
+                    }"
+                  />
                   <div class="date-range">
-                    {{ formatDate(item.startDate) }} {{ item.startDate === item.endDate ? '' : ` -
-                    ${formatDate(item.endDate)}` }}
+                    {{ formatDate(item.startDate) }}
+                    {{
+                      item.startDate === item.endDate
+                        ? ''
+                        : ` -
+                    ${formatDate(item.endDate)}`
+                    }}
                   </div>
                 </div>
               </div>
@@ -87,29 +110,38 @@
     </a-col>
 
     <!-- 项目编辑弹窗 -->
-    <a-modal v-model:visible="showModal" :title="`${formData.id ? '编辑' : '新建'}${formData.level === 1 ? '项目' : '任务'}`"
-      @ok="handleSave">
+    <a-modal
+      v-model:visible="showModal"
+      :title="`${formData.id ? '编辑' : '新建'}${formData.level === 1 ? '项目' : '任务'}`"
+      @ok="handleSave"
+    >
       <a-form layout="vertical">
         <a-form-item label="任务名称" required>
           <a-input v-model:value="formData.title" />
         </a-form-item>
         <a-form-item label="日期范围" required>
-          <a-range-picker v-model:value="dateRange" :disabledDate="disabledDate" />
+          <a-range-picker v-model:value="dateRange" :disabled-date="disabledDate" />
         </a-form-item>
         <a-form-item label="参与人">
-          <a-select v-model:value="formData.assignees" mode="tags" placeholder="输入或选择参与人"
-            :options="existingAssignees" />
+          <a-select
+            v-model:value="formData.assignees"
+            mode="tags"
+            placeholder="输入或选择参与人"
+            :options="existingAssignees"
+          />
         </a-form-item>
         <a-form-item label="进度">
-          <a-slider v-model:value="formData.progress"
-            :marks="{ 0: '0%', 20: '20%', 50: '50%', 80: '80%', 100: '100%' }" />
+          <a-slider
+            v-model:value="formData.progress"
+            :marks="{ 0: '0%', 20: '20%', 50: '50%', 80: '80%', 100: '100%' }"
+          />
         </a-form-item>
       </a-form>
     </a-modal>
   </a-row>
 
-  <a-drawer title="回收站" :visible="showTrash" @close="showTrash = false" width="500">
-    <a-table :dataSource="deletedProjects" rowKey="id" :pagination="false">
+  <a-drawer title="回收站" :visible="showTrash" width="500" @close="showTrash = false">
+    <a-table :data-source="deletedProjects" row-key="id" :pagination="false">
       <a-table-column title="任务名称" data-index="title" />
       <a-table-column title="删除时间" data-index="deletedAt">
         <template #default="{ text }">
@@ -118,10 +150,10 @@
       </a-table-column>
       <a-table-column title="操作">
         <template #default="{ record }">
-          <a-button @click="handleRestore(record)" style="margin-right: 8px" type="link">恢复</a-button>
-            <a-popconfirm title="确定永久删除该记录吗？" @confirm="deleteFromTrash(record)">
-              <a-button danger type="text">删除</a-button>
-            </a-popconfirm>
+          <a-button style="margin-right: 8px" type="link" @click="handleRestore(record)">恢复</a-button>
+          <a-popconfirm title="确定永久删除该记录吗？" @confirm="deleteFromTrash(record)">
+            <a-button danger type="text">删除</a-button>
+          </a-popconfirm>
         </template>
       </a-table-column>
     </a-table>
@@ -129,84 +161,78 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import dayjs from 'dayjs';
-import minMax from 'dayjs/plugin/minMax';
-import { message } from 'ant-design-vue';
-import {
-  DeleteOutlined,
-  PlusOutlined,
-  EditOutlined,
-  RestOutlined
-} from '@ant-design/icons-vue';
+import { ref, computed } from 'vue'
+import dayjs from 'dayjs'
+import minMax from 'dayjs/plugin/minMax'
+import { message } from 'ant-design-vue'
+import { DeleteOutlined, PlusOutlined, EditOutlined, RestOutlined } from '@ant-design/icons-vue'
 
-dayjs.extend(minMax);
+dayjs.extend(minMax)
 
 // 配置参数
-const CELL_WIDTH = 60;
-const ROW_HEIGHT = 40;
+const CELL_WIDTH = 60
+const ROW_HEIGHT = 40
 
-const selectedProject = ref(null);
-const showModal = ref(false);
-const formData = ref(initFormData());
-const dateRange = ref([]);
-const selectedAssignees = ref([]);
-const showTrash = ref(false);
-const projects = ref(JSON.parse(localStorage.getItem('projects')) || []);
-const deletedProjects = ref(JSON.parse(localStorage.getItem('deletedProjects')) || []);
+const selectedProject = ref(null)
+const showModal = ref(false)
+const formData = ref(initFormData())
+const dateRange = ref([])
+const selectedAssignees = ref([])
+const showTrash = ref(false)
+const projects = ref(JSON.parse(localStorage.getItem('projects')) || [])
+const deletedProjects = ref(JSON.parse(localStorage.getItem('deletedProjects')) || [])
 
 // 计算属性
 const timeline = computed(() => {
-  if (!selectedProject.value?.startDate) return [];
+  if (!selectedProject.value?.startDate) return []
 
-  const start = dayjs(selectedProject.value.startDate);
-  const end = dayjs(selectedProject.value.endDate);
-  const days = end.diff(start, 'day') + 1;
+  const start = dayjs(selectedProject.value.startDate)
+  const end = dayjs(selectedProject.value.endDate)
+  const days = end.diff(start, 'day') + 1
 
-  return Array.from({ length: days }, (_, i) =>
-    start.add(i, 'day').format('MM/DD')
-  );
-});
+  return Array.from({ length: days }, (_, i) => start.add(i, 'day').format('MM/DD'))
+})
 
 // 添加现有参与人选项
 const existingAssignees = computed(() =>
-  projects.value.flatMap(p => p.assignees)
+  projects.value
+    .flatMap((p) => p.assignees)
     .filter((v, i, a) => a.indexOf(v) === i)
-    .map(a => ({ value: a }))
-);
+    .map((a) => ({ value: a })),
+)
 
-const timelineWidth = computed(() => timeline.value.length * CELL_WIDTH);
+const timelineWidth = computed(() => timeline.value.length * CELL_WIDTH)
 
 const visibleTasks = computed(() => {
-  if (!selectedProject.value) return [];
+  if (!selectedProject.value) return []
 
   // 获取二级结构数据
   const tasks = [
     selectedProject.value,
-    ...(selectedProject.value.children || []).map(child => ({
+    ...(selectedProject.value.children || []).map((child) => ({
       ...child,
-      level: 2
-    }))
-  ];
+      level: 2,
+    })),
+  ]
 
   // 参与人过滤
-  return tasks.filter(task => {
-    const hasAssignee = selectedAssignees.value.length === 0 ||
-      task.assignees.some(a => selectedAssignees.value.includes(a));
-    return task.startDate && task.endDate && hasAssignee;
-  });
-});
+  return tasks.filter((task) => {
+    const hasAssignee =
+      selectedAssignees.value.length === 0 || task.assignees.some((a) => selectedAssignees.value.includes(a))
+    return task.startDate && task.endDate && hasAssignee
+  })
+})
 
 // 参与人选项计算
 const assigneeOptions = computed(() => {
-  const allAssignees = visibleTasks.value.flatMap(t => t.assignees);
-  return [...new Set(allAssignees)].map(a => ({ label: a, value: a }));
-});
+  const allAssignees = visibleTasks.value.flatMap((t) => t.assignees)
+  return [...new Set(allAssignees)].map((a) => ({ label: a, value: a }))
+})
 
 const persistData = () => {
-  localStorage.setItem('projects', JSON.stringify(projects.value));
-  localStorage.setItem('deletedProjects', JSON.stringify(deletedProjects.value));
-};
+  localStorage.setItem('projects', JSON.stringify(projects.value))
+  localStorage.setItem('deletedProjects', JSON.stringify(deletedProjects.value))
+}
 
 // 初始化表单数据
 function initFormData() {
@@ -219,221 +245,215 @@ function initFormData() {
     progress: 0,
     progressColor: '#1890ff',
     children: [],
-    level: 1 // 1-项目 2-子任务
-  };
+    level: 1, // 1-项目 2-子任务
+  }
 }
 
 function handleSelectProject(keys, { node }) {
-  const task = node.dataRef;
-  selectedProject.value = task;
+  const task = node.dataRef
+  selectedProject.value = task
 
   // 初始化编辑表单
   if (task.id) {
     formData.value = {
       ...task,
-      assignees: [...task.assignees]
-    };
-    dateRange.value = [
-      dayjs(task.startDate),
-      dayjs(task.endDate)
-    ];
+      assignees: [...task.assignees],
+    }
+    dateRange.value = [dayjs(task.startDate), dayjs(task.endDate)]
   }
 }
 
 function handleAddRoot() {
-  formData.value = initFormData(); // 重置表单数据
-  formData.value.assignees = ['全员'];
-  dateRange.value = [dayjs(), dayjs().add(3, 'day')];
-  showModal.value = true;
+  formData.value = initFormData() // 重置表单数据
+  formData.value.assignees = ['全员']
+  dateRange.value = [dayjs(), dayjs().add(3, 'day')]
+  showModal.value = true
 }
 
 function handleAddChild(parent) {
   formData.value = {
     ...initFormData(),
     parentId: parent.id,
-    level: 2
-  };
-  dateRange.value = [dayjs(parent.startDate), dayjs(parent.endDate)];
-  showModal.value = true;
+    level: 2,
+  }
+  dateRange.value = [dayjs(parent.startDate), dayjs(parent.endDate)]
+  showModal.value = true
 }
 
 async function handleSave() {
-  if (!validateForm()) return;
+  if (!validateForm()) return
 
-  const isEditMode = !!formData.value.id;
+  const isEditMode = !!formData.value.id
   const newItem = {
     ...formData.value,
     id: formData.value.id || Date.now().toString(),
     startDate: dateRange.value[0].format('YYYY-MM-DD'),
     endDate: dateRange.value[1].format('YYYY-MM-DD'),
     progressColor: getProgressColor(formData.value.progress),
-    assignees: formData.value.assignees.filter(Boolean)
-  };
+    assignees: formData.value.assignees.filter(Boolean),
+  }
 
   if (newItem.parentId) {
-    const parent = findProject(projects.value, newItem.parentId);
+    const parent = findProject(projects.value, newItem.parentId)
     if (parent) {
       if (isEditMode) {
-        const index = parent.children.findIndex(c => c.id === newItem.id);
+        const index = parent.children.findIndex((c) => c.id === newItem.id)
         if (index > -1) {
-          parent.children.splice(index, 1, newItem);
+          parent.children.splice(index, 1, newItem)
         }
       } else {
-        parent.children = parent.children ? [...parent.children, newItem] : [newItem];
+        parent.children = parent.children ? [...parent.children, newItem] : [newItem]
       }
     }
   } else {
     if (isEditMode) {
-      const index = projects.value.findIndex(p => p.id === newItem.id);
+      const index = projects.value.findIndex((p) => p.id === newItem.id)
       if (index > -1) {
-        projects.value.splice(index, 1, newItem);
+        projects.value.splice(index, 1, newItem)
       }
     } else {
-      projects.value = [...projects.value, newItem];
+      projects.value = [...projects.value, newItem]
     }
   }
 
-  selectedProject.value = newItem;
+  selectedProject.value = newItem
 
-  updateProjectDates();
+  updateProjectDates()
   persistData()
-  resetForm();
-  message.success(isEditMode ? '更新成功' : '创建成功');
+  resetForm()
+  message.success(isEditMode ? '更新成功' : '创建成功')
 }
 
 function handleDelete(node) {
   const deleteNode = (nodes) => {
     return nodes.filter((n) => {
-      if (n.id === node.id) return false;
+      if (n.id === node.id) return false
       if (n.children) {
-        n.children = deleteNode(n.children);
+        n.children = deleteNode(n.children)
       }
-      return true;
-    });
-  };
+      return true
+    })
+  }
 
   const deletedItem = {
     ...node,
     deletedAt: dayjs().format(),
-    parentId: findParentId(projects.value, node.id)
-  };
+    parentId: findParentId(projects.value, node.id),
+  }
 
   // 使用新数组触发响应式更新
-  projects.value = deleteNode(projects.value);
+  projects.value = deleteNode(projects.value)
 
   // 添加到回收站
-  deletedProjects.value = [...deletedProjects.value, deletedItem];
+  deletedProjects.value = [...deletedProjects.value, deletedItem]
 
   persistData()
 
   // 强制刷新选中项目
   if (selectedProject.value?.id === node.id) {
-    selectedProject.value = projects[0] || null;
+    selectedProject.value = projects.value[0] || null
   }
-  message.success('删除成功');
+  message.success('删除成功')
 }
 
 function findParentId(nodes, targetId, parentId = null) {
   for (const node of nodes) {
-    if (node.id === targetId) return parentId;
+    if (node.id === targetId) return parentId
     if (node.children) {
-      const found = findParentId(node.children, targetId, node.id);
-      if (found) return found;
+      const found = findParentId(node.children, targetId, node.id)
+      if (found) return found
     }
   }
-  return null;
+  return null
 }
 
 function getProgressColor(progress) {
-  if (progress < 30) return '#ff4d4f';
-  if (progress < 70) return '#faad14';
-  return '#52c41a';
+  if (progress < 30) return '#ff4d4f'
+  if (progress < 70) return '#faad14'
+  return '#52c41a'
 }
 
 function updateProjectDates() {
   const update = (nodes) => {
-    return nodes.map(node => {
+    return nodes.map((node) => {
       if (node.children?.length) {
-        const newChildren = update(node.children);
-        const dates = newChildren.flatMap(c => [dayjs(c.startDate), dayjs(c.endDate)]);
+        const newChildren = update(node.children)
+        const dates = newChildren.flatMap((c) => [dayjs(c.startDate), dayjs(c.endDate)])
         return {
           ...node,
           startDate: dayjs.min(dates).format('YYYY-MM-DD'),
           endDate: dayjs.max(dates).format('YYYY-MM-DD'),
-          children: newChildren
-        };
+          children: newChildren,
+        }
       }
-      return node;
-    });
-  };
+      return node
+    })
+  }
 
-  projects.value = update(projects.value);
+  projects.value = update(projects.value)
 }
 
 function validateForm() {
   // 基础验证
   if (!formData.value.title?.trim()) {
-    message.error('任务名称不能为空');
-    return false;
+    message.error('任务名称不能为空')
+    return false
   }
 
   if (!dateRange.value[0] || !dateRange.value[1]) {
-    message.error('请选择完整的时间范围');
-    return false;
+    message.error('请选择完整的时间范围')
+    return false
   }
 
   // 时间顺序验证
   if (dateRange.value[0].isAfter(dateRange.value[1])) {
-    message.error('开始时间不能晚于结束时间');
-    return false;
+    message.error('开始时间不能晚于结束时间')
+    return false
   }
 
   // 子任务时间范围验证
   if (formData.value.parentId) {
-    const parent = findProject(projects.value, formData.value.parentId);
-    const parentStart = dayjs(parent.startDate);
-    const parentEnd = dayjs(parent.endDate);
+    const parent = findProject(projects.value, formData.value.parentId)
+    const parentStart = dayjs(parent.startDate)
+    const parentEnd = dayjs(parent.endDate)
 
-    if (
-      dateRange.value[0].isBefore(parentStart) ||
-      dateRange.value[1].isAfter(parentEnd)
-    ) {
-      message.error('子任务时间必须在父任务时间范围内');
-      return false;
+    if (dateRange.value[0].isBefore(parentStart) || dateRange.value[1].isAfter(parentEnd)) {
+      message.error('子任务时间必须在父任务时间范围内')
+      return false
     }
   }
 
-  return true;
+  return true
 }
 
 function resetForm() {
-  showModal.value = false;
-  formData.value = initFormData();
-  dateRange.value = [];
+  showModal.value = false
+  formData.value = initFormData()
+  dateRange.value = []
 }
 
 function findProject(nodes, id) {
   for (const node of nodes) {
-    if (node.id === id) return node;
+    if (node.id === id) return node
     if (node.children) {
-      const found = findProject(node.children, id);
-      if (found) return found;
+      const found = findProject(node.children, id)
+      if (found) return found
     }
   }
-  return null;
+  return null
 }
 
 function getRowStyle(item, index) {
-  if (!item.startDate || !item.endDate) return { display: 'none' };
+  if (!item.startDate || !item.endDate) return { display: 'none' }
 
-  const baseDate = dayjs(selectedProject.value.startDate);
-  const startDate = dayjs(item.startDate);
-  const endDate = dayjs(item.endDate);
+  const baseDate = dayjs(selectedProject.value.startDate)
+  const startDate = dayjs(item.startDate)
+  const endDate = dayjs(item.endDate)
 
   // 计算相对于项目开始日期的偏移
-  const startOffset = startDate.diff(baseDate, 'day') * CELL_WIDTH;
+  const startOffset = startDate.diff(baseDate, 'day') * CELL_WIDTH
   // 计算实际显示宽度
-  const durationDays = endDate.diff(startDate, 'day') + 1;
+  const durationDays = endDate.diff(startDate, 'day') + 1
 
   return {
     height: ROW_HEIGHT + 'px',
@@ -442,66 +462,63 @@ function getRowStyle(item, index) {
     position: 'absolute',
     top: `${ROW_HEIGHT * index}px`,
     backgroundColor: item.level === 1 ? '#fafafa' : 'transparent',
-  };
+  }
 }
 
 function syncScroll(e) {
-  const header = document.querySelector('.gantt-header');
+  const header = document.querySelector('.gantt-header')
   if (header) {
-    header.scrollLeft = e.target.scrollLeft;
+    header.scrollLeft = e.target.scrollLeft
   }
 }
 
 function formatDate(date) {
-  return dayjs(date).format('MM/DD');
+  return dayjs(date).format('MM/DD')
 }
 
 function disabledDate(current) {
-  return current && current < dayjs(selectedProject.value?.startDate).startOf('day');
+  return current && current < dayjs(selectedProject.value?.startDate).startOf('day')
 }
 
 function handleEdit(task) {
   formData.value = {
     ...task,
-    assignees: [...task.assignees]
-  };
-  dateRange.value = [
-    dayjs(task.startDate),
-    dayjs(task.endDate)
-  ];
-  showModal.value = true;
+    assignees: [...task.assignees],
+  }
+  dateRange.value = [dayjs(task.startDate), dayjs(task.endDate)]
+  showModal.value = true
 }
 
 function handleRestore(item) {
   if (item.parentId) {
-    const parent = findProject(projects.value, item.parentId);
+    const parent = findProject(projects.value, item.parentId)
     if (parent) {
-      parent.children = parent.children ? [...parent.children, item] : [item];
+      parent.children = parent.children ? [...parent.children, item] : [item]
     } else {
-      message.error('恢复失败，请先恢复父级项目');
-      return;
+      message.error('恢复失败，请先恢复父级项目')
+      return
     }
   } else {
-    projects.value = [...projects.value, item];
+    projects.value = [...projects.value, item]
   }
   // 从回收站移除
-  deletedProjects.value = deletedProjects.value.filter(i => i.id !== item.id);
+  deletedProjects.value = deletedProjects.value.filter((i) => i.id !== item.id)
   persistData()
-  message.success('恢复成功');
+  message.success('恢复成功')
 }
 
 // 彻底删除
 function deleteFromTrash(item) {
-  let parent;
+  let parent
   if (item.parentId) {
-    parent = findProject(deletedProjects.value, item.parentId);
-    if (parent) parent.children = parent.filter(c => c.id !== item.id);
-  } 
+    parent = findProject(deletedProjects.value, item.parentId)
+    if (parent) parent.children = parent.filter((c) => c.id !== item.id)
+  }
   if (!parent) {
-    deletedProjects.value = deletedProjects.value.filter(i => i.id !== item.id);
-  } 
-  persistData();
-  message.success('已永久删除');
+    deletedProjects.value = deletedProjects.value.filter((i) => i.id !== item.id)
+  }
+  persistData()
+  message.success('已永久删除')
 }
 </script>
 

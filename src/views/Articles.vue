@@ -10,5 +10,4 @@
 
 <script lang="ts" setup>
 import ArticleList from '@/views/article/ArticleList.vue'
-
 </script>

@@ -5,28 +5,16 @@
       <a-card title="Cron表达式校验">
         <a-tag color="blue" style="margin-bottom: 12px">示例：0 0 12 * * ?</a-tag>
 
-        <a-input
-          v-model:value="cronExpression"
-          placeholder="请输入Cron表达式"
-          allow-clear
-          @change="validateCron"
-        />
+        <a-input v-model:value="cronExpression" placeholder="请输入Cron表达式" allow-clear @change="validateCron" />
         <div class="validation-result">
-          <a-alert 
+          <a-alert
             v-if="validationResult"
             :message="validationResult.message"
             :type="validationResult.type"
             show-icon
           />
         </div>
-        <a-button 
-          type="primary" 
-          block 
-          style="margin-top: 16px"
-          @click="translateCron"
-        >
-          解析表达式
-        </a-button>
+        <a-button type="primary" block style="margin-top: 16px" @click="translateCron"> 解析表达式 </a-button>
       </a-card>
     </a-col>
 
@@ -45,38 +33,36 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { message } from 'ant-design-vue';
-import cronstrue from "cronstrue/i18n";
+import { ref } from 'vue'
+import cronstrue from 'cronstrue/i18n'
 
-
-const cronExpression = ref('');
-const validationResult = ref(null);
-const humanReadable = ref('');
+const cronExpression = ref('')
+const validationResult = ref(null)
+const humanReadable = ref('')
 
 // Cron表达式基础校验
-const validateCron = () => {  
+const validateCron = () => {
   if (!cronExpression.value) {
     validationResult.value = {
       type: 'info',
-      message: '等待输入...'
-    };
-    return;
+      message: '等待输入...',
+    }
+    return
   }
 
   try {
-    cronstrue.toString(cronExpression.value);
+    cronstrue.toString(cronExpression.value)
     validationResult.value = {
       type: 'success',
-      message: '基础格式校验通过'
-    };
+      message: '基础格式校验通过',
+    }
   } catch (error) {
     validationResult.value = {
       type: 'error',
-      message: `语义校验失败：${error.message}`
-    };
+      message: `语义校验失败：${error.message}`,
+    }
   }
-};
+}
 
 // 翻译为可读格式
 const translateCron = () => {
@@ -84,13 +70,12 @@ const translateCron = () => {
     humanReadable.value = cronstrue.toString(cronExpression.value, {
       verbose: true,
       use24HourTimeFormat: true,
-      locale: 'zh_CN'
-    });
+      locale: 'zh_CN',
+    })
   } catch (error) {
-    humanReadable.value = `解析失败：${error.message}`;
+    humanReadable.value = `解析失败：${error.message}`
   }
-};
-
+}
 </script>
 
 <style scoped>
@@ -98,5 +83,4 @@ const translateCron = () => {
   margin: 12px 0;
   min-height: 60px;
 }
-
 </style>

@@ -1,8 +1,7 @@
 <template>
-    <EncodeLayout type="url" />
+  <EncodeLayout type="url" />
 </template>
 
 <script setup>
 import EncodeLayout from './EncodeLayout.vue'
-
 </script>

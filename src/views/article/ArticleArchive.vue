@@ -12,12 +12,11 @@
     </a-timeline-item>
     <a-timeline-item>07-22 文章一</a-timeline-item>
     <a-timeline-item>07-23 文章二</a-timeline-item>
-
   </a-timeline>
 </template>
 
 <script lang="ts" setup>
-import { ClockCircleOutlined } from '@ant-design/icons-vue';
+import { ClockCircleOutlined } from '@ant-design/icons-vue'
 </script>
 
 <style scoped lang="less"></style>

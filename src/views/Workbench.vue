@@ -2,7 +2,7 @@
   <a-layout>
     <a-layout-sider></a-layout-sider>
     <a-layout-content>
-      <a-tabs v-model:activeKey="activeKey" animated>
+      <a-tabs v-model:active-key="activeKey" animated>
         <a-tab-pane key="1" tab="待办事项">
           <TodoList />
         </a-tab-pane>
@@ -20,7 +20,7 @@ import { ref } from 'vue'
 
 import TodoList from '@/views/work/TodoList.vue'
 import GanttChart from '@/views/work/GanttChart.vue'
-const activeKey = ref('1');
+const activeKey = ref('1')
 </script>
 
 <style scoped lang="less">

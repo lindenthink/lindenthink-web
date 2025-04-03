@@ -4,13 +4,13 @@
     <a-layout-content>
       <div class="tools-container">
         <!-- 主功能Tab页 -->
-        <a-tabs v-model:activeKey="activeKey" animated>
+        <a-tabs v-model:active-key="activeKey" animated>
           <a-tab-pane v-for="tool in tools" :key="tool.title" :tab="tool.title">
             <div class="btns">
               <a-space wrap :size="[12, 12]">
                 <span class="label">{{ tool.title }}</span>
                 <template v-for="child in tool.children" :key="child.title">
-                  <a-button @click="router.push(child.path)" class="sub-tool-btn" type="primary" ghost>
+                  <a-button class="sub-tool-btn" type="primary" ghost @click="router.push(child.path)">
                     {{ child.title }}
                   </a-button>
                 </template>
@@ -23,8 +23,15 @@
         <div class="btns">
           <a-space wrap :size="[10, 10]">
             <span class="label">常用</span>
-            <a-button v-for="entry in quickEntries" :key="entry.title" type="primary" ghost shape="round"
-              class="quick-btn" @click="router.push(entry.path)">
+            <a-button
+              v-for="entry in quickEntries"
+              :key="entry.title"
+              type="primary"
+              ghost
+              shape="round"
+              class="quick-btn"
+              @click="router.push(entry.path)"
+            >
               {{ entry.quickName }}
             </a-button>
           </a-space>
@@ -41,21 +48,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import {
-  CodeFilled,
-} from '@ant-design/icons-vue';
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { CodeFilled } from '@ant-design/icons-vue'
 
 const router = useRouter()
-const activeKey = ref('格式化');
+const activeKey = ref('格式化')
 
 onMounted(() => {
   const pathname = location.pathname
-  if (!pathname.includes('tools\/')) {
+  if (!pathname.includes('tools/')) {
     router.push({ path: '/tools' })
   }
-  activeKey.value = tools.find(tool => tool.children.some(child => child.path === pathname))?.title || '格式化'
+  activeKey.value = tools.find((tool) => tool.children.some((child) => child.path === pathname))?.title || '格式化'
 })
 
 const tools = [
@@ -91,7 +96,7 @@ const tools = [
       { title: 'SHA1', path: '/tools/digest-sha1' },
       { title: 'SHA256', path: '/tools/digest-sha256' },
       { title: 'HMAC', path: '/tools/digest-hmac' },
-    ]
+    ],
   },
   {
     title: '转换',
@@ -111,17 +116,18 @@ const tools = [
     title: '密码', // 密码生成，密码管理
     children: [
       { title: '密码生成', path: '/tools/password-generator', quickEntry: true, quickName: '密码生成' },
-      { title: '密码管理', path: '/tools/password-manager', },
-    ]
+      { title: '密码管理', path: '/tools/password-manager' },
+    ],
   },
 ]
-const quickEntries = tools.flatMap(tool =>
-  tool.children.filter(child => child.quickEntry)
-    .map(child => ({
+const quickEntries = tools.flatMap((tool) =>
+  tool.children
+    .filter((child) => child.quickEntry)
+    .map((child) => ({
       ...child,
-      icon: tool.icon
-    }))
-);
+      icon: tool.icon,
+    })),
+)
 </script>
 
 <style scoped lang="less">

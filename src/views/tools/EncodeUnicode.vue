@@ -1,8 +1,7 @@
 <template>
-    <EncodeLayout type="unicode" />
+  <EncodeLayout type="unicode" />
 </template>
 
 <script setup>
 import EncodeLayout from './EncodeLayout.vue'
-
 </script>
