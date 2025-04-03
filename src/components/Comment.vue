@@ -2,26 +2,15 @@
   <div class="comment">
     <a-list
       class="comment-list"
-      :header="`共 ${data.length} 条回复`"
+      :header="`共 ${comments.length} 条回复`"
       item-layout="horizontal"
-      :data-source="data"
+      :data-source="comments"
       :pagination="pagination"
+      :loading="loading"
     >
       <template #renderItem="{ item }">
         <a-list-item>
-          <a-comment :author="item.author" :avatar="item.avatar">
-            <template #actions>
-              <span v-for="(action, index) in item.actions" :key="index" @click="clickReply(item)">{{ action }}</span>
-            </template>
-            <template #content>
-              {{ item.content }}
-            </template>
-            <template #datetime>
-              <a-tooltip :title="item.datetime.format('YYYY-MM-DD HH:mm:ss')">
-                <span>{{ item.datetime.fromNow() }}</span>
-              </a-tooltip>
-            </template>
-          </a-comment>
+          <CommentView :data="item" @reply-click="clickReply" />
         </a-list-item>
       </template>
     </a-list>
@@ -56,11 +45,11 @@
           </div>
           <transition name="fade">
             <div v-if="isShowQuote === true" class="comment-quote">
-              <a-comment :author="quoteItem.author" :avatar="quoteItem.avatar">
+              <a-comment :author="quoteItem.username" :avatar="quoteItem.avatar">
                 <template #content> {{ quoteItem.content }} </template>
                 <template #datetime>
-                  <a-tooltip :title="date2.format('YYYY-MM-DD HH:mm:ss')">
-                    <span>{{ quoteItem.datetime.fromNow() }}</span>
+                  <a-tooltip :title="quoteItem.created.format('YYYY-MM-DD HH:mm:ss')">
+                    <span>{{ quoteItem.created.fromNow() }}</span>
                   </a-tooltip>
                 </template>
                 <template #actions>
@@ -90,11 +79,14 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { onMounted, ref, reactive } from 'vue'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { UserOutlined, LinkOutlined, MailOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import { getComments, addComment } from '@/services/commentService'
+import CommentView from '@/components/CommentView.vue'
 
 const props = defineProps({
   owner: String,
@@ -103,40 +95,18 @@ const props = defineProps({
 dayjs.locale('zh-cn')
 dayjs.extend(relativeTime)
 
-const data = [
-  {
-    actions: ['回复'],
-    author: '1Han Solo',
-    avatar: 'https://ui-avatars.com/api?name=random&background=random',
-    content:
-      '1We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-    datetime: dayjs('2023-07-16 22:54'),
-  },
-  {
-    actions: ['回复'],
-    author: '2Han Solo',
-    avatar: 'https://ui-avatars.com/api?name=random2?background=random',
-    content:
-      '2We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-    datetime: dayjs().subtract(2, 'days'),
-  },
-]
-
-const date2 = dayjs().subtract(1, 'days')
+const comments = ref([])
+const loading = ref(false)
 const quoteItem = reactive({})
 const textareaRef = ref()
 const commentContent = ref('')
-const submitting = false
+const submitting = ref(false)
 const formRef = ref()
 const isShowQuote = ref(false)
-
-const handleSubmit = () => {
-  console.log(user)
-  formRef.value.validateFields()
-}
 const pagination = {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onChange: (page) => {
-    console.log(page)
+    // do nothing
   },
   showQuickJumper: true,
   pageSize: 5,
@@ -151,11 +121,61 @@ const user = reactive({
   avatar: '',
 })
 
+onMounted(async () => {
+  loading.value = true
+  try {
+    const res = await getComments(props.owner)
+    comments.value = res.data.map((item) => initItem(item))
+  } catch (error) {
+    console.error(error)
+    message.error('获取数据失败: ' + error.message)
+  } finally {
+    loading.value = false
+  }
+})
+
+const initItem = (item) => {
+  item.created = dayjs(item.created)
+  item.actions = ['回复']
+  if (item.children && item.children.length > 0) {
+    item.children.forEach((child) => initItem(child))
+  }
+  return item
+}
+
+const handleSubmit = async () => {
+  await formRef.value.validateFields()
+  if (commentContent.value === '') {
+    message.error('评论内容不能为空')
+    return
+  }
+  const comment = {
+    owner: props.owner,
+    userId: user.id,
+    username: user.name,
+    email: user.email,
+    avatar: user.avatar,
+    content: commentContent.value,
+    parentId: isShowQuote.value ? quoteItem.id : null,
+  }
+  submitting.value = true
+  try {
+    await addComment(comment)
+    message.success('添加成功')
+  } catch (error) {
+    console.error(error)
+    message.error('添加失败: ' + error.message)
+  } finally {
+    submitting.value = false
+  }
+}
+
 const clickReply = (item) => {
-  quoteItem.author = item.author
+  quoteItem.id = item.id
+  quoteItem.username = item.username
   quoteItem.avatar = item.avatar
   quoteItem.content = item.content
-  quoteItem.datetime = item.datetime
+  quoteItem.created = item.created
   isShowQuote.value = true
   scrollToReply()
 }

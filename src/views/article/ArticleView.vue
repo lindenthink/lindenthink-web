@@ -113,7 +113,7 @@
         </div>
       </div>
 
-      <Comment ref="commentRef" target="1" />
+      <Comment ref="commentRef" :owner="article.id" />
     </a-layout-content>
 
     <a-layout-sider> </a-layout-sider>

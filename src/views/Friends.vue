@@ -2,10 +2,22 @@
   <a-layout>
     <a-layout-sider></a-layout-sider>
     <a-layout-content>
-      <a-modal v-model:visible="showApplyModel" width="450px" title="申请友链" ok-text="确认" cancel-text="取消"
-        @ok="submitApply">
-        <a-form ref="formRef" name="custom-validation" :model="formData" :rules="rules" :label-col="{ span: 6 }"
-          :wrapper-col="{ span: 18 }">
+      <a-modal
+        v-model:visible="showApplyModel"
+        width="450px"
+        title="申请友链"
+        ok-text="确认"
+        cancel-text="取消"
+        @ok="submitApply"
+      >
+        <a-form
+          ref="formRef"
+          name="custom-validation"
+          :model="formData"
+          :rules="rules"
+          :label-col="{ span: 6 }"
+          :wrapper-col="{ span: 18 }"
+        >
           <a-form-item has-feedback label="标题" name="title">
             <a-input v-model:value="formData.title" />
           </a-form-item>
@@ -24,8 +36,11 @@
       <div class="main">
         <a-alert message="说明" type="info" show-icon>
           <template #description>
-            以下列表按照最近登录时间倒叙+申请时间正序排列，如果您的博客也想在这里展示请先添加本博客为友链然后点击<a class="link" @click="showApplyModel = true">申请</a>，
-            本博客信息如下：
+            以下列表按照最近登录时间倒叙+申请时间正序排列，如果您的博客也想在这里展示请先添加本博客为友链然后点击<a
+              class="link"
+              @click="showApplyModel = true"
+              >申请</a
+            >， 本博客信息如下：
             <ul>
               <li>名称：菩提思</li>
               <li>地址：https://www.lindenthink.com</li>
@@ -48,7 +63,7 @@
           </template>
         </a-list>
       </div>
-      <Comment />
+      <Comment owner="1" />
     </a-layout-content>
     <a-layout-sider></a-layout-sider>
   </a-layout>
