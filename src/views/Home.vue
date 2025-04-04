@@ -1,123 +1,219 @@
 <template>
-  <a-layout>
-    <a-layout-sider></a-layout-sider>
+  <a-layout class="home-layout">
+    <a-layout-sider breakpoint="lg" collapsed-width="0" />
     <a-layout-content>
-      <a-carousel autoplay arrows>
+      <!-- Enhanced Carousel -->
+      <a-carousel autoplay effect="fade" class="custom-carousel" :autoplay-speed="5000" arrows>
         <template #prevArrow>
           <div class="custom-slick-arrow" style="left: 10px; z-index: 1">
-            <left-circle-outlined />
+            <LeftCircleFilled />
           </div>
         </template>
         <template #nextArrow>
           <div class="custom-slick-arrow" style="right: 10px">
-            <right-circle-outlined />
+            <RightCircleFilled />
           </div>
         </template>
 
         <div v-for="img in carouselImgs" :key="img.id" class="carousel-slide">
-          <img :src="img.url" class="carousel-image" />
-          <div class="carousel-caption">{{ img.desc }}</div>
+          <img :src="img.url" class="carousel-image" :alt="img.desc" />
+          <div class="carousel-caption">
+            <div class="caption-content">
+              <p class="poetry-text">{{ img.desc }}</p>
+              <div class="gradient-overlay" />
+            </div>
+          </div>
         </div>
       </a-carousel>
 
-      <!-- 内容模块 -->
-      <div class="content-section">
-        <!-- 最新动态模块 -->
-        <div class="section">
-          <h2>最新动态</h2>
-          <a-row :gutter="16">
-            <a-col v-for="news in latestNews" :key="news.id" :span="8">
-              <a-card :title="news.title" hoverable>
-                <p class="card-summary">{{ news.summary }}</p>
+      <!-- Content Sections -->
+      <div class="content-container">
+        <!-- Latest News Section -->
+        <section class="dynamic-section">
+          <h2 class="section-title">
+            <bulb-outlined class="title-icon" />
+            最新动态
+          </h2>
+          <a-row :gutter="[24, 24]">
+            <a-col v-for="news in latestNews" :key="news.id" :xs="24" :sm="12" :lg="8">
+              <a-card hoverable class="news-card" :cover="news.cover">
+                <template #actions>
+                  <span><eye-outlined /> {{ news.views }}</span>
+                  <span><clock-circle-outlined /> {{ news.date }}</span>
+                </template>
+                <a-card-meta :title="news.title" :description="news.summary">
+                  <template #avatar>
+                    <a-avatar :src="news.avatar" />
+                  </template>
+                </a-card-meta>
               </a-card>
             </a-col>
           </a-row>
-        </div>
+        </section>
 
-        <!-- 热门文章模块 -->
-        <div class="section">
-          <h2>热门文章</h2>
-          <a-row :gutter="16">
-            <a-col v-for="article in popularArticles" :key="article.id" :span="8">
-              <a-card :title="article.title" hoverable>
-                <p class="card-summary">{{ article.summary }}</p>
+        <!-- Popular Articles Section -->
+        <section class="articles-section">
+          <h2 class="section-title">
+            <fire-outlined class="title-icon" />
+            热门文章
+          </h2>
+          <a-row :gutter="[24, 24]">
+            <a-col v-for="article in popularArticles" :key="article.id" :xs="24" :sm="12" :lg="8">
+              <a-card hoverable class="article-card">
+                <a-tag class="article-tag" color="#2db7f5">
+                  {{ article.category }}
+                </a-tag>
+                <a-card-meta :title="article.title" :description="article.summary" />
+                <div class="stats-bar">
+                  <div class="stat-item">
+                    <like-outlined />
+                    <span>{{ article.likes }}</span>
+                  </div>
+                  <div class="stat-item">
+                    <message-outlined />
+                    <span>{{ article.comments }}</span>
+                  </div>
+                  <div class="stat-item">
+                    <share-alt-outlined />
+                  </div>
+                </div>
               </a-card>
             </a-col>
           </a-row>
-        </div>
+        </section>
       </div>
     </a-layout-content>
-    <a-layout-sider></a-layout-sider>
+    <a-layout-sider breakpoint="lg" collapsed-width="0" />
   </a-layout>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { reactive } from 'vue'
-import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue'
+import {
+  LeftCircleFilled,
+  RightCircleFilled,
+  BulbOutlined,
+  FireOutlined,
+  EyeOutlined,
+  ClockCircleOutlined,
+  LikeOutlined,
+  MessageOutlined,
+  ShareAltOutlined,
+} from '@ant-design/icons-vue'
 
 const popularArticles = reactive([
-  { id: 1, title: '热门文章1', summary: '这是热门文章1的摘要...' },
-  { id: 2, title: '热门文章2', summary: '这是热门文章2的摘要...' },
-  { id: 3, title: '热门文章3', summary: '这是热门文章3的摘要...' },
+  {
+    id: 1,
+    title: 'Vue3性能优化实战',
+    summary: '深入探讨Vue3组合式API的最佳实践...',
+    category: '前端开发',
+    likes: 245,
+    comments: 38,
+    cover: '/1.png',
+  },
+  {
+    id: 2,
+    title: 'Vue3性能优化实战',
+    summary: '深入探讨Vue3组合式API的最佳实践...',
+    category: '前端开发',
+    likes: 245,
+    comments: 38,
+    cover: '/1.png',
+  },
+  // 其他数据...
 ])
 
 const latestNews = reactive([
-  { id: 1, title: '最新动态1', summary: '这是最新动态1的摘要...' },
-  { id: 2, title: '最新动态2', summary: '这是最新动态2的摘要...' },
-  { id: 3, title: '最新动态3', summary: '这是最新动态3的摘要...' },
+  {
+    id: 1,
+    title: '新功能发布',
+    summary: '新增实时协作编辑功能...',
+    date: '2024-03-15',
+    views: 1567,
+    avatar: 'https://ui-avatars.com/api?name=jack&background=random',
+  },
+  {
+    id: 2,
+    title: '新功能发布',
+    summary: '新增实时协作编辑功能...',
+    date: '2024-03-15',
+    views: 1567,
+    avatar: 'https://ui-avatars.com/api?name=lucy&background=random',
+  },
+  // 其他数据...
 ])
 
 const carouselImgs = reactive([
-  { id: 1, desc: '清明时节雨纷纷，路上行人欲断魂。—— 『清明』', url: '/1.png' },
-  { id: 2, desc: '图片2的说明文字', url: '/2.png' },
-  { id: 3, desc: '图片3的说明文字', url: '/3.png' },
+  {
+    id: 1,
+    desc: '清明时节雨纷纷，路上行人欲断魂。',
+    url: '/1.jpg',
+  },
+  {
+    id: 2,
+    desc: '知识库+在线工具+工作台，打造一站式服务。',
+    url: '/2.jpg',
+  },
+  {
+    id: 3,
+    desc: '大漠孤烟直，长河落日圆。',
+    url: '/3.jpg',
+  },
 ])
 </script>
 
 <style scoped lang="less">
-.carousel-caption {
-  position: absolute;
-  top: 320px;
-  /* 将文字放在图片更低的位置 */
-  height: 150px;
-  line-height: 150px;
-  left: 0;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.2);
-  color: #fff;
-  white-space: normal;
-  /* 支持换行 */
-  font-size: larger;
-}
+@import '@/styles/variables.less';
 
-.ant-carousel {
-  padding: 23px;
-}
-
-.ant-carousel :deep(.slick-slide) {
-  text-align: center;
-  height: 360px;
-  /* 调整高度到360px */
-  line-height: 360px;
-  /* 调整行高到360px */
-  background: #364d79;
+.custom-carousel {
+  margin: 16px;
+  border-radius: 8px;
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  box-shadow: @box-shadow-base;
+
+  :deep(.slick-slide) {
+    height: 300px;
+    position: relative;
+  }
 }
 
 .carousel-slide {
-  width: 100%;
-  height: 100%;
   position: relative;
-  /* 确保 .carousel-caption 绝对定位有效 */
+  height: 100%;
+
+  .carousel-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
-.carousel-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.carousel-caption {
+  position: absolute;
+  top: 190px;
+  left: 0;
+  right: 0;
+  padding: 2.5rem;
+  color: white;
+  text-align: center;
+
+  .poetry-text {
+    font-size: 1.5rem;
+    font-family: @font-family-serif;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 3;
+  }
+
+  .gradient-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    z-index: 1;
+  }
 }
 
 .ant-carousel :deep(.slick-arrow.custom-slick-arrow) {
@@ -129,58 +225,105 @@ const carouselImgs = reactive([
   opacity: 0.3;
   z-index: 1;
 }
+.custom-slick-arrow {
+  width: 40px;
+  height: 40px;
+  font-size: 2rem;
+  opacity: 0.3;
+  transition: all 0.3s @ease-in-out;
 
-.ant-carousel :deep(.custom-slick-arrow:before) {
-  display: none;
+  .arrow-icon {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+  }
+
+  &:hover {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
 }
 
-.ant-carousel :deep(.custom-slick-arrow:hover) {
-  opacity: 0.5;
+.content-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
 
-.content-section {
+.section-title {
   display: flex;
-  flex-direction: column;
-  margin: 0 10px 10px 10px;
+  align-items: center;
+  font-size: 1.75rem;
+  margin: 2rem 0 1.5rem;
+  color: @heading-color;
+
+  .title-icon {
+    margin-right: 0.8rem;
+    font-size: 1.5em;
+    color: @primary-color;
+  }
 }
 
-.section {
-  margin: 10px;
+.news-card,
+.article-card {
+  transition:
+    transform 0.3s @ease-in-out,
+    box-shadow 0.3s @ease-in-out;
+  border-radius: 8px;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: @box-shadow-lg;
+  }
+
+  :deep(.ant-card-meta-title) {
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  :deep(.ant-card-meta-description) {
+    color: @text-color-secondary;
+    line-height: 1.6;
+  }
 }
 
-.section h2 {
-  margin-bottom: 20px;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
+.article-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
 }
 
-.card-summary {
-  font-size: 14px;
-  color: #666;
-}
-
-.articles,
-.news {
+.stats-bar {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem 0 0;
+  margin-top: 1rem;
+  border-top: 1px solid @border-color-base;
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: @text-color-secondary;
+
+    &:hover {
+      color: @primary-color;
+      cursor: pointer;
+    }
+  }
 }
 
-.article,
-.news-item {
-  background: #f0f2f5;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 4px;
-}
+@media (max-width: @screen-sm) {
+  .custom-carousel :deep(.slick-slide) {
+    height: 300px;
+  }
 
-.article h3,
-.news-item h3 {
-  margin: 0 0 10px 0;
-}
+  .carousel-caption .poetry-text {
+    font-size: 1.1rem;
+  }
 
-.article p,
-.news-item p {
-  margin: 0;
+  .section-title {
+    font-size: 1.5rem;
+  }
 }
 </style>
