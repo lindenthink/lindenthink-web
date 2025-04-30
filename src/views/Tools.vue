@@ -148,7 +148,7 @@ const quickEntries = tools.flatMap((tool) =>
   width: 50px;
   font-size: 13px;
   padding-left: 4px;
-  border-left: #1890ff 3px solid;
+  border-left: #1890ff 2px solid;
 }
 
 .tools-container {
@@ -162,17 +162,19 @@ const quickEntries = tools.flatMap((tool) =>
       .btn();
 
       &:hover {
-        transform: translateX(8px);
+        transform: translateY(-2px);
         color: @tools-color;
       }
     }
 
     .quick-btn {
       .btn();
+      border: none;
+      background: linear-gradient(45deg, @tools-color, #40a9ff);
+      color: white;
 
       &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(@tools-color, 0.2);
+        opacity: 0.9;
       }
     }
   }
