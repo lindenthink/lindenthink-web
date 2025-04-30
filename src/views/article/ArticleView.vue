@@ -12,7 +12,7 @@
           </a-tab-pane>
           <a-tab-pane key="2" tab="目录">
             <div class="article-toc-content">
-              <a-anchor :affix="false" :offset-top="40" show-ink-in-fixed>
+              <a-anchor :affix="false" :offset-top="55" show-ink-in-fixed>
                 <a-anchor-link
                   v-for="(anchor, index) in anchors"
                   :key="index"

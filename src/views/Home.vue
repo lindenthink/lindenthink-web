@@ -151,12 +151,12 @@ const carouselImgs = reactive([
   },
   {
     id: 2,
-    desc: '知识库+在线工具+工作台，打造一站式服务。',
+    desc: '知识库+在线工具+工作台，构建一站式服务。',
     url: '/2.jpg',
   },
   {
     id: 3,
-    desc: '大漠孤烟直，长河落日圆。',
+    desc: '行至水穷处，坐看云起时。',
     url: '/3.jpg',
   },
 ])
@@ -164,15 +164,16 @@ const carouselImgs = reactive([
 
 <style scoped lang="less">
 @import '@/styles/variables.less';
+@carousel-height: 300px;
 
 .custom-carousel {
-  margin: 16px;
+  margin: 20px 16px 0px 16px;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: @box-shadow-base;
 
   :deep(.slick-slide) {
-    height: 300px;
+    height: @carousel-height;
     position: relative;
   }
 }
@@ -190,7 +191,7 @@ const carouselImgs = reactive([
 
 .carousel-caption {
   position: absolute;
-  top: 190px;
+  top: @carousel-height - 110px;
   left: 0;
   right: 0;
   padding: 2.5rem;

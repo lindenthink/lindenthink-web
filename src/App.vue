@@ -66,7 +66,7 @@
         <router-view :style="{ background: '#fff' }"> </router-view>
       </a-layout-content>
 
-      <a-layout-footer :style="{ textAlign: 'center', margin: '36px 0 24px 0' }">
+      <a-layout-footer :style="{ textAlign: 'center' }">
         <div>菩提思 ©2023-{{ new Date().getFullYear() }} 版权所有</div>
         <div>
           <a href="/about" target="_blank">关于本站</a>
