@@ -65,7 +65,12 @@
               <div class="info-cell task-info task-title">任务详情</div>
             </div>
             <div class="time-scale" :style="{ width: timelineWidth + 'px' }">
-              <div v-for="(date, index) in timeline" :key="index" class="time-cell">
+              <div
+                v-for="(date, index) in timeline"
+                :key="index"
+                class="time-cell"
+                :class="{ 'today-cell': isToday(date) }"
+              >
                 {{ date }}
               </div>
             </div>
@@ -161,7 +166,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import dayjs from 'dayjs'
 import minMax from 'dayjs/plugin/minMax'
 import { message } from 'ant-design-vue'
@@ -191,6 +196,39 @@ const timeline = computed(() => {
   const days = end.diff(start, 'day') + 1
 
   return Array.from({ length: days }, (_, i) => start.add(i, 'day').format('MM/DD'))
+})
+
+const isToday = (dateStr) => {
+  const date = dayjs(dateStr, 'MM/DD')
+  return date.isSame(dayjs(), 'day')
+}
+
+// 添加样式
+const todayIndex = computed(() => {
+  return timeline.value.findIndex((d) => isToday(d))
+})
+
+// 添加滚动方法
+const scrollToToday = () => {
+  if (todayIndex.value === -1) return
+
+  nextTick(() => {
+    const container = document.querySelector('.gantt-body')
+    if (!container) return
+
+    const scrollLeft = todayIndex.value * CELL_WIDTH - container.clientWidth / 2
+    container.scrollTo({
+      left: Math.max(0, scrollLeft),
+      behavior: 'smooth',
+    })
+  })
+}
+
+// 在项目选择变化时触发
+watch(selectedProject, () => {
+  if (selectedProject.value) {
+    scrollToToday()
+  }
 })
 
 // 添加现有参与人选项
@@ -564,6 +602,21 @@ function deleteFromTrash(item) {
   text-align: center;
   border-right: 1px solid #e8e8e8;
   font-size: 12px;
+}
+
+.today-cell {
+  background-color: #fffb8f !important;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ff4d4f;
+  }
 }
 
 .gantt-body {
