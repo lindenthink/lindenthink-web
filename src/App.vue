@@ -27,25 +27,21 @@
           <a-input-search placeholder="搜索..." enter-button style="max-width: 300px" @search="onSearch" />
           <a-dropdown>
             <a style="margin-right: 2em" @click.prevent>
-              <a-avatar :size="40">
+              <a-avatar v-if="!userInfo?.avatar" :size="40">
                 <template #icon>
                   <UserOutlined />
                 </template>
               </a-avatar>
+              <a-avatar v-else :size="40" :src="userInfo.avatar" alt="用户头像" />
+              <span v-if="userInfo?.nickname" class="nickname">{{ userInfo.nickname }}</span>
             </a>
             <template #overlay>
               <a-menu>
-                <a-menu-item>
-                  <a href="javascript:;">登陆</a>
+                <a-menu-item :disabled="isLoggedIn">
+                  <a href="javascript:;" @click="showLoginModal = true">扫码登录</a>
                 </a-menu-item>
-                <a-menu-item>
-                  <a href="javascript:;">注册账号</a>
-                </a-menu-item>
-                <a-menu-item>
-                  <a href="javascript:;">修改密码</a>
-                </a-menu-item>
-                <a-menu-item>
-                  <a href="javascript:;">退出</a>
+                <a-menu-item :disabled="!isLoggedIn">
+                  <a href="javascript:;" @click="handleLogout">退出</a>
                 </a-menu-item>
               </a-menu>
             </template>
@@ -75,15 +71,18 @@
         </div>
       </a-layout-footer>
     </a-layout>
+    <WechatLogin v-model:visible="showLoginModal" @login-success="handleLoginSuccess" />
   </a-config-provider>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { UserOutlined } from '@ant-design/icons-vue'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import { useMediaQuery } from '@vueuse/core'
+import WechatLogin from '@/components/WechatLogin.vue'
+import { message } from 'ant-design-vue'
 
 // import MyAudioPlayer from '@/components/common/AudioPlayer.vue'
 
@@ -93,6 +92,9 @@ const router = useRouter()
 const currentMenu = ref(['/'])
 const drawerVisible = ref(false)
 const isMobile = useMediaQuery('(max-width: 768px)')
+const showLoginModal = ref(false)
+const userInfo = ref(null)
+const isLoggedIn = ref(false)
 
 onMounted(() => {
   const pathname = location.pathname
@@ -109,9 +111,29 @@ onMounted(() => {
     const menu = newValue[0]
     router.push({ name: menu })
   })
+
+  const storedUser = localStorage.getItem('userInfo')
+  if (storedUser) {
+    userInfo.value = JSON.parse(storedUser)
+    isLoggedIn.value = true
+  }
 })
-const onSearch = (value: string) => {
+const onSearch = (value) => {
   console.log('搜索内容:', value)
+}
+
+const handleLoginSuccess = (loginUserInfo) => {
+  isLoggedIn.value = true
+  userInfo.value = loginUserInfo
+  localStorage.setItem('userInfo', JSON.stringify(loginUserInfo))
+  message.success(`欢迎回来，${loginUserInfo.nickname}`)
+}
+
+const handleLogout = () => {
+  isLoggedIn.value = false
+  userInfo.value = null
+  localStorage.removeItem('userInfo')
+  message.success('已退出登录')
 }
 </script>
 
@@ -169,7 +191,31 @@ const onSearch = (value: string) => {
   cursor: pointer;
 }
 
-.ant-avatar:hover {
-  background-color: #1890ff;
+.ant-avatar {
+  transition: all 0.3s;
+
+  img {
+    object-fit: cover;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+// 禁用状态样式
+.ant-menu-item-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+
+  a {
+    color: inherit !important;
+  }
+}
+
+.nickname {
+  margin-left: 8px;
+  color: #555;
+  font-weight: 600;
 }
 </style>
