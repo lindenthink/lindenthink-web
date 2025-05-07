@@ -41,7 +41,11 @@
                   <a href="javascript:;" @click="showLoginModal = true">扫码登录</a>
                 </a-menu-item>
                 <a-menu-item :disabled="!isLoggedIn">
-                  <a href="javascript:;" @click="handleLogout">退出</a>
+                  <a href="javascript:;" @click="showSettingsModal = true">系统设置</a>
+                </a-menu-item>
+                <a-menu-divider />
+                <a-menu-item :disabled="!isLoggedIn">
+                  <a href="javascript:;" @click="handleLogout">退出登录</a>
                 </a-menu-item>
               </a-menu>
             </template>
@@ -72,6 +76,8 @@
       </a-layout-footer>
     </a-layout>
     <WechatLogin v-model:visible="showLoginModal" @login-success="handleLoginSuccess" />
+
+    <SystemSettings v-model:visible="showSettingsModal" />
   </a-config-provider>
 </template>
 
@@ -81,8 +87,12 @@ import { useRouter } from 'vue-router'
 import { UserOutlined } from '@ant-design/icons-vue'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import { useMediaQuery } from '@vueuse/core'
-import WechatLogin from '@/components/WechatLogin.vue'
 import { message } from 'ant-design-vue'
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
+
+import WechatLogin from '@/components/WechatLogin.vue'
+import SystemSettings from '@/components/SystemSettings.vue'
 
 // import MyAudioPlayer from '@/components/common/AudioPlayer.vue'
 
@@ -93,8 +103,10 @@ const currentMenu = ref(['/'])
 const drawerVisible = ref(false)
 const isMobile = useMediaQuery('(max-width: 768px)')
 const showLoginModal = ref(false)
-const userInfo = ref(null)
-const isLoggedIn = ref(false)
+
+const userStore = useUserStore()
+const { isLoggedIn, userInfo } = storeToRefs(userStore)
+const showSettingsModal = ref(false)
 
 onMounted(() => {
   const pathname = location.pathname
@@ -114,8 +126,7 @@ onMounted(() => {
 
   const storedUser = localStorage.getItem('userInfo')
   if (storedUser) {
-    userInfo.value = JSON.parse(storedUser)
-    isLoggedIn.value = true
+    userStore.login(JSON.parse(storedUser))
   }
 })
 const onSearch = (value) => {
@@ -123,16 +134,12 @@ const onSearch = (value) => {
 }
 
 const handleLoginSuccess = (loginUserInfo) => {
-  isLoggedIn.value = true
-  userInfo.value = loginUserInfo
-  localStorage.setItem('userInfo', JSON.stringify(loginUserInfo))
+  userStore.login(loginUserInfo)
   message.success(`欢迎回来，${loginUserInfo.nickname}`)
 }
 
 const handleLogout = () => {
-  isLoggedIn.value = false
-  userInfo.value = null
-  localStorage.removeItem('userInfo')
+  userStore.logout()
   message.success('已退出登录')
 }
 </script>

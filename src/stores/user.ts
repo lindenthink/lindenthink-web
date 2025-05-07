@@ -1,18 +1,33 @@
-import { ref } from 'vue'
-import { defineStore, acceptHMRUpdate } from 'pinia'
+import { defineStore } from 'pinia'
 
-interface User {
-  name?: string
-  id?: number
-  isAdmin?: boolean
+interface UserInfo {
+  nickname: string
+  avatar: string
+  bio?: string
+  [key: string]: any
 }
 
-export const useUserStore = defineStore('user', () => {
-  const user = ref<User>({})
-
-  return { user }
+export const useUserStore = defineStore('user', {
+  state: () => ({
+    isLoggedIn: false,
+    userInfo: null as UserInfo | null,
+  }),
+  actions: {
+    login(userData: UserInfo) {
+      this.isLoggedIn = true
+      this.userInfo = userData
+      localStorage.setItem('userInfo', JSON.stringify(userData))
+    },
+    logout() {
+      this.isLoggedIn = false
+      this.userInfo = null
+      localStorage.removeItem('userInfo')
+    },
+    updateProfile(updateData: Partial<UserInfo>) {
+      if (this.userInfo) {
+        this.userInfo = { ...this.userInfo, ...updateData }
+        localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+      }
+    },
+  },
 })
-
-if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useUserStore, import.meta.hot))
-}
