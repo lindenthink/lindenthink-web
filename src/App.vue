@@ -20,7 +20,7 @@
             <a-button v-else icon="menu" @click="drawerVisible = true" />
           </div>
           <div class="search-wrapper">
-            <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..."  style="max-width: 300px"
+            <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..." style="max-width: 300px"
               @search="handleSearch" @focus="showResults = true" @blur="handleSearchBlur">
               <template #enterButton>
                 <a-button type="primary">搜索</a-button>
@@ -37,9 +37,12 @@
                   <a-list item-layout="horizontal" :data-source="section">
                     <template #renderItem="{ item }">
                       <a-list-item @click="goToSearchResult(item)">
-                        <a-list-item-meta :description="item.description">
+                        <a-list-item-meta>
                           <template #title>
-                            <a>{{ item.title }}</a>
+                            <a v-html="highlightKeywords(item.title, searchKeyword)" />
+                          </template>
+                          <template #description>
+                            <span v-html="highlightKeywords(item.description, searchKeyword)" />
                           </template>
                         </a-list-item-meta>
                       </a-list-item>
@@ -263,6 +266,13 @@ watch(searchKeyword, (val) => {
     searchResults.value = []
   }
 })
+
+const highlightKeywords = (text, keyword) => {
+  if (!text || !keyword) return text
+  const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const regex = new RegExp(`(${escapedKeyword})`, 'gi')
+  return text.replace(regex, '<span class="highlight">$1</span>')
+}
 </script>
 
 <style lang="less" scoped>
@@ -357,7 +367,7 @@ watch(searchKeyword, (val) => {
 }
 
 .search-results {
-  padding:0 0 10px 10px;
+  padding: 0 0 10px 10px;
   position: absolute;
   top: 40px; // 根据搜索框高度调整
   left: 50%;
@@ -378,6 +388,7 @@ watch(searchKeyword, (val) => {
     left: 5vw;
     transform: none;
   }
+
   .empty-tips {
     padding: 20px;
     color: #999;
@@ -402,6 +413,21 @@ watch(searchKeyword, (val) => {
         background-color: #fafafa;
       }
     }
+  }
+}
+
+:deep(.ant-list-item-meta) {
+  .highlight {
+    color: #e94117;
+    font-weight: 500;
+    background-color: rgba(24, 144, 255, 0.1);
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+
+  // 允许描述字段换行
+  &-description {
+    white-space: pre-wrap;
   }
 }
 </style>
