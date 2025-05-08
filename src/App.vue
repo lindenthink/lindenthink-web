@@ -9,14 +9,9 @@
             <img src="/logo.jpg" width="42" style="margin: 0 1.5em" />
             <img src="/title.png" width="130" />
           </div>
-          <div class="menu-container">
-            <a-menu
-              v-if="!isMobile"
-              v-model:selected-keys="currentMenu"
-              mode="horizontal"
-              :theme="theam"
-              :style="{ fontSize: '16px' }"
-            >
+          <div>
+            <a-menu v-if="!isMobile" v-model:selected-keys="currentMenu" mode="horizontal" :theme="theam"
+              :style="{ fontSize: '16px' }">
               <a-menu-item key="home">首页</a-menu-item>
               <a-menu-item key="articles">知识库</a-menu-item>
               <a-menu-item key="tools">工具箱</a-menu-item>
@@ -24,7 +19,36 @@
             </a-menu>
             <a-button v-else icon="menu" @click="drawerVisible = true" />
           </div>
-          <a-input-search placeholder="搜索..." enter-button style="max-width: 300px" @search="onSearch" />
+          <div class="search-wrapper">
+            <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..."  style="max-width: 300px"
+              @search="handleSearch" @focus="showResults = true" @blur="handleSearchBlur">
+              <template #enterButton>
+                <a-button type="primary">搜索</a-button>
+              </template>
+            </a-input-search>
+            <div v-if="showResults" class="search-results">
+              <a-spin v-if="searchLoading" />
+              <template v-else>
+                <div v-if="searchResults.length === 0" class="empty-tips">
+                  暂无相关结果
+                </div>
+                <div v-else class="result-section" v-for="(section, type) in resultCategories" :key="type">
+                  <div class="section-title">{{ type === 'article' ? '文章' : '工具' }}</div>
+                  <a-list item-layout="horizontal" :data-source="section">
+                    <template #renderItem="{ item }">
+                      <a-list-item @click="goToSearchResult(item)">
+                        <a-list-item-meta :description="item.description">
+                          <template #title>
+                            <a>{{ item.title }}</a>
+                          </template>
+                        </a-list-item-meta>
+                      </a-list-item>
+                    </template>
+                  </a-list>
+                </div>
+              </template>
+            </div>
+          </div>
           <a-dropdown>
             <a style="margin-right: 2em" @click.prevent>
               <a-avatar v-if="!userInfo?.avatar" :size="40">
@@ -82,11 +106,11 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { UserOutlined } from '@ant-design/icons-vue'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
-import { useMediaQuery } from '@vueuse/core'
+import { useMediaQuery, useDebounceFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
@@ -107,6 +131,11 @@ const showLoginModal = ref(false)
 const userStore = useUserStore()
 const { isLoggedIn, userInfo } = storeToRefs(userStore)
 const showSettingsModal = ref(false)
+
+const searchKeyword = ref('')
+const searchResults = ref([])
+const searchLoading = ref(false)
+const showResults = ref(false)
 
 onMounted(() => {
   const pathname = location.pathname
@@ -129,9 +158,6 @@ onMounted(() => {
     userStore.login(JSON.parse(storedUser))
   }
 })
-const onSearch = (value) => {
-  console.log('搜索内容:', value)
-}
 
 const handleLoginSuccess = (loginUserInfo) => {
   userStore.login(loginUserInfo)
@@ -142,6 +168,101 @@ const handleLogout = () => {
   userStore.logout()
   message.success('已退出登录')
 }
+
+const debouncedSearch = useDebounceFn(async (keyword) => {
+  if (!keyword) {
+    searchResults.value = []
+    return
+  }
+  try {
+    searchLoading.value = true
+    // 模拟调用接口延迟
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // 模拟数据
+    searchResults.value = [
+      {
+        id: '1',
+        type: 'article',
+        title: 'Vue3使用指南',
+        description: '最新Vue3特性详解',
+        route: '/articles/2'
+      },
+      {
+        id: '2',
+        type: 'article',
+        title: 'Vue3使用指南',
+        description: '最新Vue3特性详解',
+        route: '/articles/2'
+      },
+      {
+        id: '3',
+        type: 'article',
+        title: 'Vue3使用指南',
+        description: '最新Vue3特性详解',
+        route: '/articles/2'
+      },
+      {
+        id: '4',
+        type: 'article',
+        title: 'Vue3使用指南',
+        description: '最新Vue3特性详解',
+        route: '/articles/2'
+      },
+      {
+        id: '5',
+        type: 'article',
+        title: 'Vue3使用指南',
+        description: '最新Vue3特性详解',
+        route: '/articles/2'
+      },
+      {
+        id: 'code-formatter',
+        type: 'tool',
+        title: '代码格式化工具',
+        description: '在线代码格式化工具',
+        route: '/tools/code-formatter'
+      }
+    ]
+  } finally {
+    searchLoading.value = false
+  }
+}, 500)
+const handleSearch = (value) => {
+  searchKeyword.value = value
+  debouncedSearch(value)
+}
+const handleSearchBlur = () => {
+  if (!showResults.value) return
+  setTimeout(() => {
+    showResults.value = false
+  }, 200)
+}
+const goToSearchResult = (item) => {
+  if (item.type === 'article') {
+    router.push({ name: 'articles', query: { keyword: item.title } })
+  } else if (item.type === 'tool') {
+    router.push({ name: 'tools', query: { keyword: item.title } })
+  }
+}
+
+// 计算属性分类结果
+const resultCategories = computed(() => {
+  if (!searchResults.value.length) return {}
+  return {
+    article: searchResults.value.filter(item => item.type === 'article'),
+    tool: searchResults.value.filter(item => item.type === 'tool')
+  }
+})
+
+// 监听输入变化
+watch(searchKeyword, (val) => {
+  if (val) {
+    showResults.value = true
+    debouncedSearch(val)
+  } else {
+    searchResults.value = []
+  }
+})
 </script>
 
 <style lang="less" scoped>
@@ -224,5 +345,63 @@ const handleLogout = () => {
   margin-left: 8px;
   color: #555;
   font-weight: 600;
+}
+
+.search-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 500px;
+  margin: 0 20px;
+  display: flex;
+  align-items: center; // 新增垂直居中
+}
+
+.search-results {
+  padding:0 0 10px 10px;
+  position: absolute;
+  top: 40px; // 根据搜索框高度调整
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1050; // 高于头部z-index
+  width: 500px;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05);
+
+  // 移动端适配
+  @media (max-width: 768px) {
+    width: 90vw;
+    left: 5vw;
+    transform: none;
+  }
+  .empty-tips {
+    padding: 20px;
+    color: #999;
+    text-align: center;
+  }
+
+  .result-section {
+    .section-title {
+      font-weight: 600;
+      color: #1890ff;
+      padding: 0px 0;
+      border-bottom: 1px solid #f0f0f0;
+      margin-bottom: 8px;
+    }
+
+    .ant-list-item {
+      padding: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        background-color: #fafafa;
+      }
+    }
+  }
 }
 </style>
