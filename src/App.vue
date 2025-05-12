@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template class="app">
   <!-- <AudioPlayer id="6991674483" /> -->
   <a-config-provider :locale="locale">
@@ -10,18 +11,29 @@
             <img src="/title.png" width="130" />
           </div>
           <div>
-            <a-menu v-if="!isMobile" v-model:selected-keys="currentMenu" mode="horizontal" :theme="theam"
-              :style="{ fontSize: '16px' }">
+            <a-menu
+              v-if="!isMobile"
+              v-model:selected-keys="currentMenu"
+              mode="horizontal"
+              :theme="theam"
+              :style="{ fontSize: '16px' }"
+            >
               <a-menu-item key="home">首页</a-menu-item>
-              <a-menu-item key="articles">知识库</a-menu-item>
-              <a-menu-item key="tools">工具箱</a-menu-item>
+              <a-menu-item key="articles">文章</a-menu-item>
+              <a-menu-item key="tools">工具</a-menu-item>
               <a-menu-item key="workbench">工作台</a-menu-item>
             </a-menu>
             <a-button v-else icon="menu" @click="drawerVisible = true" />
           </div>
           <div class="search-wrapper">
-            <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..." style="max-width: 300px"
-              @search="handleSearch" @focus="showResults = true" @blur="handleSearchBlur">
+            <a-input-search
+              v-model:value="searchKeyword"
+              placeholder="搜索文章或工具..."
+              style="max-width: 300px"
+              @search="handleSearch"
+              @focus="showResults = true"
+              @blur="handleSearchBlur"
+            >
               <template #enterButton>
                 <a-button type="primary">搜索</a-button>
               </template>
@@ -29,10 +41,8 @@
             <div v-if="showResults" class="search-results">
               <a-spin v-if="searchLoading" />
               <template v-else>
-                <div v-if="searchResults.length === 0" class="empty-tips">
-                  暂无相关结果
-                </div>
-                <div v-else class="result-section" v-for="(section, type) in resultCategories" :key="type">
+                <div v-if="searchResults.length === 0" class="empty-tips">暂无相关结果</div>
+                <div v-for="(section, type) in resultCategories" v-else :key="type" class="result-section">
                   <div class="section-title">{{ type === 'article' ? '文章' : '工具' }}</div>
                   <a-list item-layout="horizontal" :data-source="section">
                     <template #renderItem="{ item }">
@@ -188,43 +198,43 @@ const debouncedSearch = useDebounceFn(async (keyword) => {
         type: 'article',
         title: 'Vue3使用指南',
         description: '最新Vue3特性详解',
-        route: '/articles/2'
+        route: '/articles/2',
       },
       {
         id: '2',
         type: 'article',
         title: 'Vue3使用指南',
         description: '最新Vue3特性详解',
-        route: '/articles/2'
+        route: '/articles/2',
       },
       {
         id: '3',
         type: 'article',
         title: 'Vue3使用指南',
         description: '最新Vue3特性详解',
-        route: '/articles/2'
+        route: '/articles/2',
       },
       {
         id: '4',
         type: 'article',
         title: 'Vue3使用指南',
         description: '最新Vue3特性详解',
-        route: '/articles/2'
+        route: '/articles/2',
       },
       {
         id: '5',
         type: 'article',
         title: 'Vue3使用指南',
         description: '最新Vue3特性详解',
-        route: '/articles/2'
+        route: '/articles/2',
       },
       {
         id: 'code-formatter',
         type: 'tool',
         title: '代码格式化工具',
         description: '在线代码格式化工具',
-        route: '/tools/code-formatter'
-      }
+        route: '/tools/code-formatter',
+      },
     ]
   } finally {
     searchLoading.value = false
@@ -252,8 +262,8 @@ const goToSearchResult = (item) => {
 const resultCategories = computed(() => {
   if (!searchResults.value.length) return {}
   return {
-    article: searchResults.value.filter(item => item.type === 'article'),
-    tool: searchResults.value.filter(item => item.type === 'tool')
+    article: searchResults.value.filter((item) => item.type === 'article'),
+    tool: searchResults.value.filter((item) => item.type === 'tool'),
   }
 })
 
@@ -378,7 +388,8 @@ const highlightKeywords = (text, keyword) => {
   overflow-y: auto;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
+  box-shadow:
+    0 3px 6px -4px rgba(0, 0, 0, 0.12),
     0 6px 16px 0 rgba(0, 0, 0, 0.08),
     0 9px 28px 8px rgba(0, 0, 0, 0.05);
 
