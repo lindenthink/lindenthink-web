@@ -30,14 +30,11 @@
               v-model:value="searchKeyword"
               placeholder="搜索文章或工具..."
               style="max-width: 300px"
+              allow-clear
               @search="handleSearch"
               @focus="showResults = true"
               @blur="handleSearchBlur"
-            >
-              <template #enterButton>
-                <a-button type="primary">搜索</a-button>
-              </template>
-            </a-input-search>
+            />
             <div v-if="showResults" class="search-results">
               <a-spin v-if="searchLoading" />
               <template v-else>

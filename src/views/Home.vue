@@ -28,33 +28,10 @@
 
       <!-- Content Sections -->
       <div class="content-container">
-        <!-- Latest News Section -->
-        <section class="dynamic-section">
-          <h2 class="section-title">
-            <bulb-outlined class="title-icon" />
-            最新动态
-          </h2>
-          <a-row :gutter="[24, 24]">
-            <a-col v-for="news in latestNews" :key="news.id" :xs="24" :sm="12" :lg="8">
-              <a-card hoverable class="news-card" :cover="news.cover">
-                <template #actions>
-                  <span><eye-outlined /> {{ news.views }}</span>
-                  <span><clock-circle-outlined /> {{ news.date }}</span>
-                </template>
-                <a-card-meta :title="news.title" :description="news.summary">
-                  <template #avatar>
-                    <a-avatar :src="news.avatar" />
-                  </template>
-                </a-card-meta>
-              </a-card>
-            </a-col>
-          </a-row>
-        </section>
-
         <!-- Popular Articles Section -->
         <section class="articles-section">
           <h2 class="section-title">
-            <fire-outlined class="title-icon" />
+            <fire-outlined class="title-icon" style="color: orangered" />
             热门文章
           </h2>
           <a-row :gutter="[24, 24]">
@@ -66,6 +43,10 @@
                 <a-card-meta :title="article.title" :description="article.summary" />
                 <div class="stats-bar">
                   <div class="stat-item">
+                    <eye-outlined />
+                    <span>{{ article.likes }}</span>
+                  </div>
+                  <div class="stat-item">
                     <like-outlined />
                     <span>{{ article.likes }}</span>
                   </div>
@@ -73,10 +54,29 @@
                     <message-outlined />
                     <span>{{ article.comments }}</span>
                   </div>
-                  <div class="stat-item">
-                    <share-alt-outlined />
-                  </div>
                 </div>
+              </a-card>
+            </a-col>
+          </a-row>
+        </section>
+        <!-- Latest News Section -->
+        <section class="dynamic-section">
+          <h2 class="section-title">
+            <bulb-outlined class="title-icon" />
+            最新动态
+          </h2>
+          <a-row :gutter="[24, 24]">
+            <a-col v-for="news in latestNews" :key="news.id" :xs="24" :sm="12" :lg="8">
+              <a-card hoverable class="news-card" :cover="news.cover">
+                <template #actions>
+                  <span><edit-outlined /> {{ news.author }}</span>
+                  <span><clock-circle-outlined /> {{ news.date }}</span>
+                </template>
+                <a-card-meta :title="news.title" :description="news.summary">
+                  <template #avatar>
+                    <a-avatar :src="news.avatar" />
+                  </template>
+                </a-card-meta>
               </a-card>
             </a-col>
           </a-row>
@@ -94,11 +94,11 @@ import {
   RightCircleFilled,
   BulbOutlined,
   FireOutlined,
+  EditOutlined,
   EyeOutlined,
   ClockCircleOutlined,
   LikeOutlined,
   MessageOutlined,
-  ShareAltOutlined,
 } from '@ant-design/icons-vue'
 
 const popularArticles = reactive([
@@ -120,7 +120,15 @@ const popularArticles = reactive([
     comments: 38,
     cover: '/1.png',
   },
-  // 其他数据...
+  {
+    id: 3,
+    title: 'Vue3性能优化实战',
+    summary: '深入探讨Vue3组合式API的最佳实践...',
+    category: '前端开发',
+    likes: 245,
+    comments: 38,
+    cover: '/1.png',
+  },
 ])
 
 const latestNews = reactive([
@@ -129,15 +137,15 @@ const latestNews = reactive([
     title: '新功能发布',
     summary: '新增实时协作编辑功能...',
     date: '2024-03-15',
-    views: 1567,
+    author: 'Linden',
     avatar: 'https://ui-avatars.com/api?name=jack&background=random',
   },
   {
     id: 2,
-    title: '新功能发布',
-    summary: '新增实时协作编辑功能...',
+    title: '新文章发布',
+    summary: 'Vue3性能优化实战',
     date: '2024-03-15',
-    views: 1567,
+    author: 'Linden',
     avatar: 'https://ui-avatars.com/api?name=lucy&background=random',
   },
   // 其他数据...
@@ -151,7 +159,7 @@ const carouselImgs = reactive([
   },
   {
     id: 2,
-    desc: '知识库+在线工具+工作台，构建一站式服务。',
+    desc: '知识库+在线工具+工作台，提供一站式服务。',
     url: '/2.jpg',
   },
   {
