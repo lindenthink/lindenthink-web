@@ -304,7 +304,7 @@ function handleSelectProject(keys, { node }) {
 function handleAddRoot() {
   formData.value = initFormData() // 重置表单数据
   formData.value.assignees = ['全员']
-  dateRange.value = [dayjs(), dayjs().add(3, 'day')]
+  dateRange.value = [dayjs(), dayjs().add(1, 'day')]
   showModal.value = true
 }
 
@@ -356,7 +356,6 @@ async function handleSave() {
 
   selectedProject.value = newItem
 
-  updateProjectDates()
   persistData()
   resetForm()
   message.success(isEditMode ? '更新成功' : '创建成功')
@@ -409,26 +408,6 @@ function getProgressColor(progress) {
   if (progress < 30) return '#ff4d4f'
   if (progress < 70) return '#faad14'
   return '#52c41a'
-}
-
-function updateProjectDates() {
-  const update = (nodes) => {
-    return nodes.map((node) => {
-      if (node.children?.length) {
-        const newChildren = update(node.children)
-        const dates = newChildren.flatMap((c) => [dayjs(c.startDate), dayjs(c.endDate)])
-        return {
-          ...node,
-          startDate: dayjs.min(dates).format('YYYY-MM-DD'),
-          endDate: dayjs.max(dates).format('YYYY-MM-DD'),
-          children: newChildren,
-        }
-      }
-      return node
-    })
-  }
-
-  projects.value = update(projects.value)
 }
 
 function validateForm() {
