@@ -87,9 +87,6 @@ const rightLineNumbers = computed(() => generateLineNumbers(diffResult.value?.ri
 
 // 行号生成逻辑
 const generateLineNumbers = (html) => {
-  const isCharMode = diffMode.value === 'char'
-  if (isCharMode) return [] // 字符模式不显示行号
-
   const lineCount = (html.match(/<div/g) || []).length
   return Array.from({ length: lineCount }, (_, i) => i + 1)
 }
