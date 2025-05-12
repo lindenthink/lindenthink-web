@@ -119,6 +119,17 @@ const tools = [
       { title: '密码管理', path: '/tools/password-manager' },
     ],
   },
+  {
+    title: '比对',
+    children: [
+      {
+        title: '文本比对',
+        path: '/tools/text-diff',
+        quickEntry: true,
+        quickName: '文本比对',
+      },
+    ],
+  },
 ]
 const quickEntries = tools.flatMap((tool) =>
   tool.children

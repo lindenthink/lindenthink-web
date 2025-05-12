@@ -16,6 +16,7 @@
     "cronstrue": "^2.56.0",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.13",
+    "diff": "^7.0.0",
     "highlight.js": "^11.11.1",
     "pinia": "2.0.5",
     "qrcode.vue": "^3.6.0",
@@ -27,21 +28,21 @@
   },
   "devDependencies": {
     "@rollup/pluginutils": "4.1.1",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "@typescript-eslint/parser": "^8.28.0",
     "@vitejs/plugin-vue": "1.6.1",
     "@vue/compiler-sfc": "3.2.6",
-    "less": "4.1.1",
-    "mockjs": "^1.1.0",
-    "typescript": "4.3.2",
-    "vite": "2.5.4",
-    "vite-plugin-mock": "^3.0.2",
-    "vue-tsc": "0.2.2",
     "eslint": "8.57.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.5",
     "eslint-plugin-vue": "9.33.0",
-    "vue-eslint-parser": "^10.1.1",
+    "less": "4.1.1",
+    "mockjs": "^1.1.0",
     "prettier": "3.5.3",
-    "@typescript-eslint/eslint-plugin": "^8.28.0",
-    "@typescript-eslint/parser": "^8.28.0"
+    "typescript": "4.3.2",
+    "vite": "2.5.4",
+    "vite-plugin-mock": "^3.0.2",
+    "vue-eslint-parser": "^10.1.1",
+    "vue-tsc": "0.2.2"
   }
 }

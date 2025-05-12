@@ -105,6 +105,11 @@ const routes = [
         path: 'password-manager',
         component: () => import('@/views/tools/PasswordManager.vue'),
       },
+      {
+        path: 'text-diff',
+        component: () => import('@/views/tools/TextDiff.vue'),
+        meta: { title: '文本比对工具' },
+      },
     ],
   },
   {
