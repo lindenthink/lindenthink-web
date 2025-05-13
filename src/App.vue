@@ -438,4 +438,8 @@ const highlightKeywords = (text, keyword) => {
     white-space: pre-wrap;
   }
 }
+
+:deep(.ant-layout-footer) {
+  padding: 10px 0;
+}
 </style>

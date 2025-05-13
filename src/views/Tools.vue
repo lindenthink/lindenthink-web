@@ -85,8 +85,8 @@ const tools = [
   {
     title: '加解密',
     children: [
-      { title: 'RSA', path: '/tools/encrypt-rsa', quickEntry: true, quickName: `RSA加解密` },
-      { title: 'AES', path: '/tools/encrypt-aes' },
+      { title: 'RSA', path: '/tools/encrypt-rsa' },
+      { title: 'AES', path: '/tools/encrypt-aes', quickEntry: true, quickName: `AES加解密` },
     ],
   },
   {

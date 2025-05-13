@@ -8,7 +8,7 @@
           <a-textarea
             v-model:value="textLeft"
             placeholder="输入或粘贴文本1"
-            :rows="12"
+            :rows="8"
             allow-clear
             @input="handleInput"
           />
@@ -19,7 +19,7 @@
           <a-textarea
             v-model:value="textRight"
             placeholder="输入或粘贴文本2"
-            :rows="12"
+            :rows="8"
             allow-clear
             @input="handleInput"
           />
@@ -173,8 +173,8 @@ const handleInput = () => {
     user-select: none;
 
     div {
-      padding: 2px 4px;
-      line-height: 1.5;
+      padding: 0 4px;
+      font-size: 14px;
     }
   }
 
@@ -182,7 +182,6 @@ const handleInput = () => {
     flex: 1;
     padding: 10px;
     margin: 0;
-    white-space: pre-wrap;
 
     div {
       padding: 2px 4px;
