@@ -5,7 +5,7 @@
       <a-space direction="vertical" style="width: 100%">
         <!-- 正则表达式输入 -->
         <a-input-group compact>
-          <a-select v-model:value="regexFlags" style="width: 360px" mode="multiple">
+          <a-select v-model:value="regexFlags" style="width: 120px" mode="multiple">
             <a-select-option value="g">全局匹配(g)</a-select-option>
             <a-select-option value="i">忽略大小写(i)</a-select-option>
             <a-select-option value="m">多行模式(m)</a-select-option>
@@ -14,7 +14,7 @@
             v-model:value="regexPattern"
             placeholder="输入正则表达式，例如：\d+"
             allow-clear
-            style="width: calc(100% - 360px)"
+            style="width: calc(100% - 120px)"
           />
         </a-input-group>
 
@@ -59,7 +59,7 @@
 <script setup>
 import { ref, watchEffect } from 'vue'
 
-const regexPattern = ref('\\d+')
+const regexPattern = ref('')
 const regexFlags = ref(['g'])
 const testText = ref('')
 const matches = ref([])
@@ -74,18 +74,10 @@ watchEffect(() => {
       highlightText.value = testText.value
       return
     }
-
     const regex = new RegExp(regexPattern.value, regexFlags.value.join(''))
     const newMatches = [...testText.value.matchAll(regex)] || []
-
     // 更新匹配结果
     matches.value = newMatches
-
-    // 更新高亮文本
-    // highlightText.value = testText.value.replace(
-    //   regex,
-    //   '<span style="background-color: #fffbe6;padding: 2px 4px;border-radius: 2px;border: 1px solid #ffe58f;">$&</span>',
-    // )
     highlightText.value = testText.value.replace(regex, '<span class="highlight">$&</span>')
   } catch (e) {
     error.value = e.message
