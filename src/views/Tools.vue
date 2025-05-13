@@ -38,7 +38,7 @@
         </div>
 
         <!-- 内容区域 -->
-        <div class="content-area">
+        <div>
           <router-view></router-view>
         </div>
       </div>
@@ -120,13 +120,19 @@ const tools = [
     ],
   },
   {
-    title: '比对',
+    title: '文本',
     children: [
       {
         title: '文本比对',
         path: '/tools/text-diff',
         quickEntry: true,
         quickName: '文本比对',
+      },
+      {
+        title: '正则匹配',
+        path: '/tools/text-regular',
+        quickEntry: true,
+        quickName: '正则匹配',
       },
     ],
   },
@@ -143,49 +149,93 @@ const quickEntries = tools.flatMap((tool) =>
 
 <style scoped lang="less">
 @tools-color: #1890ff;
+@primary-color: #1890ff;
+@hover-color: #40a9ff;
+@bg-color: #f0faff;
 
 .btn {
-  height: 26px;
-  padding: 0 12px;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.3s;
-}
-
-.label {
-  display: inline-block;
-  width: 50px;
-  font-size: 13px;
-  padding-left: 4px;
-  border-left: #1890ff 2px solid;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 10px;
 }
 
 .tools-container {
-  margin: 10px auto;
+  margin: 10px 0 20px 0;
   padding: 0 24px;
 
+  // 按钮组统一样式
   .btns {
-    margin: 12px 0;
+    margin: 0 0 12px 0;
+    padding: 10px;
+    background: @bg-color;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
-    .sub-tool-btn {
-      .btn();
+    .label {
+      font-size: 14px;
+      font-weight: 500;
+      color: @primary-color;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
 
-      &:hover {
-        transform: translateY(-2px);
-        color: @tools-color;
+      &::before {
+        content: '';
+        display: block;
+        width: 3px;
+        height: 16px;
+        background: @primary-color;
+        margin-right: 8px;
       }
     }
 
-    .quick-btn {
+    // 分类工具按钮
+    .sub-tool-btn {
       .btn();
-      border: none;
-      background: linear-gradient(45deg, @tools-color, #40a9ff);
-      color: white;
+      border: 1px solid fadeout(@primary-color, 80%);
+      background: white;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
       &:hover {
-        opacity: 0.9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px fadeout(@primary-color, 80%);
+        border-color: @primary-color;
+        color: @primary-color !important;
+
+        &::after {
+          content: '→';
+          margin-left: 8px;
+          opacity: 0.8;
+        }
+      }
+    }
+
+    // 快捷入口按钮
+    .quick-btn {
+      .btn();
+      background: linear-gradient(135deg, @primary-color, @hover-color);
+      color: white !important;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s;
+      }
+
+      &:hover {
+        box-shadow: 0 4px 16px fadeout(@primary-color, 50%);
+
+        &::before {
+          left: 100%;
+        }
       }
     }
   }

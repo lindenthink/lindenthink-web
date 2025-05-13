@@ -110,6 +110,11 @@ const routes = [
         component: () => import('@/views/tools/TextDiff.vue'),
         meta: { title: '文本比对工具' },
       },
+      {
+        path: 'text-regular',
+        component: () => import('@/views/tools/TextRegular.vue'),
+        meta: { title: '正则匹配工具' },
+      },
     ],
   },
   {
