@@ -197,11 +197,10 @@ const regexSyntax = ref([
 }
 
 :deep(.highlight) {
-  background-color: #d8fdd3;
   padding: 2px 4px;
   border-radius: 2px;
-  border: 1px solid rgb(173, 248, 173);
-  color: rgb(25, 211, 25);
+  background-color: #f6ffed;
+  border: 1px solid #b7eb8f;
 }
 
 .regex-reference {
