@@ -7,8 +7,8 @@
       <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
         <div style="display: flex; align-items: center; justify-content: space-between; width: 99%">
           <div>
-            <img src="/logo.jpg" width="42" style="margin: 0 1.5em" />
-            <img src="/title.png" width="130" />
+            <!-- <img src="/logo.jpg" width="42" style="margin: 0 1.5em" /> -->
+            <img src="/title.png" width="130" style="margin: 0 1.5em" />
           </div>
           <div>
             <a-menu

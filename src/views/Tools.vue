@@ -1,6 +1,19 @@
 <template>
   <a-layout>
-    <a-layout-sider></a-layout-sider>
+    <a-layout-sider>
+      <!-- 快捷入口按钮组 -->
+      <a-card title="常用工具" :bordered="false" class="quick-btns">
+        <div class="btns">
+          <a-space wrap :size="[5, 5]">
+            <a-button v-for="entry in quickEntries" :key="entry.title" type="primary" ghost shape="round"
+              class="quick-btn" @click="router.push(entry.path)">
+              {{ entry.quickName }}
+            </a-button>
+          </a-space>
+        </div>
+      </a-card>
+
+    </a-layout-sider>
     <a-layout-content>
       <div class="tools-container">
         <!-- 主功能Tab页 -->
@@ -18,24 +31,6 @@
             </div>
           </a-tab-pane>
         </a-tabs>
-
-        <!-- 快捷入口按钮组 -->
-        <div class="btns">
-          <a-space wrap :size="[10, 10]">
-            <span class="label">常用</span>
-            <a-button
-              v-for="entry in quickEntries"
-              :key="entry.title"
-              type="primary"
-              ghost
-              shape="round"
-              class="quick-btn"
-              @click="router.push(entry.path)"
-            >
-              {{ entry.quickName }}
-            </a-button>
-          </a-space>
-        </div>
 
         <!-- 内容区域 -->
         <div>
@@ -151,7 +146,6 @@ const quickEntries = tools.flatMap((tool) =>
 @tools-color: #1890ff;
 @primary-color: #1890ff;
 @hover-color: #40a9ff;
-@bg-color: #f0faff;
 
 .btn {
   height: 24px;
@@ -162,76 +156,85 @@ const quickEntries = tools.flatMap((tool) =>
 .tools-container {
   margin: 10px 0 20px 0;
   padding: 0 24px;
+}
 
-  // 按钮组统一样式
-  .btns {
-    margin: 0 0 12px 0;
-    padding: 10px;
-    background: @bg-color;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+.quick-btns {
+  background-color: #fff;
+  position: sticky;
+  top: 120px;
+  z-index: 9;
+  margin-right: 10px;
+  padding: 10px 0px 0px 0px;
+  max-width: 200px;
+  left: 12%;
+}
 
-    .label {
-      font-size: 14px;
-      font-weight: 500;
-      color: @primary-color;
-      padding: 0 12px;
-      display: flex;
-      align-items: center;
+// 按钮组统一样式
+.btns {
+  margin: 0 0 12px 0;
+  border-radius: 8px;
 
-      &::before {
-        content: '';
-        display: block;
-        width: 3px;
-        height: 16px;
-        background: @primary-color;
-        margin-right: 8px;
+  .label {
+    font-size: 14px;
+    font-weight: 500;
+    color: @primary-color;
+    padding: 0 12px 0 0;
+    display: flex;
+    align-items: center;
+
+    &::before {
+      content: '';
+      display: block;
+      width: 3px;
+      height: 16px;
+      background: @primary-color;
+      margin-right: 8px;
+    }
+  }
+
+  // 分类工具按钮
+  .sub-tool-btn {
+    .btn();
+    border: 1px solid fadeout(@primary-color, 80%);
+    background: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px fadeout(@primary-color, 80%);
+      border-color: @primary-color;
+      color: @primary-color !important;
+
+      &::after {
+        content: '→';
+        margin-left: 8px;
+        opacity: 0.8;
       }
     }
+  }
 
-    // 分类工具按钮
-    .sub-tool-btn {
-      .btn();
-      border: 1px solid fadeout(@primary-color, 80%);
-      background: white;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  // 快捷入口按钮
+  .quick-btn {
+    .btn();
+    background: linear-gradient(135deg, @primary-color, @hover-color);
+    color: white !important;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
 
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px fadeout(@primary-color, 80%);
-        border-color: @primary-color;
-        color: @primary-color !important;
-
-        &::after {
-          content: '→';
-          margin-left: 8px;
-          opacity: 0.8;
-        }
-      }
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s;
     }
 
-    // 快捷入口按钮
-    .quick-btn {
-      .btn();
-      background: linear-gradient(135deg, @primary-color, @hover-color);
-      color: white !important;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-        transition: left 0.6s;
-      }
-
-      &:hover {
-        box-shadow: 0 4px 16px fadeout(@primary-color, 50%);
+    &:hover {
+      box-shadow: 0 4px 16px fadeout(@primary-color, 50%);
 
         &::before {
           left: 100%;
@@ -239,5 +242,4 @@ const quickEntries = tools.flatMap((tool) =>
       }
     }
   }
-}
 </style>
