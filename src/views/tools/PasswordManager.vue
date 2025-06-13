@@ -206,7 +206,7 @@ items.value = [
 
 <style scoped>
 .password-list {
-  margin-top: 16px;
+  height: 30vh;
   max-height: 70vh;
   overflow-y: auto;
 }

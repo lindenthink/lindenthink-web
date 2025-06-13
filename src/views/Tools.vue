@@ -149,8 +149,8 @@ const quickEntries = tools.flatMap((tool) =>
 
 .btn {
   height: 24px;
-  padding: 0 10px;
-  border-radius: 10px;
+  padding: 0 8px;
+  border-radius: 8px;
 }
 
 .tools-container {
@@ -204,12 +204,6 @@ const quickEntries = tools.flatMap((tool) =>
       box-shadow: 0 4px 12px fadeout(@primary-color, 80%);
       border-color: @primary-color;
       color: @primary-color !important;
-
-      &::after {
-        content: '→';
-        margin-left: 8px;
-        opacity: 0.8;
-      }
     }
   }
 
