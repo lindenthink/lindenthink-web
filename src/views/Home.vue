@@ -258,16 +258,24 @@ const carouselImgs = reactive([
 }
 
 .section-title {
-  display: flex;
-  align-items: center;
   font-size: 1.75rem;
   margin: 2rem 0 1.5rem;
   color: @heading-color;
 
   .title-icon {
-    margin-right: 0.8rem;
-    font-size: 1.5em;
+    font-size: 1.1em;
     color: @primary-color;
+  }
+  position: relative;
+  letter-spacing: 2px;
+  &::after {
+    content: '';
+    display: block;
+    width: 120px;
+    height: 4px;
+    background: linear-gradient(90deg, #2075f5, #19b4f1, transparent);
+    border-radius: 2px;
+    margin-top: 0.2em;
   }
 }
 
