@@ -20,7 +20,7 @@
             </a-button-group>
             <a-button type="primary" @click="createNewTodo">
               <template #icon><plus-outlined /></template>
-              新增
+              新增  
             </a-button>
             <a-button @click="showTrash = true">
               <template #icon><rest-outlined /></template>

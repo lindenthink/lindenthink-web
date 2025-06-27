@@ -301,8 +301,8 @@ const highlightKeywords = (text, keyword) => {
   min-width: 0;
   background: #ffffff;
   transition: all 0.2s;
-  min-width: 1000px;
-  flex: 1 1 55%;
+  min-width: 900px;
+  flex: 1 1 50%;
   margin: 10px;
   border-radius: 5px;
   padding: 0 !important;
@@ -328,7 +328,7 @@ const highlightKeywords = (text, keyword) => {
   line-height: 1.5715;
   font-feature-settings: 'tnum';
   position: fixed;
-  right: 15vw;
+  right: 18vw;
   bottom: 14vh;
   z-index: 10;
   width: 40px;

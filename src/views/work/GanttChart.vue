@@ -4,11 +4,11 @@
     <a-col :span="8">
       <a-card title="项目列表">
         <template #extra>
-          <a-button type="primary" style="margin-right: 5px" @click="handleAddRoot">
+          <a-button type="primary" size="small" style="margin-right: 5px" @click="handleAddRoot">
             <template #icon><plus-outlined /></template>
             新增
           </a-button>
-          <a-button @click="showTrash = true">
+          <a-button size="small" @click="showTrash = true">
             <template #icon><rest-outlined /></template>
             回收站
           </a-button>
