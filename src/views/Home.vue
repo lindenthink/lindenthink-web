@@ -152,9 +152,9 @@ const latestNews = reactive([
 ])
 
 const carouselImgs = reactive([
-  {
+{
     id: 1,
-    desc: '清明时节雨纷纷，路上行人欲断魂。',
+    desc: '接天莲叶无穷碧，映日荷花别样红。',
     url: '/1.jpg',
   },
   {
@@ -178,7 +178,7 @@ const carouselImgs = reactive([
   margin: 20px 16px 0px 16px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: @box-shadow-base;
+  // box-shadow: @box-shadow-base;
 
   :deep(.slick-slide) {
     height: @carousel-height;

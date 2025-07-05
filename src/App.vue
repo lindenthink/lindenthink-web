@@ -328,7 +328,7 @@ const highlightKeywords = (text, keyword) => {
   line-height: 1.5715;
   font-feature-settings: 'tnum';
   position: fixed;
-  right: 18vw;
+  right: 20vw;
   bottom: 14vh;
   z-index: 10;
   width: 40px;
