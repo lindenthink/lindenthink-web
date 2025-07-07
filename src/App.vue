@@ -61,18 +61,27 @@
           </div>
           <a-dropdown>
             <a style="margin-right: 2em" @click.prevent>
-              <a-avatar v-if="!userInfo?.avatar" :size="40">
-                <template #icon>
-                  <UserOutlined />
-                </template>
-              </a-avatar>
-              <a-avatar v-else :size="40" :src="userInfo.avatar" alt="用户头像" />
+              <template v-if="!isLoggedIn">
+                <a-avatar :size="32">
+                  <template #icon>
+                    <UserOutlined />
+                  </template>
+                </a-avatar>
+              </template>
+              <template v-else-if="userInfo?.avatar">
+                <a-avatar :size="32" :src="userInfo.avatar" alt="用户头像" />
+              </template>
+              <template v-else>
+                <a-avatar :size="32" style="background-color: #1890ff">
+                  {{ userInfo?.username?.[0].toUpperCase() || 'U' }}
+                </a-avatar>
+              </template>
               <span v-if="userInfo?.nickname" class="nickname">{{ userInfo.nickname }}</span>
             </a>
             <template #overlay>
               <a-menu>
                 <a-menu-item :disabled="isLoggedIn">
-                  <a href="javascript:;" @click="showLoginModal = true">扫码登录</a>
+                  <a href="javascript:;" @click="showLoginModal = true">登录/注册</a>
                 </a-menu-item>
                 <a-menu-item :disabled="!isLoggedIn">
                   <a href="javascript:;" @click="showSettingsModal = true">系统设置</a>
@@ -109,7 +118,8 @@
         </div>
       </a-layout-footer>
     </a-layout>
-    <WechatLogin v-model:visible="showLoginModal" @login-success="handleLoginSuccess" />
+    <!-- <WechatLogin v-model:visible="showLoginModal" @login-success="handleLoginSuccess" /> -->
+    <LoginForm v-model:visible="showLoginModal" @login-success="handleLoginSuccess" />
 
     <SystemSettings v-model:visible="showSettingsModal" />
   </a-config-provider>
@@ -124,8 +134,7 @@ import { useMediaQuery, useDebounceFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
-
-import WechatLogin from '@/components/WechatLogin.vue'
+import LoginForm from '@/components/LoginForm.vue'
 import SystemSettings from '@/components/SystemSettings.vue'
 
 // import MyAudioPlayer from '@/components/common/AudioPlayer.vue'

@@ -1,11 +1,21 @@
 import useApiFetch from '@/composables/useApiFetch'
 
-export async function getQrcode() {
-  const fetch = useApiFetch()
-  return await fetch('/user/auth/qrcode')
+const fetch = useApiFetch()
+
+
+export async function login(data) {
+  return await fetch('/user/login', { method: 'POST', body: data })
 }
 
-export async function checkAuth(ticket) {
-  const fetch = useApiFetch()
-  return await fetch(`/user/auth/check?ticket=${ticket}`)
+export async function register(data) {
+  return await fetch('/user/register', { method: 'POST', body: data })
+}
+
+export async function getCaptcha() {
+  return await fetch('/user/captcha', { stream: true })
+}
+
+// 更新用户信息
+export async function updateUserInfo(data) {
+  return await fetch('/user/update', { method: 'POST', body: data })
 }

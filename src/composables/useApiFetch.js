@@ -1,4 +1,6 @@
 import { useFetch } from '@vueuse/core'
+import { useUserStore } from '@/stores/user'
+
 
 // 获取环境变量配置的基准URL
 const BASE_URL = import.meta.env.VITE_API_BASEURL
@@ -19,12 +21,16 @@ export default function useApiFetch() {
       options = {}
     }
     options.headers = { 'Content-Type': 'application/json' }
-    const token = localStorage.getItem('token')
-    if (token) {
+    options.credentials = 'include' // 确保发送 cookies
+    const userInfo = useUserStore()
+    if (userInfo?.token) {
       options.headers = {
         ...options.headers,
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${userInfo.token}`,
       }
+    }
+    if (options.body) {
+      options.body = JSON.stringify({ data: options.body })
     }
     return { url, options }
   }
@@ -32,21 +38,44 @@ export default function useApiFetch() {
   // 响应拦截
   const afterResponse = (str) => {
     const response = JSON.parse(str)
-    if (response.code > 0) {
-      throw new Error(response.message)
+    if (response.code < 0) {
+      throw new Error(response.message || '未知错误')
     }
     return response
   }
 
-  return async (url, options) => {
+  return async (url, options = {}) => {
     const processed = beforeRequest(url, options)
+    const { stream } = options
+
+    if (stream) {
+      // 处理流式响应
+      const { response, error } = await request(processed.url, {
+        ...processed.options,
+        responseType: 'stream'
+      })
+
+      if (error.value) {
+        handleError(error.value)
+      }
+      const reader = response.value.body.getReader()
+      const chunks = []
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        chunks.push(value)
+      }
+      const contentType = response.value.headers.get('Content-Type')
+      const blob = new Blob(chunks, { type: contentType })
+      return URL.createObjectURL(blob)
+    }
+
     const { data, error } = await request(processed.url, processed.options)
     const finalRes = afterResponse(data.value)
-
     if (error.value) {
       handleError(error.value)
     }
-
     return finalRes
   }
 }
