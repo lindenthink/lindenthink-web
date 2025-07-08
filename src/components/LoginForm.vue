@@ -22,13 +22,13 @@
         </div>
       </a-form-item>
       <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
-        <a-button type="primary" html-type="submit" class="ancient-button">登录</a-button>
+        <a-button type="primary" html-type="submit" class="ancient-button" :loading="loginLoading">登录</a-button>
       </a-form-item>
     </a-form>
 
     <a-form v-else @finish="handleRegister" class="ancient-style-form" :model="formModel" :label-col="{ span: 6 }">
       <a-form-item name="username" label="账号" :rules="[{ required: true, message: '请输入账号' }]">
-        <a-input v-model:value="formModel.username" ref="usernameInput"/>
+        <a-input v-model:value="formModel.username" ref="usernameInput" />
       </a-form-item>
       <a-form-item name="password" label="密码" :rules="[{ required: true, message: '请输入密码' }]">
         <a-input type="password" v-model:value="formModel.password" />
@@ -46,7 +46,7 @@
         </div>
       </a-form-item>
       <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
-        <a-button type="primary" html-type="submit" class="ancient-button">注册</a-button>
+        <a-button type="primary" html-type="submit" class="ancient-button" :loading="registerLoading">注册</a-button>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -55,8 +55,8 @@
 <script setup>
 import { ref, reactive, watch, nextTick } from 'vue'
 import { message } from 'ant-design-vue'
-import { useUserStore } from '@/stores/user'
 import { login, register, getCaptcha } from '@/services/userService'
+import { useUserStore } from '@/stores/user'
 
 const props = defineProps({ visible: Boolean })
 const emit = defineEmits(['update:visible', 'login-success'])
@@ -71,6 +71,8 @@ const formModel = reactive({
 })
 
 const usernameInput = ref(null)
+const loginLoading = ref(false)
+const registerLoading = ref(false)
 
 const refreshCaptcha = async () => {
   try {
@@ -84,6 +86,7 @@ const refreshCaptcha = async () => {
 }
 
 const handleLogin = async (values) => {
+  loginLoading.value = true
   try {
     const res = await login(values)
     userStore.login(res.data)
@@ -93,6 +96,8 @@ const handleLogin = async (values) => {
     console.error('登录失败:', error)
     message.error('登录失败: ' + error.message)
     refreshCaptcha()
+  } finally {
+    loginLoading.value = false
   }
 }
 
@@ -104,6 +109,7 @@ const validateConfirmPassword = (rule, value, password) => {
 }
 
 const handleRegister = async (values) => {
+  registerLoading.value = true
   try {
     await register(values)
     message.success('注册成功，请登录')
@@ -112,6 +118,8 @@ const handleRegister = async (values) => {
   } catch (error) {
     message.error('注册失败: ' + error.message)
     console.error('注册失败:', error)
+  } finally {
+    registerLoading.value = false
   }
 }
 
@@ -136,8 +144,9 @@ watch(() => props.visible, (visible) => {
 })
 
 watch(activeKey, (key) => {
-    focusInput()
+  focusInput()
 })
+
 </script>
 
 <style lang="less" scoped>

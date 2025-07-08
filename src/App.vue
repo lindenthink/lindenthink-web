@@ -81,10 +81,14 @@
             <template #overlay>
               <a-menu>
                 <a-menu-item :disabled="isLoggedIn">
-                  <a href="javascript:;" @click="showLoginModal = true">登录/注册</a>
+                  <a href="javascript:;" @click="showLoginModal = true">注册登录</a>
+                </a-menu-item>
+                <a-menu-divider />
+                <a-menu-item :disabled="!isLoggedIn">
+                  <a href="javascript:;" @click="showUserInfoModal = true">用户信息</a>
                 </a-menu-item>
                 <a-menu-item :disabled="!isLoggedIn">
-                  <a href="javascript:;" @click="showSettingsModal = true">系统设置</a>
+                  <a href="javascript:;" @click="showChangePasswordModal = true">修改密码</a>
                 </a-menu-item>
                 <a-menu-divider />
                 <a-menu-item :disabled="!isLoggedIn">
@@ -121,7 +125,8 @@
     <!-- <WechatLogin v-model:visible="showLoginModal" @login-success="handleLoginSuccess" /> -->
     <LoginForm v-model:visible="showLoginModal" @login-success="handleLoginSuccess" />
 
-    <SystemSettings v-model:visible="showSettingsModal" />
+    <UserInfo v-model:visible="showUserInfoModal" />
+    <ChangePassword v-model:visible="showChangePasswordModal" />
   </a-config-provider>
 </template>
 
@@ -135,7 +140,8 @@ import { message } from 'ant-design-vue'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
 import LoginForm from '@/components/LoginForm.vue'
-import SystemSettings from '@/components/SystemSettings.vue'
+import UserInfo from '@/components/UserInfo.vue'
+import ChangePassword from '@/components/ChangePassword.vue'
 
 // import MyAudioPlayer from '@/components/common/AudioPlayer.vue'
 
@@ -146,10 +152,11 @@ const currentMenu = ref(['/'])
 const drawerVisible = ref(false)
 const isMobile = useMediaQuery('(max-width: 768px)')
 const showLoginModal = ref(false)
+const showChangePasswordModal = ref(false)
 
 const userStore = useUserStore()
 const { isLoggedIn, userInfo } = storeToRefs(userStore)
-const showSettingsModal = ref(false)
+const showUserInfoModal = ref(false)
 
 const searchKeyword = ref('')
 const searchResults = ref([])
@@ -174,6 +181,7 @@ onMounted(() => {
 
   const storedUser = localStorage.getItem('userInfo')
   if (storedUser) {
+    console.log('storedUser', storedUser)
     userStore.login(JSON.parse(storedUser))
   }
 })

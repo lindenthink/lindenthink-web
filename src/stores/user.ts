@@ -25,7 +25,7 @@ export const useUserStore = defineStore('user', {
       this.userInfo = null
       localStorage.removeItem('userInfo')
     },
-    updateProfile(updateData: Partial<UserInfo>) {
+    updateInfo(updateData: Partial<UserInfo>) {
       if (this.userInfo) {
         this.userInfo = { ...this.userInfo, ...updateData }
         localStorage.setItem('userInfo', JSON.stringify(this.userInfo))

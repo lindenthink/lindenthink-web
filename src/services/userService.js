@@ -16,6 +16,11 @@ export async function getCaptcha() {
 }
 
 // 更新用户信息
-export async function updateUserInfo(data) {
-  return await fetch('/user/update', { method: 'POST', body: data })
+export async function updateInfo(data) {
+  return await fetch('/user/update/info', { method: 'POST', body: data })
+}
+
+// 更新用户密码
+export async function updatePassword(data) {
+  return await fetch('/user/update/password', { method: 'POST', body: data })
 }

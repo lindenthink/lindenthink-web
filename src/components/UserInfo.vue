@@ -1,15 +1,9 @@
 <template>
-  <a-modal :visible="visible" title="系统设置" :width="600" @ok="handleSubmit" @cancel="emit('update:visible', false)">
+  <a-modal :visible="visible" title="用户信息" :width="600" @ok="handleSubmit" @cancel="emit('update:visible', false)">
     <a-form :model="formState" :label-col="{ span: 6 }">
       <a-form-item label="用户头像">
-        <a-upload
-          name="avatar"
-          list-type="picture-card"
-          class="avatar-uploader"
-          :show-upload-list="false"
-          :before-upload="beforeUpload"
-          @change="handleAvatarChange"
-        >
+        <a-upload name="avatar" list-type="picture-card" class="avatar-uploader" :show-upload-list="false"
+          :before-upload="beforeUpload" @change="handleAvatarChange">
           <img v-if="formState.avatar" :src="formState.avatar" class="avatar" />
           <div v-else>
             <plus-outlined />
@@ -30,21 +24,31 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import { useUserStore } from '@/stores/user'
 
-defineProps({
-  visible: Boolean,
+const props = defineProps({
+  visible: Boolean
 })
 const emit = defineEmits(['update:visible'])
-const userStore = useUserStore()
 
-const formState = ref({
-  nickname: userStore.userInfo?.nickname || '',
-  avatar: userStore.userInfo?.avatar || '',
-  bio: userStore.userInfo?.bio || '',
+
+const formState = ref({ nickname: '', avatar: '', bio: '' })
+
+
+watch(() => props.visible, (visible) => {
+  if (visible) {
+    const userStore = useUserStore()
+    const { userInfo } = userStore
+    console.log('userInfo', userInfo)
+    formState.value = {
+      nickname: userInfo?.nickname || '',
+      avatar: userInfo?.avatar || '',
+      bio: userInfo?.bio || ''
+    }
+  }
 })
 
 const beforeUpload = (file) => {
@@ -57,7 +61,6 @@ const beforeUpload = (file) => {
 
 const handleAvatarChange = (info) => {
   if (info.file.status === 'done') {
-    // 这里替换为实际的上传接口
     formState.value.avatar = URL.createObjectURL(info.file.originFileObj)
   }
 }
@@ -66,11 +69,9 @@ const handleSubmit = async () => {
   if (!formState.value.nickname) {
     return message.error('昵称不能为空')
   }
-
   try {
-    // 调用更新接口（示例）
-    // await updateUserProfile(formState.value)
-    userStore.updateProfile(formState.value)
+    const userStore = useUserStore()
+    userStore.updateInfo(formState.value)
     message.success('设置已保存')
     emit('update:visible', false)
   } catch (error) {
@@ -81,11 +82,6 @@ const handleSubmit = async () => {
 
 <style lang="less" scoped>
 .avatar-uploader {
-  :deep(.ant-upload) {
-    width: 128px;
-    height: 128px;
-  }
-
   .avatar {
     width: 100%;
     height: 100%;

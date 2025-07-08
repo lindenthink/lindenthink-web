@@ -22,7 +22,7 @@ export default function useApiFetch() {
     }
     options.headers = { 'Content-Type': 'application/json' }
     options.credentials = 'include' // 确保发送 cookies
-    const userInfo = useUserStore()
+    const { userInfo } = useUserStore()
     if (userInfo?.token) {
       options.headers = {
         ...options.headers,
