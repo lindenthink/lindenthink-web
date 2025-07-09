@@ -292,7 +292,7 @@ const persistData = () => {
 
 <style scoped>
 .todo-list {
-  max-height: 70vh;
+  max-height: 54vh;
   overflow-y: auto;
 }
 

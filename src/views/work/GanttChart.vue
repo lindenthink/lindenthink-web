@@ -2,7 +2,7 @@
   <a-row :gutter="24">
     <!-- 左侧项目树 -->
     <a-col :span="8">
-      <a-card title="项目列表">
+      <a-card title="项目列表" class="project-list">
         <template #extra>
           <a-button type="primary" size="small" style="margin-right: 5px" @click="handleAddRoot">
             <template #icon><plus-outlined /></template>
@@ -545,6 +545,12 @@ function deleteFromTrash(item) {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  font-size: 11px;
+}
+
+.project-list {
+  max-height: 65vh;
+  overflow: auto;
 }
 
 .progress {
@@ -553,7 +559,7 @@ function deleteFromTrash(item) {
 }
 
 .gantt-container {
-  height: 60vh;
+  height: 54vh;
   overflow: hidden;
   position: relative;
 }
