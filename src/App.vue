@@ -286,6 +286,7 @@ watch(searchKeyword, (val) => {
     showResults.value = true
     debouncedSearch(val)
   } else {
+    showResults.value = false
     searchResults.value = []
   }
 })
