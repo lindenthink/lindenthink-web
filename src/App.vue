@@ -32,7 +32,6 @@
               style="max-width: 300px"
               allow-clear
               @search="handleSearch"
-              @focus="showResults = true"
               @blur="handleSearchBlur"
             />
             <div v-if="showResults" class="search-results">
@@ -283,7 +282,7 @@ const resultCategories = computed(() => {
 
 // 监听输入变化
 watch(searchKeyword, (val) => {
-  if (val) {
+  if (val && val.trim().length > 1) {
     showResults.value = true
     debouncedSearch(val)
   } else {
@@ -393,7 +392,7 @@ const highlightKeywords = (text, keyword) => {
 .search-results {
   padding: 0 0 10px 10px;
   position: absolute;
-  top: 40px; // 根据搜索框高度调整
+  top: 52px; // 根据搜索框高度调整
   left: 50%;
   transform: translateX(-50%);
   z-index: 1050; // 高于头部z-index
