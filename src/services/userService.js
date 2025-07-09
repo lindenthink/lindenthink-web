@@ -24,3 +24,8 @@ export async function updateInfo(data) {
 export async function updatePassword(data) {
   return await fetch('/user/update/password', { method: 'POST', body: data })
 }
+
+// 更新用户头像
+export async function updateAvatar(data) {
+  return await fetch('/user/update/avatar', { method: 'POST', body: data, form: true })
+}

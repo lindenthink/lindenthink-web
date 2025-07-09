@@ -5,8 +5,6 @@ interface UserInfo {
   nickname: string
   avatar: string
   token: string
-  bio?: string
-  [key: string]: any
 }
 
 export const useUserStore = defineStore('user', {

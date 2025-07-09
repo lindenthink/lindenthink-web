@@ -20,7 +20,9 @@ export default function useApiFetch() {
     if (!options) {
       options = {}
     }
-    options.headers = { 'Content-Type': 'application/json' }
+    if (!options.form) {
+      options.headers = { 'Content-Type': 'application/json' }
+    }
     options.credentials = 'include' // 确保发送 cookies
     const { userInfo } = useUserStore()
     if (userInfo?.token) {
@@ -29,7 +31,7 @@ export default function useApiFetch() {
         Authorization: `Bearer ${userInfo.token}`,
       }
     }
-    if (options.body) {
+    if (options.body && options.headers['Content-Type'] === 'application/json') {
       options.body = JSON.stringify({ data: options.body })
     }
     return { url, options }
