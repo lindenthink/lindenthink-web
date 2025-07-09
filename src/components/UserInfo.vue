@@ -118,7 +118,7 @@ const handleSubmit = async () => {
   try {
     await updateInfo(formState.value)
     useUserStore().updateInfo(formState.value)
-    message.success('设置已保存')
+    message.success('用户信息已保存')
     emit('update:visible', false)
   } catch (error) {
     message.error('保存失败' + error.message)

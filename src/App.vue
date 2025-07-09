@@ -11,13 +11,8 @@
             <img src="/title.png" width="130" style="margin: 0 1.5em" />
           </div>
           <div>
-            <a-menu
-              v-if="!isMobile"
-              v-model:selected-keys="currentMenu"
-              mode="horizontal"
-              :theme="theam"
-              :style="{ fontSize: '16px' }"
-            >
+            <a-menu v-if="!isMobile" v-model:selected-keys="currentMenu" mode="horizontal" :theme="theam"
+              :style="{ fontSize: '16px' }">
               <a-menu-item key="home">首页</a-menu-item>
               <a-menu-item key="articles">文章</a-menu-item>
               <a-menu-item key="tools">工具</a-menu-item>
@@ -26,14 +21,8 @@
             <a-button v-else icon="menu" @click="drawerVisible = true" />
           </div>
           <div class="search-wrapper">
-            <a-input-search
-              v-model:value="searchKeyword"
-              placeholder="搜索文章或工具..."
-              style="max-width: 300px"
-              allow-clear
-              @search="handleSearch"
-              @blur="handleSearchBlur"
-            />
+            <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..." style="max-width: 300px" allow-clear
+              @search="handleSearch" @blur="handleSearchBlur" />
             <div v-if="showResults" class="search-results">
               <a-spin v-if="searchLoading" />
               <template v-else>
@@ -102,8 +91,8 @@
       <a-drawer v-model:visible="drawerVisible" placement="left" :width="250">
         <a-menu v-model:selected-keys="currentMenu" mode="vertical" :theme="theam">
           <a-menu-item key="home"> 首页 </a-menu-item>
-          <a-menu-item key="articles"> 知识库 </a-menu-item>
-          <a-menu-item key="tools"> 百宝箱 </a-menu-item>
+          <a-menu-item key="articles"> 文章 </a-menu-item>
+          <a-menu-item key="tools"> 工具 </a-menu-item>
           <a-menu-item key="workbench"> 工作台 </a-menu-item>
         </a-menu>
       </a-drawer>
@@ -301,9 +290,11 @@ const highlightKeywords = (text, keyword) => {
 
 <style lang="less" scoped>
 .ant-layout {
-  position: relative;
   background: #f0f2f5 !important;
   transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  min-height: 80.1vh;
 }
 
 .ant-layout-header {
@@ -346,7 +337,7 @@ const highlightKeywords = (text, keyword) => {
   font-feature-settings: 'tnum';
   position: fixed;
   right: 20vw;
-  bottom: 14vh;
+  bottom: 20vh;
   z-index: 10;
   width: 40px;
   height: 40px;
@@ -457,6 +448,19 @@ const highlightKeywords = (text, keyword) => {
 }
 
 :deep(.ant-layout-footer) {
-  padding: 10px 0;
+  padding: 24px 0; // 增加内边距
+  background-color: #1890ff; // 设置背景色为蓝色
+  color: #fff; // 设置文字颜色为白色
+  font-size: 14px; // 设置字体大小
+  transition: all 0.3s; // 添加过渡效果
+
+  a {
+    color: #fff; // 设置链接颜色为白色
+    transition: color 0.3s; // 添加颜色过渡效果
+
+    &:hover {
+      color: #e6f7ff; // 鼠标悬停时链接颜色变浅
+    }
+  }
 }
 </style>
