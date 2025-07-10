@@ -7,7 +7,6 @@
       <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
         <div style="display: flex; align-items: center; justify-content: space-between; width: 99%">
           <div>
-            <!-- <img src="/logo.jpg" width="42" style="margin: 0 1.5em" /> -->
             <img src="/title.png" width="130" style="margin: 0 1.5em" />
           </div>
           <div>
@@ -97,11 +96,11 @@
         </a-menu>
       </a-drawer>
 
-      <a-layout-content :style="{ padding: '10px', marginTop: '64px', minWidth: '680px' }">
+      <a-layout-content :style="{ padding: '10px', marginTop: '64px' }">
         <router-view :style="{ background: '#fff' }"> </router-view>
       </a-layout-content>
 
-      <a-layout-footer :style="{ textAlign: 'center' }">
+      <a-layout-footer>
         <div>菩提思 ©2023-{{ new Date().getFullYear() }} 版权所有</div>
         <div>
           <a href="/about" target="_blank">关于本站</a>
@@ -110,9 +109,7 @@
         </div>
       </a-layout-footer>
     </a-layout>
-    <!-- <WechatLogin v-model:visible="showLoginModal" @login-success="handleLoginSuccess" /> -->
     <LoginForm v-model:visible="showLoginModal" @login-success="handleLoginSuccess" />
-
     <UserInfo v-model:visible="showUserInfoModal" />
     <ChangePassword v-model:visible="showChangePasswordModal" />
   </a-config-provider>
@@ -131,7 +128,7 @@ import LoginForm from '@/components/LoginForm.vue'
 import UserInfo from '@/components/UserInfo.vue'
 import ChangePassword from '@/components/ChangePassword.vue'
 
-// import MyAudioPlayer from '@/components/common/AudioPlayer.vue'
+// import AudioPlayer from '@/components/AudioPlayer.vue'
 
 const locale = zhCN
 const theam = 'light'
@@ -289,6 +286,8 @@ const highlightKeywords = (text, keyword) => {
 </script>
 
 <style lang="less" scoped>
+@import '@/styles/variables.less';
+
 .ant-layout {
   background: #f0f2f5 !important;
   transition: all 0.2s;
@@ -306,7 +305,6 @@ const highlightKeywords = (text, keyword) => {
 
 :deep(.ant-layout-content) {
   position: relative;
-  min-width: 0;
   background: #ffffff;
   transition: all 0.2s;
   min-width: 900px;
@@ -314,7 +312,7 @@ const highlightKeywords = (text, keyword) => {
   margin: 10px;
   border-radius: 5px;
   padding: 0 !important;
-}
+} 
 
 :deep(.ant-layout-sider) {
   position: relative;
@@ -323,7 +321,7 @@ const highlightKeywords = (text, keyword) => {
   opacity: 1;
   background: #f0f2f5;
   transition: all 0.2s;
-  flex: 1 1 20% !important;
+  flex: 1 1 15% !important;
 }
 
 .ant-back-top {
@@ -336,7 +334,7 @@ const highlightKeywords = (text, keyword) => {
   line-height: 1.5715;
   font-feature-settings: 'tnum';
   position: fixed;
-  right: 20vw;
+  right: 18vw;
   bottom: 20vh;
   z-index: 10;
   width: 40px;
@@ -448,19 +446,14 @@ const highlightKeywords = (text, keyword) => {
 }
 
 :deep(.ant-layout-footer) {
-  padding: 24px 0; // 增加内边距
-  background-color: #1890ff; // 设置背景色为蓝色
-  color: #fff; // 设置文字颜色为白色
-  font-size: 14px; // 设置字体大小
-  transition: all 0.3s; // 添加过渡效果
+  width: 100%;
+  text-align: center;
+  padding: 24px 0;
+  font-size: 14px;
+  transition: all 0.3s;
+}
 
-  a {
-    color: #fff; // 设置链接颜色为白色
-    transition: color 0.3s; // 添加颜色过渡效果
-
-    &:hover {
-      color: #e6f7ff; // 鼠标悬停时链接颜色变浅
-    }
-  }
+.ant-divider-vertical {
+    border-left: 1px solid #d0dadf;
 }
 </style>

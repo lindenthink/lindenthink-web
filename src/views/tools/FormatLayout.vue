@@ -37,7 +37,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { CopyOutlined, CheckOutlined } from '@ant-design/icons-vue'
 import { useClipboard } from '@vueuse/core'
-import { useFormat } from '@/composables/useFormat'
+import useFormat from '@/composables/useFormat'
 
 const props = defineProps({
   lang: String,

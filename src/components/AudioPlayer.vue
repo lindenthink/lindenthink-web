@@ -2,12 +2,12 @@
   <div ref="playerRef"></div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 
 import APlayer from 'APlayer'
 import 'APlayer/dist/APlayer.min.css'
-import {showMessage } from '@/static/linden'
+import useLive2d from '@/composables/useLive2d'
 
 let props = defineProps({
   // 开启吸底模式
@@ -54,7 +54,7 @@ let props = defineProps({
   loop: {
     type: String,
     default: 'all',
-    validator: (value: 'all' | 'one' | 'none') => {
+    validator: (value) => {
       return value === 'all' || value === 'one' || value === 'none'
     },
   },
@@ -62,7 +62,7 @@ let props = defineProps({
   order: {
     type: String,
     default: 'random',
-    validator: (value: 'list' | 'random') => {
+    validator: (value) => {
       return value === 'list' || value === 'random'
     },
   },
@@ -70,7 +70,7 @@ let props = defineProps({
   preload: {
     type: String,
     default: 'auto',
-    validator: (value: 'auto' | 'metadata' | 'none') => {
+    validator: (value) => {
       return value === 'auto' || value === 'metadata' || value === 'none'
     },
   },
@@ -78,7 +78,7 @@ let props = defineProps({
   volume: {
     type: Number,
     default: 0.7,
-    validator: (value: number) => {
+    validator: (value) => {
       return value >= 0 && value <= 1
     },
   },
@@ -101,13 +101,13 @@ let props = defineProps({
 const playerRef = ref()
 // 也可以使用一言提供的接口：https://developer.hitokoto.cn/sentence/demo/#javascript
 // const url = `https://api.i-meto.com/meting/api?server=netease&type=${props.songType}&id=${props.id}&r=${Math.random}`
-const url = `http://localhost:8080/lindenthink/netease/audio/playlist?id=${props.id}`
+const url = `http://localhost:8080/service/netease/audio/playlist?id=${props.id}`
 
-let ap: any
+let ap
 onMounted(() => {
   nextTick(() => {
     fetch(url)
-      .then((resp: any) => resp.json())
+      .then((resp) => resp.json())
       .then((data) => {
         ap = new APlayer({
           container: playerRef.value,
@@ -127,6 +127,7 @@ onMounted(() => {
           audio: data,
         })
         let needNotify = true
+        const { showMessage } = useLive2d()
         ap.on('canplay', () => {
           if (needNotify) {
             showMessage('音乐已加载完成，可以点击左下角播放按钮进行欣赏哦！', 5000)
@@ -137,7 +138,7 @@ onMounted(() => {
           showMessage('已暂停播放音乐！', 3000)
         })
         ap.on('play', () => {
-          let music = data.find((item: any) => item.url === ap.audio.src)
+          let music = data.find((item) => item.url === ap.audio.src)
           showMessage(`开始播放 <span style=\"color:rgb(165, 163, 163)\">${music.author}</span> 演唱的『${music.title}』`, 3000)
         })
         ap.on('lrchide', () => {

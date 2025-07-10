@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 
-export function useFormat() {
+export default function useFormat() {
   const formatted = ref('')
   const output = ref('')
 
