@@ -40,7 +40,7 @@ export default function useApiFetch() {
   // 响应拦截
   const afterResponse = (str) => {
     const response = JSON.parse(str)
-    if (response.code < 0) {
+    if (response?.code < 0) {
       throw new Error(response.message || '未知错误')
     }
     return response

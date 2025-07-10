@@ -8,6 +8,8 @@ import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import APlayer from 'APlayer'
 import 'APlayer/dist/APlayer.min.css'
 import useLive2d from '@/composables/useLive2d'
+import useApiFetch from '@/composables/useApiFetch'
+
 
 let props = defineProps({
   // 开启吸底模式
@@ -101,14 +103,13 @@ let props = defineProps({
 const playerRef = ref()
 // 也可以使用一言提供的接口：https://developer.hitokoto.cn/sentence/demo/#javascript
 // const url = `https://api.i-meto.com/meting/api?server=netease&type=${props.songType}&id=${props.id}&r=${Math.random}`
-const url = `http://localhost:8080/service/netease/audio/playlist?id=${props.id}`
+const url = `/netease/audio/playlist?id=${props.id}`
+const fetch = useApiFetch()
 
 let ap
 onMounted(() => {
   nextTick(() => {
-    fetch(url)
-      .then((resp) => resp.json())
-      .then((data) => {
+    fetch(url).then((data) => {
         ap = new APlayer({
           container: playerRef.value,
           fixed: props.fixed,
