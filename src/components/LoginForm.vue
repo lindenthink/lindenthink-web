@@ -76,9 +76,7 @@ const registerLoading = ref(false)
 
 const refreshCaptcha = async () => {
   try {
-    // 获取响应，使用流式响应类型
-    const res = await getCaptcha()
-    captchaUrl.value = res
+    captchaUrl.value = await getCaptcha()
   } catch (error) {
     console.error('获取验证码失败:', error)
     message.error('获取验证码失败: ' + error.message)

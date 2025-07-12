@@ -97,6 +97,7 @@ const handleUpload = async ({ file, onSuccess, onError }) => {
     message.success('头像上传成功')
   } catch (error) {
     uploadError.value = '头像上传失败: ' + error.message
+    console.log('头像上传失败', error)
     onError(error)
   } finally {
     uploadLoading.value = false
@@ -121,7 +122,8 @@ const handleSubmit = async () => {
     message.success('用户信息已保存')
     emit('update:visible', false)
   } catch (error) {
-    message.error('保存失败' + error.message)
+    message.error('保存失败：' + error.message)
+    console.log('保存失败', error)
   }
 }
 </script>

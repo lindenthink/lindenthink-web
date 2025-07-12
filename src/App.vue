@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-v-html -->
 <template class="app">
-  <!-- <AudioPlayer id="6991674483" /> -->
+  <AudioPlayer id="6991674483" />
   <a-config-provider :locale="locale">
     <a-back-top :visibility-height="200" />
     <a-layout>
@@ -128,7 +128,7 @@ import LoginForm from '@/components/LoginForm.vue'
 import UserInfo from '@/components/UserInfo.vue'
 import ChangePassword from '@/components/ChangePassword.vue'
 
-// import AudioPlayer from '@/components/AudioPlayer.vue'
+import AudioPlayer from '@/components/AudioPlayer.vue'
 
 const locale = zhCN
 const theam = 'light'
