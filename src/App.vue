@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-v-html -->
 <template class="app">
-  <AudioPlayer id="6991674483" />
+  <AudioPlayer v-if="audioPlayerEnabled" :id="playlistId" />
   <a-config-provider :locale="locale">
     <a-back-top :visibility-height="200" />
     <a-layout>
@@ -74,6 +74,10 @@
                 <a-menu-item :disabled="!isLoggedIn">
                   <a href="javascript:;" @click="showUserInfoModal = true">用户信息</a>
                 </a-menu-item>
+                <!-- 添加系统设置菜单项 -->
+                <a-menu-item @click="showSettingsDrawer = true">
+                  <a href="javascript:;">系统设置</a>
+                </a-menu-item>
                 <a-menu-item :disabled="!isLoggedIn">
                   <a href="javascript:;" @click="showChangePasswordModal = true">修改密码</a>
                 </a-menu-item>
@@ -101,18 +105,39 @@
       </a-layout-content>
 
       <a-layout-footer>
-        <div>菩提思 ©2023-{{ new Date().getFullYear() }} 版权所有</div>
-        <div>
-          <a href="/about" target="_blank">关于本站</a>
-          <a-divider type="vertical" />
-          <a href="/friends" target="_blank">友情链接</a>
-        </div>
+        <template v-if="!audioPlayerEnabled">
+          <div>菩提思 ©2023-{{ new Date().getFullYear() }} 版权所有</div>
+          <div>
+            <a href="/about" target="_blank">关于本站</a>
+            <a-divider type="vertical" />
+            <a href="/friends" target="_blank">友情链接</a>
+          </div>
+        </template>
       </a-layout-footer>
     </a-layout>
     <LoginForm v-model:visible="showLoginModal" @login-success="handleLoginSuccess" />
     <UserInfo v-model:visible="showUserInfoModal" />
     <ChangePassword v-model:visible="showChangePasswordModal" />
+    <!-- 系统设置Drawer -->
+    <a-drawer v-model:visible="showSettingsDrawer" title="系统设置" placement="right" :width="300">
+      <div class="setting-section">
+        <h4>音频播放器设置</h4>
+        <div class="setting-item">
+          <span class="setting-label">启用音乐播放器</span>
+          <a-switch v-model:checked="audioPlayerEnabled" />
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">音乐列表ID</span>
+          <a-input v-model:value="playlistId" placeholder="输入音乐列表ID" :disabled="!audioPlayerEnabled" />
+        </div>
+      </div>
+      <div class="drawer-actions">
+        <a-button @click="showSettingsDrawer = false">取消</a-button>
+        <a-button type="primary" @click="saveSettings">保存</a-button>
+      </div>
+    </a-drawer>
   </a-config-provider>
+
 </template>
 
 <script setup>
@@ -147,6 +172,14 @@ const searchKeyword = ref('')
 const searchResults = ref([])
 const searchLoading = ref(false)
 const showResults = ref(false)
+
+// 系统设置相关变量
+const showSettingsDrawer = ref(false)
+// 从localStorage加载设置，默认为true
+const savedSettings = localStorage.getItem('systemSettings')
+const initialSettings = savedSettings ? JSON.parse(savedSettings) : {}
+const audioPlayerEnabled = ref(initialSettings.audioPlayerEnabled !== undefined ? initialSettings.audioPlayerEnabled : true)
+const playlistId = ref(initialSettings.audioPlayerId || '6991674483')
 
 onMounted(() => {
   const pathname = location.pathname
@@ -283,6 +316,16 @@ const highlightKeywords = (text, keyword) => {
   const regex = new RegExp(`(${escapedKeyword})`, 'gi')
   return text.replace(regex, '<span class="highlight">$1</span>')
 }
+// 保存系统设置
+const saveSettings = () => {
+  const settings = {
+    audioPlayerEnabled: audioPlayerEnabled.value,
+    audioPlayerId: playlistId.value
+  }
+  localStorage.setItem('systemSettings', JSON.stringify(settings))
+  message.success('系统设置已保存')
+  showSettingsDrawer.value = false
+}
 </script>
 
 <style lang="less" scoped>
@@ -312,7 +355,7 @@ const highlightKeywords = (text, keyword) => {
   margin: 10px;
   border-radius: 5px;
   padding: 0 !important;
-} 
+}
 
 :deep(.ant-layout-sider) {
   position: relative;
@@ -454,6 +497,43 @@ const highlightKeywords = (text, keyword) => {
 }
 
 .ant-divider-vertical {
-    border-left: 1px solid #d0dadf;
+  border-left: 1px solid #d0dadf;
+}
+
+.setting-section {
+  margin-bottom: 20px;
+
+  h4 {
+    margin-bottom: 16px;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    font-weight: 1000;
+  }
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  .setting-label {
+    color: rgba(128, 122, 122, 0.85);
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+    width: 200px;
+  }
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.drawer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }
 </style>

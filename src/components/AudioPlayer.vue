@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 
 import APlayer from 'APlayer'
 import 'APlayer/dist/APlayer.min.css'
@@ -103,56 +103,108 @@ let props = defineProps({
 const playerRef = ref()
 // 也可以使用一言提供的接口：https://developer.hitokoto.cn/sentence/demo/#javascript
 // const url = `https://api.i-meto.com/meting/api?server=netease&type=${props.songType}&id=${props.id}&r=${Math.random}`
-const url = `/netease/audio/playlist?id=${props.id}`
 const fetch = useApiFetch()
 
 let ap
+let abortController = null
+
+// 封装加载音频的方法
+const loadAudio = async (newId) => {
+  // 如果有正在进行的请求，取消它
+  if (abortController) {
+    abortController.abort()
+  }
+
+  // 如果已有播放器实例，销毁它
+  if (ap) {
+    ap.destroy()
+    ap = null
+  }
+
+  try {
+    abortController = new AbortController()
+    const url = `/netease/audio/playlist?id=${newId}`
+    const data = await fetch(url, { signal: abortController.signal })
+
+    await nextTick()
+    if (!playerRef.value) {
+      return
+    }
+    ap = new APlayer({
+      container: playerRef.value,
+      fixed: props.fixed,
+      mini: props.mini,
+      autoplay: props.autoplay,
+      theme: props.theme,
+      loop: props.loop,
+      order: props.order,
+      preload: props.preload,
+      volume: props.volume,
+      mutex: props.mutex,
+      lrcType: props.lrcType,
+      listFolded: props.listFolded,
+      listMaxHeight: props.listMaxHeight,
+      storageName: props.storageName,
+      audio: data,
+    })
+
+    // 保留原有的事件监听逻辑
+    let needNotify = true
+    const { showMessage } = useLive2d()
+    ap.on('canplay', () => {
+      if (needNotify) {
+        showMessage('音乐已加载完成，可以点击左下角播放按钮进行欣赏哦！', 5000)
+      }
+      needNotify = false
+    })
+    ap.on('pause', () => {
+      showMessage('已暂停播放音乐！', 3000)
+    })
+    ap.on('play', () => {
+      let music = data.find((item) => item.url === ap.audio.src)
+      showMessage(`开始播放 <span style=\"color:rgb(165, 163, 163)\">${music.author}</span> 演唱的『${music.title}』`, 3000)
+    })
+    ap.on('lrchide', () => {
+      showMessage('已隐藏歌词！', 3000)
+    })
+    ap.on('lrcshow', () => {
+      showMessage('已显示歌词！', 3000)
+    })
+
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      console.error('加载音频失败:', error)
+      const { showMessage } = useLive2d()
+      showMessage('音频加载失败，请稍后重试', 3000)
+    }
+  }
+}
+
+
+
 onMounted(() => {
-  nextTick(() => {
-    fetch(url).then((data) => {
-        ap = new APlayer({
-          container: playerRef.value,
-          fixed: props.fixed,
-          mini: props.mini,
-          autoplay: props.autoplay,
-          theme: props.theme,
-          loop: props.loop,
-          order: props.order,
-          preload: props.preload,
-          volume: props.volume,
-          mutex: props.mutex,
-          lrcType: props.lrcType,
-          listFolded: props.listFolded,
-          listMaxHeight: props.listMaxHeight,
-          storageName: props.storageName,
-          audio: data,
-        })
-        let needNotify = true
-        const { showMessage } = useLive2d()
-        ap.on('canplay', () => {
-          if (needNotify) {
-            showMessage('音乐已加载完成，可以点击左下角播放按钮进行欣赏哦！', 5000)
-          }
-          needNotify = false
-        })
-        ap.on('pause', () => {
-          showMessage('已暂停播放音乐！', 3000)
-        })
-        ap.on('play', () => {
-          let music = data.find((item) => item.url === ap.audio.src)
-          showMessage(`开始播放 <span style=\"color:rgb(165, 163, 163)\">${music.author}</span> 演唱的『${music.title}』`, 3000)
-        })
-        ap.on('lrchide', () => {
-          showMessage('已隐藏歌词！', 3000)
-        })
-        ap.on('lrcshow', () => {
-          showMessage('已显示歌词！', 3000)
-        })
-      })
-  })
+  loadAudio(props.id)
 })
 
+// 监听id变化，重新加载音频
+watch(
+  () => props.id,
+  (newId, oldId) => {
+    if (newId && newId !== oldId) {
+      const { showMessage } = useLive2d()
+      showMessage('正在切换播放列表...', 2000)
+      loadAudio(newId)
+    }
+  }
+)
+
 onBeforeUnmount(() => {
-  ap.destroy()
+  if (abortController) {
+    abortController.abort()
+  }
+  if (ap) {
+    ap.destroy()
+    ap = null
+  }
 })
 </script>
