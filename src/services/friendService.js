@@ -9,6 +9,6 @@ export async function addFriend(data) {
   const fetch = useApiFetch()
   return await fetch('/friends', {
     method: 'POST',
-    body: JSON.stringify(data),
+    body: data,
   })
 }

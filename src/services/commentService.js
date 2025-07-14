@@ -9,6 +9,6 @@ export async function addComment(data) {
   const fetch = useApiFetch()
   return await fetch('/comment', {
     method: 'put',
-    body: JSON.stringify(data),
+    body: data,
   })
 }

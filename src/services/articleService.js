@@ -5,10 +5,10 @@ export async function getArticle(id) {
   return await fetch(`/articles/${id}`)
 }
 
-export async function getArticles(req) {
+export async function getArticles(data) {
   const fetch = useApiFetch()
   return await fetch('/articles', {
     method: 'POST',
-    body: JSON.stringify(req),
+    body: data,
   })
 }
