@@ -4,7 +4,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, nextTick } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import asciidoctor from '@asciidoctor/core'
 import kroki from 'asciidoctor-kroki'
 import hljs from 'highlight.js'
@@ -26,18 +26,18 @@ const props = defineProps({
     default: () => ({}),
   },
 })
-
-// 初始化 Asciidoctor
-const asciidoc = asciidoctor()
-
-// 启用 Kroki 插件以支持 PlantUML
-kroki.register(asciidoc.Extensions)
-
 // 渲染后的内容
 const renderedContent = ref('')
 
+const emit = defineEmits(['render-complete']);
+
+// 初始化 Asciidoctor
+const asciidoc = asciidoctor()
+// 启用 Kroki 插件以支持 PlantUML
+kroki.register(asciidoc.Extensions)
+
 // 渲染 AsciiDoc 内容
-const renderContent = () => {
+const renderContent = async() => {
   try {
     if (!props.content) {
       return
@@ -55,8 +55,8 @@ const renderContent = () => {
     })
 
     // 渲染完成后处理代码块
-    nextTick(() => {
-      const codeBlocks = document.querySelectorAll('.asciidoc-viewer pre code')
+    await nextTick()
+    const codeBlocks = document.querySelectorAll('.asciidoc-viewer pre code')
       codeBlocks.forEach((block) => {
         // 检查是否已经添加了行号
         if (block.parentNode.querySelector('.code-with-line-numbers')) {
@@ -101,20 +101,17 @@ const renderContent = () => {
           })
         })
       })
-    })
-  } catch (error) {
-    console.error('Failed to render AsciiDoc:', error)
-    renderedContent.value = '<p>Error rendering AsciiDoc content.</p>'
+    } catch (error) {
+      console.error('Failed to render AsciiDoc:', error)
+      renderedContent.value = '<p>Error rendering AsciiDoc content.</p>'
+    } finally {
+      emit('render-complete');
+    }
   }
-}
 
 // 监听 content 变化，重新渲染
 watch(() => props.content, renderContent, { immediate: true })
 
-// 组件挂载后初始化高亮
-onMounted(() => {
-  renderContent()
-})
 </script>
 
 <style>

@@ -25,7 +25,7 @@ export async function updatePassword(data) {
   return await fetch('/user/update/password', { method: 'POST', body: data })
 }
 
-// 更新用户头像
-export async function updateAvatar(data) {
-  return await fetch('/user/update/avatar', { method: 'POST', body: data, form: true })
+// 上传文件
+export async function uploadFile(data) {
+  return await fetch('/user/upload/file', { method: 'POST', body: data, form: true })
 }
