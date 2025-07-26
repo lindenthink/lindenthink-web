@@ -46,6 +46,17 @@
               </template>
             </div>
           </div>
+          <a-tooltip>
+            <template #title>
+              <span>写作</span>
+            </template>
+            <a-button v-if="isLoggedIn" shape="circle" @click="router.push('/articles/editor')"
+              style="margin-right: 16px;">
+              <template #icon>
+                <EditOutlined />
+              </template>
+            </a-button>
+          </a-tooltip>
           <a-dropdown>
             <a style="margin-right: 2em" @click.prevent>
               <template v-if="!isLoggedIn">
@@ -143,7 +154,7 @@
 <script setup>
 import { onMounted, ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { UserOutlined } from '@ant-design/icons-vue'
+import { UserOutlined, EditOutlined } from '@ant-design/icons-vue'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import { useMediaQuery, useDebounceFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'

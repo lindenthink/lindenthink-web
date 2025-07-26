@@ -1,130 +1,127 @@
-<template class="editor-layout">
-    <!-- 顶部操作栏 -->
-    <div
-        style="background: #fff; padding: 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between;">
-        <h1 class="header">{{ isPreviewMode ? '文章预览' : '文章编辑' }}</h1>
-        <div>
-            <a-button :type="isPreviewMode ? 'default' : 'primary'" @click="togglePreview" size="small" :loading="previewLoading">
-                {{ isPreviewMode ? '编辑' : '预览' }}
-            </a-button>
-            <a-button v-if="!isPreviewMode" type="primary" html-type="submit" :loading="submitting"
-                style="margin-left: 10px" size="small">
-                保存
-            </a-button>
-            <a-button @click="handleCancel" style="margin-left: 10px" size="small">取消</a-button>
-        </div>
-    </div>
-    <!-- 编辑模式 -->
-    <div v-if="!isPreviewMode">
-        <a-form ref="formRef" :model="articleForm" :rules="formRules" @finish="handleSubmit">
-            <a-row :gutter="[12, 12]">
-                <a-col :span="8">
-                    <a-form-item name="title" label="文章标题" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-                        <a-input v-model:value="articleForm.title" placeholder="请输入文章标题" :max-length="64" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item name="category" label="文章分类" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-                        <a-select v-model:value="articleForm.category" placeholder="请选择分类" allow-clear>
-                            <a-select-option v-for="category in categories" :key="category.id">
-                                {{ category.name }}
-                            </a-select-option>
-                        </a-select>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item name="series" label="所属系列" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-                        <a-select v-model:value="articleForm.series" placeholder="请选择系列" allow-clear>
-                            <a-select-option v-for="series in seriesList" :key="series.id">
-                                {{ series.name }}
-                            </a-select-option>
-                        </a-select>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item name="articleType" label="文章类型" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-                        <a-radio-group v-model:value="articleForm.articleType">
-                            <a-radio-button value="original">原创</a-radio-button>
-                            <a-radio-button value="reprint">转载</a-radio-button>
-                        </a-radio-group>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8" v-if="articleForm.articleType === 'reprint'">
-                    <a-form-item name="origin" label="来源地址" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-                        <a-input v-model:value="articleForm.origin" placeholder="请输入转载文章的来源地址" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item name="tags" label="文章标签" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-                        <a-space :wrap="true">
-                            <a-tag v-for="tag in articleForm.tags" :key="tag" closable @close="() => removeTag(tag)">
-                                {{ tag }}
-                            </a-tag>
-                            <a-input v-model:value="newTag" placeholder="输入标签并按回车" :style="{ width: '140px' }"
-                                @press-enter="addTag" />
-                        </a-space>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item name="coverImage" label="封面图片" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-                        <ImageUploader v-model="articleForm.coverImage" upload-text="上传封面" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item name="isPublic" label="是否公开" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-                        <a-switch v-model:checked="articleForm.isPublic" checked-children="公开"
-                            un-checked-children="私有" />
-                    </a-form-item>
-                </a-col>
-            </a-row>
-            <!-- 文章内容单独一行 -->
-            <a-form-item name="content" label="文章内容" :label-col="{ span: 2.5 }" :wrapper-col="{ span: 21.5 }">
-                <a-textarea v-model:value="articleForm.content" placeholder="请使用AsciiDoc格式编写文章内容，支持PlantUML！" :rows="15"
-                    :style="{ fontFamily: 'monospace' }" />
-                <p class="editor-hint">支持AsciiDoc格式语法，点击上方"预览文章"按钮查看效果</p>
-            </a-form-item>
-        </a-form>
-    </div>
-
-    <!-- 预览模式 -->
-    <div v-else class="preview-content">
-        <div class="preview-article">
-            <div class="preview-header">
-                <h1 class="preview-title">{{ articleForm.title || '请输入文章标题' }}</h1>
-            </div>
-            <AsciiDocViewer :content="articleForm.content || placeholderContent"
-                @render-complete="handleRenderComplete" />
-            <a-divider :style="{ color: 'lightgrey' }">•</a-divider>
-            <div style="display: flex; justify-content: space-between">
-                <span>分类：{{ articleForm.category }}</span>
+<template>
+    <a-layout>
+        <a-layout-sider> </a-layout-sider>
+        <a-layout-content>
+            <!-- 顶部操作栏 -->
+            <div
+                style="background: #fff; padding: 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between;">
+                <h1 class="header">{{ isPreviewMode ? '文章预览' : '文章编辑' }}</h1>
                 <div>
-                    标签：
-                    <a-tag v-for="tag in articleForm.tags" :key="tag">
-                        <template #icon>
-                            <tag-outlined />
-                        </template>
-                        {{ tag }}
-                    </a-tag>
+                    <a-button :type="isPreviewMode ? 'default' : 'primary'" @click="togglePreview" size="small"
+                        :loading="previewLoading">
+                        {{ isPreviewMode ? '编辑' : '预览' }}
+                    </a-button>
+                    <!-- 修改保存按钮 -->
+                    <a-button v-if="!isPreviewMode" type="primary" :loading="submitting" style="margin-left: 10px" size="small" @click="handleSave">
+                      保存
+                    </a-button>
+                    <a-button @click="handleCancel" style="margin-left: 10px" size="small">取消</a-button>
                 </div>
             </div>
-        </div>
-    </div>
+            <!-- 编辑模式 -->
+            <div v-if="!isPreviewMode">
+                <a-form ref="formRef" :model="articleForm" :rules="formRules" @finish="handleSubmit">
+                    <a-row :gutter="[12, 12]">
+                        <a-col :span="6">
+                            <a-form-item name="title" label="文章标题" :label-col="{ span: 9 }" :wrapper-col="{ span: 15 }">
+                                <a-input v-model:value="articleForm.title" placeholder="请输入文章标题" :max-length="64" />
+                            </a-form-item>
+                        </a-col>
+                        <a-col :span="6">
+                            <a-form-item name="categoryId" label="文章分类" :label-col="{ span: 9 }"
+                                :wrapper-col="{ span: 15 }">
+                                <a-select v-model:value="articleForm.categoryId" placeholder="请选择分类" allow-clear>
+                                    <a-select-option v-for="category in categories" :key="category.id">
+                                        {{ category.name }}
+                                    </a-select-option>
+                                </a-select>
+                            </a-form-item>
+                        </a-col>
+                        <a-col :span="6">
+                            <a-form-item name="seriesId" label="所属系列" :label-col="{ span: 9 }"
+                                :wrapper-col="{ span: 15 }">
+                                <a-select v-model:value="articleForm.seriesId" placeholder="请选择系列" allow-clear>
+                                    <a-select-option v-for="series in seriesList" :key="series.id">
+                                        {{ series.name }}
+                                    </a-select-option>
+                                </a-select>
+                            </a-form-item>
+                        </a-col>
+                        <a-col :span="6">
+                            <a-form-item name="type" label="来源类型" :label-col="{ span: 9 }" :wrapper-col="{ span: 15 }">
+                                <a-radio-group v-model:value="articleForm.type">
+                                    <a-radio-button value="ORIGINAL">原创</a-radio-button>
+                                    <a-radio-button value="REPRINT">转载</a-radio-button>
+                                </a-radio-group>
+                            </a-form-item>
+                        </a-col>
+                        <a-col :span="6">
+                            <a-form-item name="isPublic" label="是否公开" :label-col="{ span: 9 }"
+                                :wrapper-col="{ span: 15 }">
+                                <a-switch v-model:checked="articleForm.isPublic" checked-children="公开"
+                                    un-checked-children="私有" />
+                            </a-form-item>
+                        </a-col>
+                        <a-col :span="6">
+                            <a-form-item name="tags" label="文章标签" :label-col="{ span: 9 }" :wrapper-col="{ span: 15 }">
+                                <a-space :wrap="true">
+                                    <a-tag v-for="tag in articleForm.tags" :key="tag" closable
+                                        @close="() => removeTag(tag)">
+                                        {{ tag }}
+                                    </a-tag>
+                                    <a-input v-model:value="newTag" placeholder="输入标签并按回车" :style="{ width: '140px' }"
+                                        @press-enter="addTag" />
+                                </a-space>
+                            </a-form-item>
+                        </a-col>
+                        <a-col :span="6">
+                            <a-form-item name="cover" label="封面图片" :label-col="{ span: 9 }" :wrapper-col="{ span: 15 }">
+                                <ImageUploader v-model="articleForm.cover" upload-text="上传封面" />
+                            </a-form-item>
+                        </a-col>
+                          <a-col :span="6" v-if="articleForm.type === 'REPRINT'">
+                            <a-form-item name="origin" label="转载来源" :label-col="{ span: 9 }"
+                                :wrapper-col="{ span: 15 }">
+                                <a-input v-model:value="articleForm.origin" placeholder="输入转载地址" />
+                            </a-form-item>
+                        </a-col>
+                    </a-row>
+                    <!-- 文章内容单独一行 -->
+                    <a-form-item name="content" label="文章内容" :label-col="{ span: 2.5 }" :wrapper-col="{ span: 21.5 }">
+                        <a-textarea v-model:value="articleForm.content" placeholder="请使用AsciiDoc格式编写文章内容，支持PlantUML！"
+                            :rows="15" :style="{ fontFamily: 'monospace' }" />
+                        <p class="editor-hint">支持AsciiDoc格式语法，点击上方"预览"按钮查看效果</p>
+                    </a-form-item>
+                </a-form>
+            </div>
+
+            <!-- 预览模式 -->
+            <div v-else class="preview-content">
+                <div class="preview-article">
+                    <div class="preview-header">
+                        <h1 class="preview-title">{{ articleForm.title || '请输入文章标题' }}</h1>
+                    </div>
+                    <AsciiDocViewer :content="articleForm.content || placeholderContent"
+                        @render-complete="handleRenderComplete" />
+                    <a-divider :style="{ color: 'lightgrey' }">•</a-divider>
+                </div>
+            </div>
+        </a-layout-content>
+        <a-layout-sider> </a-layout-sider>
+    </a-layout>
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted, nextTick } from 'vue'
-import { TagOutlined } from '@ant-design/icons-vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 import ImageUploader from '@/components/ImageUploader.vue'
-import useApiFetch from '@/composables/useApiFetch'
-import { getArticle, saveArticle } from '@/services/articleService'
+import { saveArticle } from '@/services/articleService'
 
 // 路由和API相关
 const router = useRouter()
 const route = useRoute()
-const fetch = useApiFetch()
 const submitting = ref(false)
 
 // 表单相关
@@ -132,18 +129,18 @@ const formRef = ref(null)
 const articleForm = reactive({
     id: '',
     title: '',
-    category: '',
-    series: '',
-    articleType: 'original', // 新增文章类型字段，默认原创
+    categoryId: '',
+    seriesId: '',
+    type: 'ORIGINAL', // 新增文章类型字段，默认原创
     tags: [],
     content: '',
     isPublic: false,
-    coverImage: '', // 新增封面图片字段
+    cover: '', // 新增封面图片字段
     origin: '' // 新增来源地址字段
 })
 
 const newTag = ref('')
-const placeholderContent = `= 文章标题示例
+const placeholderContent = `
 
 这是一篇示例文章，您可以在此处编写AsciiDoc格式的内容。
 
@@ -183,18 +180,15 @@ const seriesList = [
 // 表单验证规则
 const formRules = {
     title: [{ required: true, message: '请输入文章标题', trigger: 'blur' }],
-    category: [{ required: true, message: '请选择文章分类', trigger: 'change' }],
-    series: [{ required: true, message: '请选择系列', trigger: 'change' }],
-    articleType: [{ required: true, message: '请选择文章类型', trigger: 'change' }],
+    categoryId: [{ required: true, message: '请选择文章分类', trigger: 'change' }],
+    type: [{ required: true, message: '请选择文章类型', trigger: 'change' }],
     content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }],
-    coverImage: [{ required: false, message: '请上传封面图片', trigger: 'change' }],
-    // 新增来源地址验证规则
     origin: [{
         required: true,
         message: '请输入来源地址',
         trigger: 'blur',
         validator: (rule, value, callback) => {
-            if (articleForm.articleType === 'reprint' && !value) {
+            if (articleForm.type === 'REPRINT' && !value) {
                 callback(new Error('请输入来源地址'));
             } else {
                 callback();
@@ -235,27 +229,20 @@ const handleRenderComplete = () => {
 };
 
 async function initArticle() {
-    const articleId = route.params.id
-    if (articleId) {
-        try {
-            const response = await getArticle(articleId)
-            const article = response.data
-            articleForm.id = article.id
-            articleForm.title = article.title
-            articleForm.category = article.category
-            articleForm.series = article.series
-            articleForm.articleType = article.articleType || 'original' // 初始化文章类型
-            articleForm.tags = article.tags ? article.tags.split(',') : []
-            articleForm.content = article.content
-            articleForm.isPublic = article.isPublic !== false
-        } catch (error) {
-            console.error('加载文章失败:', error)
-            message.error('加载文章失败，请稍后重试')
-            router.back()
-        }
-    } else {
-        // 新文章，不自动加载预览
+    const article = route.params.article
+    if (!article?.id) {
+        return
     }
+    articleForm.id = article.id
+    articleForm.title = article.title
+    articleForm.categoryId = article.categoryId
+    articleForm.seriesId = article.seriesId
+    articleForm.type = article.type || 'ORIGINAL' // 初始化文章类型
+    articleForm.tags = article.tags ? article.tags.split(',') : []
+    articleForm.content = article.content
+    articleForm.isPublic = article.isPublic !== false
+    articleForm.cover = article.cover
+    articleForm.origin = article.origin
 }
 
 onMounted(() => {
@@ -273,15 +260,29 @@ async function handleSubmit() {
             // 封面图片会自动包含在formData中
         };
 
-        await saveArticle(formData);
+        const id = await saveArticle(formData);
         message.success(articleForm.id ? '文章更新成功' : '文章创建成功');
-        router.push('/articles');
+        router.push(`/articles/${id}`);
     } catch (error) {
         console.error('保存文章失败:', error);
         message.error('保存文章失败，请稍后重试');
     } finally {
         submitting.value = false;
     }
+}
+
+// 添加保存处理函数
+async function handleSave() {
+  if (!formRef.value) return;
+  try {
+    // 手动触发表单验证
+    await formRef.value.validate();
+    // 验证通过后提交表单
+    await handleSubmit();
+  } catch (error) {
+    // 验证失败，Ant Design会自动显示错误提示
+    console.log('表单验证失败:', error);
+  }
 }
 
 const handleCancel = () => {

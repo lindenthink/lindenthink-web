@@ -82,6 +82,9 @@ async function afterMyFetch(data, response, context, execute) {
 function onMyFetchError(error, response) {
   console.log('onFetchError', error, response)
   let msg;
+  if (!response?.status) {
+    return { error: new Error('网络错误') }
+  }
   switch (response.status) {
     case 401:
       msg = '请先登录再操作'

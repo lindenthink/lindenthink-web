@@ -20,6 +20,10 @@ const routes = [
     component: () => import('@/views/article/ArticleView.vue'),
     props: true,
   },
+   {
+    path: '/articles/editor',
+    component: () => import('@/views/article/ArticleEditor.vue'),
+  },
   {
     path: '/tools',
     name: 'tools',

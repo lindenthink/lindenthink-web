@@ -1,0 +1,51 @@
+import useApiFetch from '@/composables/useApiFetch'
+
+export async function queryCategory() {
+  return await queryByType('CATEGORY')
+}
+
+export async function querySeries() {
+  return await queryByType('SERIES')
+}
+
+export async function queryCarousel() {
+  return await queryByType('CAROUSEL')
+}
+
+export async function save(data) {
+  const fetch = useApiFetch()
+  const res = await fetch(`/material/save`, {
+    method: 'POST',
+    body: data,
+  })
+  return res
+}
+
+
+async function queryByType(type) {
+  const fetch = useApiFetch()
+  const res = await fetch(`/material/type/${type}`)
+  // result是扁平化的数组，包含id，pid和content，将其转为符合TreeSelect格式
+  if (type !== 'CATEGORY') {
+    return res
+  }
+  const tree = res.reduce((acc, cur) => {
+    acc[cur.id] = {
+      label: cur.content,
+      value: cur.id,
+      children: [],
+    }
+    if (cur.pid) {
+      acc[cur.pid].children.push(acc[cur.id])
+    }
+    return acc
+  }, {})
+  // 只有叶子结点可以选择
+  const result = Object.values(tree)
+  result.values(tree).forEach((item) => {
+    if (item.children.length > 0) {
+        item.selectable = false
+    }
+  })
+  return result
+}
