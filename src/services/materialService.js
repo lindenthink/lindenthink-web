@@ -29,10 +29,13 @@ async function queryByType(type) {
   if (type !== 'CATEGORY') {
     return res.data
   }
-  const tree = res.data.reduce((acc, cur) => {
+  // 按id升序排序
+  const categories = res.data.sort((a, b) => a.id - b.id)
+  const tree = categories.reduce((acc, cur) => {
     acc[cur.id] = {
       label: cur.content,
       value: cur.id,
+      pid: cur.pid,
       children: [],
     }
     if (cur.pid) {
@@ -40,12 +43,13 @@ async function queryByType(type) {
     }
     return acc
   }, {})
+  // 过滤出根节点
+  const rootNodes = Object.values(tree).filter((item) => !item.pid)
   // 只有叶子结点可以选择
-  const result = Object.values(tree)
-  result.values(tree).forEach((item) => {
+  rootNodes.forEach((item) => {
     if (item.children.length > 0) {
         item.selectable = false
     }
   })
-  return result
+  return rootNodes
 }

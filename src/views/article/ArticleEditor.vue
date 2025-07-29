@@ -28,13 +28,15 @@
                             </a-form-item>
                         </a-col>
                         <a-col :span="6">
-                            <a-form-item name="categoryId" label="文章分类" :label-col="{ span: 9 }"
+                            <a-form-item name="categoryId" label="所属分类" :label-col="{ span: 9 }"
                                 :wrapper-col="{ span: 15 }">
-                                <a-select v-model:value="articleForm.categoryId" placeholder="请选择分类" allow-clear>
-                                    <a-select-option v-for="category in categories" :key="category.id">
-                                        {{ category.name }}
-                                    </a-select-option>
-                                </a-select>
+                                <a-tree-select
+                                    v-model:value="articleForm.categoryId"
+                                    :tree-data="categoryTree"
+                                    placeholder="请选择分类"
+                                    show-search
+                                    filterTreeNode
+                                />
                             </a-form-item>
                         </a-col>
                         <a-col :span="6">
@@ -118,8 +120,7 @@ import { message } from 'ant-design-vue'
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 import ImageUploader from '@/components/ImageUploader.vue'
 import { saveArticle } from '@/services/articleService'
-// 新增导入querySeries方法
-import { querySeries } from '@/services/materialService'
+import { querySeries, queryCategory } from '@/services/materialService'
 
 // 路由和API相关
 const router = useRouter()
@@ -161,16 +162,7 @@ public class HelloWorld {
 }
 ----`
 
-// 分类数据（实际项目中应从API获取）
-const categories = [
-    { id: '1', name: '技术文章' },
-    { id: '2', name: '学习笔记' },
-    { id: '3', name: '项目经验' },
-    { id: '4', name: '行业动态' },
-    { id: '5', name: '其他' }
-]
-
-// 系列数据（实际项目中应从API获取）
+const categoryTree = ref([])
 const seriesList = ref([])
 
 // 表单验证规则
@@ -243,15 +235,16 @@ async function initArticle() {
 
 onMounted(() => {
     initArticle()
-    // 新增：获取系列数据
+    // 获取系列数据
     fetchSeries()
+    // 新增：获取分类数据
+    fetchCategories()
 })
 
 // 新增：获取系列数据的方法
 async function fetchSeries() {
     try {
         const data = await querySeries()
-        console.log('获取系列数据成功:', data)
         // 转换数据格式以适应Select组件
         seriesList.value = data.map(item => ({
             id: item.id,
@@ -301,6 +294,16 @@ async function handleSave() {
 
 const handleCancel = () => {
     router.back()
+}
+
+async function fetchCategories() {
+  try {
+    const data = await queryCategory()
+    categoryTree.value = data
+  } catch (error) {
+    console.error('获取分类数据失败:', error)
+    message.error('获取分类数据失败，请刷新页面重试')
+  }
 }
 </script>
 
