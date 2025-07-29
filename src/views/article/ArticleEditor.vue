@@ -118,6 +118,8 @@ import { message } from 'ant-design-vue'
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 import ImageUploader from '@/components/ImageUploader.vue'
 import { saveArticle } from '@/services/articleService'
+// 新增导入querySeries方法
+import { querySeries } from '@/services/materialService'
 
 // 路由和API相关
 const router = useRouter()
@@ -169,13 +171,7 @@ const categories = [
 ]
 
 // 系列数据（实际项目中应从API获取）
-const seriesList = [
-    { id: '1', name: '系列1' },
-    { id: '2', name: '系列2' },
-    { id: '3', name: '系列3' },
-    { id: '4', name: '系列4' },
-    { id: '5', name: '其他' }
-]
+const seriesList = ref([])
 
 // 表单验证规则
 const formRules = {
@@ -247,7 +243,25 @@ async function initArticle() {
 
 onMounted(() => {
     initArticle()
+    // 新增：获取系列数据
+    fetchSeries()
 })
+
+// 新增：获取系列数据的方法
+async function fetchSeries() {
+    try {
+        const data = await querySeries()
+        console.log('获取系列数据成功:', data)
+        // 转换数据格式以适应Select组件
+        seriesList.value = data.map(item => ({
+            id: item.id,
+            name: item.content
+        }))
+    } catch (error) {
+        console.error('获取系列数据失败:', error)
+        message.error('获取系列数据失败，请刷新页面重试')
+    }
+}
 
 
 // 表单提交

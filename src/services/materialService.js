@@ -27,9 +27,9 @@ async function queryByType(type) {
   const res = await fetch(`/material/type/${type}`)
   // result是扁平化的数组，包含id，pid和content，将其转为符合TreeSelect格式
   if (type !== 'CATEGORY') {
-    return res
+    return res.data
   }
-  const tree = res.reduce((acc, cur) => {
+  const tree = res.data.reduce((acc, cur) => {
     acc[cur.id] = {
       label: cur.content,
       value: cur.id,
