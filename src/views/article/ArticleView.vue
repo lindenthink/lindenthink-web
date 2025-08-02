@@ -3,7 +3,7 @@
     <a-layout-sider>
       <div v-if="anchors.length" class="article-toc">
         <a-tabs v-model:active-key="activeKey" centered>
-          <a-tab-pane key="1" tab="系列">
+          <a-tab-pane key="1" tab="系列" v-if="article.series">
             <div class="article-toc-content">
               <div v-for="(item, index) in series" :key="index" style="border-bottom: 1px #f0f2f5 solid">
                 <FileOutlined :style="{ color: 'grey' }" /> <a>{{ item }}</a>
@@ -45,7 +45,7 @@
 
     <a-spin v-if="!article.id" tip="文章加载中..." />
     <a-layout-content v-else>
-      <a-badge-ribbon :text="article.source" :color="article.source == '原创' ? 'blue' : 'orange'" style="z-index: 9">
+      <a-badge-ribbon :text="article.type == 'ORIGINAL' ? '原创' : '翻译'" :color="article.type == 'ORIGINAL' ? 'blue' : 'orange'" style="z-index: 9">
         <a-breadcrumb style="margin: 0 20px; padding: 10px 0; border-bottom: 1px #f0f2f5 solid">
           <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 列表 </router-link></a-breadcrumb-item>
           <a-breadcrumb-item>正文</a-breadcrumb-item>
@@ -90,10 +90,10 @@
             </li>
           </ul>
           <div style="display: flex; justify-content: space-between">
-            <span>分类：{{ article.category }}</span>
+            <span>分类：{{ article.categoryName }}</span>
             <div>
               标签：
-              <a-tag v-for="tag in article.tags" :key="tag">
+              <a-tag v-for="tag in article.tags?.split(',')" :key="tag" color="blue">
                 <template #icon>
                   <tag-outlined />
                 </template>
@@ -199,35 +199,59 @@ onBeforeMount(async () => {
 // }
 
 function generateAnchors() {
-  const hList = viewerRef.value.$el.querySelectorAll('h1,h2,h3')
-  // 正在处理的父锚点集合
-  const parentAnchors = []
-  let el, nextEl, parentAnchor
-  for (let i = 0; i < hList.length; i++) {
-    el = hList[i]
-    nextEl = hList.length === i + 1 ? null : hList[i + 1]
-    el.id = 'toc-' + (i + 1)
-    const anchor = {
-      id: el.id,
-      title: el.innerText.trim(),
-      href: '#' + el.id,
-      tagName: el.tagName,
-      hasChildren: el.tagName < nextEl?.tagName,
-      children: [],
+  try {
+    if (!viewerRef.value || !viewerRef.value.$el) {
+      console.error('viewerRef is not available');
+      return;
     }
-    if (parentAnchors.length > 0) {
-      parentAnchor = parentAnchors[parentAnchors.length - 1]
-      parentAnchor.children.push(anchor)
-    } else {
-      anchors.value.push(anchor)
-    }
-    if (anchor.hasChildren) {
+
+    const hList = viewerRef.value.$el.querySelectorAll('h1,h2,h3')
+    // 正在处理的父锚点集合
+    const parentAnchors = []
+    let el, nextEl, parentAnchor
+
+    anchors.value = []; // 清空现有锚点
+
+    for (let i = 0; i < hList.length; i++) {
+      el = hList[i]
+      nextEl = hList.length === i + 1 ? null : hList[i + 1]
+      el.id = 'toc-' + i;
+      const currentLevel = parseInt(el.tagName.substring(1))
+      const nextLevel = nextEl ? parseInt(nextEl.tagName.substring(1)) : 0
+
+      const anchor = {
+        id: el.id,
+        title: el.innerText.trim(),
+        href: '#' + el.id,
+        tagName: el.tagName,
+        level: currentLevel,
+        hasChildren: nextEl && currentLevel < nextLevel,
+        children: [],
+      }
+
+      // 找到合适的父级
+      while (parentAnchors.length > 0 && parentAnchors[parentAnchors.length - 1].level >= currentLevel) {
+        parentAnchors.pop()
+      }
+
+      if (parentAnchors.length > 0) {
+        parentAnchor = parentAnchors[parentAnchors.length - 1]
+        parentAnchor.children.push(anchor)
+        parentAnchor.hasChildren = true;
+      } else {
+        anchors.value.push(anchor)
+      }
+
+      // 当前标题作为可能的父级
       parentAnchors.push(anchor)
-    } else {
-      while (parentAnchors.length > 0 && parentAnchor.tagName > nextEl?.tagName) {
+
+      // 如果下一级别小于等于当前级别，弹出当前标题
+      if (nextEl && nextLevel <= currentLevel) {
         parentAnchors.pop()
       }
     }
+  } catch (error) {
+    console.error('Error generating anchors:', error)
   }
 }
 </script>
