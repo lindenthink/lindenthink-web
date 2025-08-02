@@ -11,7 +11,7 @@
             <a-divider type="vertical"></a-divider>
             <span>
               <CalendarOutlined style="margin-right: 8px" />
-              {{ dayjs(item.updated).fromNow() }}
+              {{ dayjs(item.updated).format('YYYY-MM-DD') }}
             </span>
           </template>
           <template #title>
@@ -48,11 +48,7 @@ import { ref, onBeforeMount } from 'vue'
 import { message } from 'ant-design-vue'
 import { queryArticles } from '@/services/articleService'
 import dayjs from 'dayjs'
-import 'dayjs/locale/zh-cn'
-import relativeTime from 'dayjs/plugin/relativeTime'
 
-dayjs.locale('zh-cn')
-dayjs.extend(relativeTime)
 
 const articles = ref([])
 const loading = ref(false)

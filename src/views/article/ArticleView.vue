@@ -12,7 +12,7 @@
           </a-tab-pane>
           <a-tab-pane key="2" tab="目录">
             <div class="article-toc-content">
-              <a-anchor :affix="false" :offset-top="55" show-ink-in-fixed>
+              <a-anchor :affix="false" :offset-top="58" show-ink-in-fixed>
                 <a-anchor-link
                   v-for="(anchor, index) in anchors"
                   :key="index"
@@ -59,7 +59,7 @@
             <EditOutlined style="margin-right: 5px" />
             <span>作者：{{ article.author }}</span>
             <a-divider type="vertical"></a-divider>
-            <CalendarOutlined style="margin-right: 5px" /><span>发表于：{{ article.created }}</span
+            <CalendarOutlined style="margin-right: 5px" /><span>发表于：{{ dayjs(article.updated).format('YYYY-MM-DD') }}</span
             ><a-divider type="vertical"></a-divider> <EyeOutlined style="margin-right: 5px" /><span
               >浏览数：{{ article.visitCount }}</span
             ><a-divider type="vertical"></a-divider> <LikeOutlined style="margin-right: 5px" /><span
@@ -137,6 +137,7 @@ import {
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import Comment from '@/components/Comment.vue'
+import dayjs from 'dayjs'
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 import { getArticle } from '@/services/articleService'
 // import { TagColors, showMessage, bindTip } from '@/static/linden'

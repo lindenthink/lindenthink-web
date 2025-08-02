@@ -297,4 +297,8 @@ watch(() => props.content, renderContent, { immediate: true })
   max-width: 100%;
   height: auto;
 }
+
+td.hdlist1 {
+  font-weight: bold;
+}
 </style>
