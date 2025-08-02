@@ -9,7 +9,6 @@ export default function useApiFetch() {
     }
     return data.value
   }
-
 }
 
 const useMyFetch = createFetch({
@@ -25,9 +24,8 @@ const useMyFetch = createFetch({
     onFetchError({ error, response }) {
       return onMyFetchError(error, response)
     },
-  }
+  },
 })
-
 
 function beforeMyFetch(options) {
   options.credentials = 'include'
@@ -44,7 +42,11 @@ function beforeMyFetch(options) {
     options.headers.Authorization = `Bearer ${userInfo.token}`
   }
   if (options.body && options.headers['Content-Type'] === 'application/json') {
-    options.body = JSON.stringify({ data: options.body })
+    if (!options.body.pagination) {
+      options.body = JSON.stringify({ data: options.body })
+    } else {
+      options.body = JSON.stringify(options.body)
+    }
   }
   return { options }
 }
@@ -81,7 +83,7 @@ async function afterMyFetch(data, response, context, execute) {
 
 function onMyFetchError(error, response) {
   console.log('onFetchError', error, response)
-  let msg;
+  let msg
   if (!response?.status) {
     return { error: new Error('网络错误') }
   }

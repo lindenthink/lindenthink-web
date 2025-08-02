@@ -10,8 +10,13 @@
             <img src="/title.png" width="130" style="margin: 0 1.5em" />
           </div>
           <div>
-            <a-menu v-if="!isMobile" v-model:selected-keys="currentMenu" mode="horizontal" :theme="theam"
-              :style="{ fontSize: '16px' }">
+            <a-menu
+              v-if="!isMobile"
+              v-model:selected-keys="currentMenu"
+              mode="horizontal"
+              :theme="theam"
+              :style="{ fontSize: '16px' }"
+            >
               <a-menu-item key="home">首页</a-menu-item>
               <a-menu-item key="articles">文章</a-menu-item>
               <a-menu-item key="tools">工具</a-menu-item>
@@ -20,8 +25,14 @@
             <a-button v-else icon="menu" @click="drawerVisible = true" />
           </div>
           <div class="search-wrapper">
-            <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..." style="max-width: 300px" allow-clear
-              @search="handleSearch" @blur="handleSearchBlur" />
+            <a-input-search
+              v-model:value="searchKeyword"
+              placeholder="搜索文章或工具..."
+              style="max-width: 300px"
+              allow-clear
+              @search="handleSearch"
+              @blur="handleSearchBlur"
+            />
             <div v-if="showResults" class="search-results">
               <a-spin v-if="searchLoading" />
               <template v-else>
@@ -50,8 +61,12 @@
             <template #title>
               <span>写作</span>
             </template>
-            <a-button v-if="isLoggedIn" shape="circle" @click="router.push('/articles/editor')"
-              style="margin-right: 16px;">
+            <a-button
+              v-if="isLoggedIn"
+              shape="circle"
+              @click="router.push('/articles/editor')"
+              style="margin-right: 16px"
+            >
               <template #icon>
                 <EditOutlined />
               </template>
@@ -148,7 +163,6 @@
       </div>
     </a-drawer>
   </a-config-provider>
-
 </template>
 
 <script setup>
@@ -189,7 +203,9 @@ const showSettingsDrawer = ref(false)
 // 从localStorage加载设置，默认为true
 const savedSettings = localStorage.getItem('systemSettings')
 const initialSettings = savedSettings ? JSON.parse(savedSettings) : {}
-const audioPlayerEnabled = ref(initialSettings.audioPlayerEnabled !== undefined ? initialSettings.audioPlayerEnabled : true)
+const audioPlayerEnabled = ref(
+  initialSettings.audioPlayerEnabled !== undefined ? initialSettings.audioPlayerEnabled : true,
+)
 const playlistId = ref(initialSettings.audioPlayerId || '6991674483')
 
 onMounted(() => {
@@ -331,7 +347,7 @@ const highlightKeywords = (text, keyword) => {
 const saveSettings = () => {
   const settings = {
     audioPlayerEnabled: audioPlayerEnabled.value,
-    audioPlayerId: playlistId.value
+    audioPlayerId: playlistId.value,
   }
   localStorage.setItem('systemSettings', JSON.stringify(settings))
   message.success('系统设置已保存')

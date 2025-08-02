@@ -11,7 +11,7 @@
             <a-divider type="vertical"></a-divider>
             <span>
               <CalendarOutlined style="margin-right: 8px" />
-              {{ item.createTime }}
+              {{ dayjs(item.updated).fromNow() }}
             </span>
           </template>
           <template #title>
@@ -27,14 +27,14 @@
           </span>
           <span>
             <LikeOutlined style="margin-right: 8px" />
-            {{ item.phaiseCount }}
+            {{ item.praiseCount }}
           </span>
           <span>
             <MessageOutlined style="margin-right: 8px" />
-            {{ item.replyCount }}
+            {{ item.commentCount }}
           </span>
         </template>
-        <template #extra>
+        <template #extra v-if="item.cover">
           <img width="64" alt="logo" :src="item.cover" />
         </template>
       </a-list-item>
@@ -46,7 +46,13 @@
 import { EyeOutlined, LikeOutlined, MessageOutlined, CalendarOutlined, EditOutlined } from '@ant-design/icons-vue'
 import { ref, onBeforeMount } from 'vue'
 import { message } from 'ant-design-vue'
-import { getArticles } from '@/services/articleService'
+import { queryArticles } from '@/services/articleService'
+import dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+dayjs.locale('zh-cn')
+dayjs.extend(relativeTime)
 
 const articles = ref([])
 const loading = ref(false)
@@ -64,7 +70,7 @@ onBeforeMount(async () => {
 
 function handlePageChange(page) {
   loading.value = true
-  getArticles({ page, pageSize: pagination.pageSize })
+  queryArticles({ pagination })
     .then((res) => {
       articles.value = res.data
       pagination.total = res.total
