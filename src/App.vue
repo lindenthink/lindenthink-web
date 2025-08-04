@@ -145,7 +145,7 @@
     <UserInfo v-model:visible="showUserInfoModal" />
     <ChangePassword v-model:visible="showChangePasswordModal" />
     <!-- 系统设置Drawer -->
-    <a-drawer v-model:visible="showSettingsDrawer" title="系统设置" placement="right" :width="300">
+    <a-drawer v-model:visible="showSettingsDrawer" title="系统设置" placement="right" :width="350">
       <div class="setting-section">
         <h4>音频播放器设置</h4>
         <div class="setting-item">
@@ -153,7 +153,7 @@
           <a-switch v-model:checked="audioPlayerEnabled" />
         </div>
         <div class="setting-item">
-          <span class="setting-label">音乐列表ID</span>
+          <span class="setting-label">网易云音乐列表ID</span>
           <a-input v-model:value="playlistId" placeholder="输入音乐列表ID" :disabled="!audioPlayerEnabled" />
         </div>
       </div>

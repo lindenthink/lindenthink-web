@@ -3,7 +3,7 @@
     <a-layout-sider>
       <div v-if="anchors.length" class="article-toc">
         <a-tabs v-model:active-key="activeKey" centered>
-          <a-tab-pane key="1" tab="系列" v-if="article.series">
+          <a-tab-pane key="1" tab="系列" v-if="article.seriesId">
             <div class="article-toc-content">
               <div v-for="(item, index) in series" :key="index" style="border-bottom: 1px #f0f2f5 solid">
                 <FileOutlined :style="{ color: 'grey' }" /> <a>{{ item }}</a>
@@ -43,9 +43,9 @@
       </div>
     </a-layout-sider>
 
-    <a-spin v-if="!article.id" tip="文章加载中..." />
+    <a-spin v-if="isLoading || !article.id" tip="文章加载中..." />
     <a-layout-content v-else>
-      <a-badge-ribbon :text="article.type == 'ORIGINAL' ? '原创' : '翻译'" :color="article.type == 'ORIGINAL' ? 'blue' : 'orange'" style="z-index: 9">
+      <a-badge-ribbon :text="article.type == 'ORIGINAL' ? '原创' : '转载'" :color="article.type == 'ORIGINAL' ? 'blue' : 'orange'" style="z-index: 9">
         <a-breadcrumb style="margin: 0 20px; padding: 10px 0; border-bottom: 1px #f0f2f5 solid">
           <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 列表 </router-link></a-breadcrumb-item>
           <a-breadcrumb-item>正文</a-breadcrumb-item>
@@ -103,11 +103,17 @@
           </div>
           <a-divider :style="{ color: 'lightgrey' }">•</a-divider>
           <div class="article-foot-nav">
-            <div>
-              <a href="#"><left-outlined /> 文章1文章1文章1</a>
+            <div v-if="article.prevId">
+               <router-link :to="{ path: `/articles/${article.prevId}` }"> <left-outlined />{{ article.prevTitle }} </router-link>
             </div>
-            <div>
-              <a href="#">文章2文章2文章2文章2 <right-outlined /></a>
+            <div v-else>
+              没有上一篇了
+            </div>
+            <div v-if="article.nextId">
+              <router-link :to="{ path: `/articles/${article.nextId}` }"> {{ article.nextTitle }} <right-outlined /></router-link>
+            </div>
+            <div v-else>
+              没有下一篇了
             </div>
           </div>
         </div>
@@ -121,8 +127,8 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onBeforeMount, nextTick, watch, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import {
   CopyrightOutlined,
   LeftOutlined,
@@ -147,9 +153,11 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const route = useRoute()
 const article = ref({})
 const anchors = ref([])
 const curUrl = location.href
+const isLoading = ref(false)
 const commentRef = ref()
 const viewerRef = ref()
 const activeKey = ref('2')
@@ -167,13 +175,13 @@ const series = [
   'Los Angeles battles huge wildfires.',
 ]
 
-onBeforeMount(async () => {
-  // 更早的生命周期
+const loadArticle = async (id) => {
+  isLoading.value = true
   try {
-    const res = await getArticle(props.id)
+    const res = await getArticle(id)
     if (res) {
       article.value = res.data
-      generateAnchors() // 生成目录锚点
+      await generateAnchors() // 生成目录锚点
     } else {
       message.warning('文章不存在')
       router.back()
@@ -182,8 +190,25 @@ onBeforeMount(async () => {
     console.error(e)
     message.error(e.message || '加载失败')
     router.back()
+  } finally {
+    isLoading.value = false
   }
+}
+
+// 初始加载
+onBeforeMount(() => {
+  loadArticle(props.id)
 })
+
+// 监听路由变化
+watch(
+  () => route.params.id,
+  (newId) => {
+    if (newId) {
+      loadArticle(newId)
+    }
+  }
+)
 
 // onMounted(() => {
 //   bindTip()
@@ -198,24 +223,29 @@ onBeforeMount(async () => {
 //   }
 // }
 
-async function generateAnchors() {
+async function generateAnchors(retryCount = 0) {
   await nextTick() // 等待DOM更新
   try {
     if (!viewerRef.value || !viewerRef.value.$el) {
       console.error('viewerRef is not available');
+      // 添加重试逻辑，最多重试3次
+      if (retryCount < 3) {
+        console.log(`尝试重试生成目录，当前重试次数: ${retryCount + 1}`);
+        // 等待300毫秒后重试
+        setTimeout(() => generateAnchors(retryCount + 1), 300);
+      } else {
+        message.error('无法生成目录: 内容查看器未准备好');
+      }
       return;
     }
 
-    const hList = viewerRef.value.$el.querySelectorAll('h1,h2,h3')
+    const hList = viewerRef.value.$el.querySelectorAll('h1,h2,h3,h4')
     // 正在处理的父锚点集合
     const parentAnchors = []
-    let el, nextEl, parentAnchor
-
     anchors.value = []; // 清空现有锚点
 
-    for (let i = 0; i < hList.length; i++) {
-      el = hList[i]
-      nextEl = hList.length === i + 1 ? null : hList[i + 1]
+    hList.forEach((el, i) => {
+      const nextEl = hList.length === i + 1 ? null : hList[i + 1]
       el.id = 'toc-' + i;
       const currentLevel = parseInt(el.tagName.substring(1))
       const nextLevel = nextEl ? parseInt(nextEl.tagName.substring(1)) : 0
@@ -224,35 +254,35 @@ async function generateAnchors() {
         id: el.id,
         title: el.innerText.trim(),
         href: '#' + el.id,
-        tagName: el.tagName,
         level: currentLevel,
         hasChildren: nextEl && currentLevel < nextLevel,
         children: [],
       }
 
       // 找到合适的父级
-      while (parentAnchors.length > 0 && parentAnchors[parentAnchors.length - 1].level >= currentLevel) {
+      while (parentAnchors.length > 0 && parentAnchors.at(-1).level >= currentLevel) {
         parentAnchors.pop()
       }
 
       if (parentAnchors.length > 0) {
-        parentAnchor = parentAnchors[parentAnchors.length - 1]
+        const parentAnchor = parentAnchors.at(-1)
         parentAnchor.children.push(anchor)
         parentAnchor.hasChildren = true;
       } else {
         anchors.value.push(anchor)
       }
 
-      // 当前标题作为可能的父级
+      // 当前锚点作为可能的父级
       parentAnchors.push(anchor)
 
-      // 如果下一级别小于等于当前级别，弹出当前标题
+      // 如果下一级别小于等于当前级别，弹出当前锚点
       if (nextEl && nextLevel <= currentLevel) {
         parentAnchors.pop()
       }
-    }
+    })
   } catch (error) {
     console.error('Error generating anchors:', error)
+    message.error(`生成目录时出错: ${error.message}`);
   }
 }
 </script>
@@ -300,17 +330,14 @@ async function generateAnchors() {
 .article-toc {
   background-color: #fff;
   position: sticky;
-  top: 120px;
+  top: 74px;
   z-index: 9;
   margin-right: 10px;
-  padding: 10px 0px 0px 0px;
-  max-width: 200px;
+  max-width: 260px;
   left: 12%;
 
   .article-toc-content {
-    padding: 0 10px 10px 10px;
-    max-height: 80vh;
-    overflow-y: auto;
+    padding: 0 10px 10px 5px;
   }
 }
 </style>
