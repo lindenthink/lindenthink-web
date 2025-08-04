@@ -66,10 +66,10 @@ onBeforeMount(async () => {
 
 function handlePageChange(page) {
   loading.value = true
-  queryArticles({ pagination })
+  queryArticles({ pagination: { ...pagination, page } })
     .then((res) => {
       articles.value = res.data
-      pagination.total = res.total
+      pagination.total = res.pagination.total
     })
     .catch((e) => {
       console.error(e)
