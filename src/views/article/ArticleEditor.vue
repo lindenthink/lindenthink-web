@@ -228,7 +228,7 @@ async function initArticle() {
     articleForm.type = article.type || 'ORIGINAL' // 初始化文章类型
     articleForm.tags = article.tags ? article.tags.split(',') : []
     articleForm.content = article.content
-    articleForm.isPublic = article.isPublic !== false
+    articleForm.isPublic = article.isPublic === 1
     articleForm.cover = article.cover
     articleForm.origin = article.origin
 }
@@ -263,7 +263,8 @@ async function handleSubmit() {
         submitting.value = true;
         const formData = {
             ...articleForm,
-            tags: articleForm.tags.join(',')
+            tags: articleForm.tags.join(','),
+            isPublic: articleForm.isPublic ? 1 : 0
             // 封面图片会自动包含在formData中
         };
 

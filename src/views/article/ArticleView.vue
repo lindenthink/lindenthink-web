@@ -173,7 +173,6 @@ onBeforeMount(async () => {
     const res = await getArticle(props.id)
     if (res) {
       article.value = res.data
-      await nextTick() // 等待DOM更新
       generateAnchors() // 生成目录锚点
     } else {
       message.warning('文章不存在')
@@ -199,7 +198,8 @@ onBeforeMount(async () => {
 //   }
 // }
 
-function generateAnchors() {
+async function generateAnchors() {
+  await nextTick() // 等待DOM更新
   try {
     if (!viewerRef.value || !viewerRef.value.$el) {
       console.error('viewerRef is not available');
