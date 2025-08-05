@@ -13,26 +13,12 @@
           <a-tab-pane key="2" tab="目录">
             <div class="article-toc-content">
               <a-anchor :affix="false" :offset-top="58" show-ink-in-fixed>
-                <a-anchor-link
-                  v-for="(anchor, index) in anchors"
-                  :key="index"
-                  :href="anchor.href"
-                  :title="anchor.title"
-                >
-                  <a-anchor-link
-                    v-for="(anchor2, index2) in anchor.children"
-                    v-if="anchor.hasChildren"
-                    :key="index2"
-                    :href="anchor2.href"
-                    :title="anchor2.title"
-                  >
-                    <a-anchor-link
-                      v-for="(anchor3, index3) in anchor2.children"
-                      v-if="anchor2.hasChildren"
-                      :key="index3"
-                      :href="anchor3.href"
-                      :title="anchor3.title"
-                    >
+                <a-anchor-link v-for="(anchor, index) in anchors" :key="index" :href="anchor.href"
+                  :title="anchor.title">
+                  <a-anchor-link v-for="(anchor2, index2) in anchor.children" v-if="anchor.hasChildren" :key="index2"
+                    :href="anchor2.href" :title="anchor2.title">
+                    <a-anchor-link v-for="(anchor3, index3) in anchor2.children" v-if="anchor2.hasChildren"
+                      :key="index3" :href="anchor3.href" :title="anchor3.title">
                     </a-anchor-link>
                   </a-anchor-link>
                 </a-anchor-link>
@@ -45,7 +31,8 @@
 
     <a-spin v-if="isLoading || !article.id" tip="文章加载中..." />
     <a-layout-content v-else>
-      <a-badge-ribbon :text="article.type == 'ORIGINAL' ? '原创' : '转载'" :color="article.type == 'ORIGINAL' ? 'blue' : 'orange'" style="z-index: 9">
+      <a-badge-ribbon :text="article.type == 'ORIGINAL' ? '原创' : '转载'"
+        :color="article.type == 'ORIGINAL' ? 'blue' : 'orange'" style="z-index: 9">
         <a-breadcrumb style="margin: 0 20px; padding: 10px 0; border-bottom: 1px #f0f2f5 solid">
           <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 列表 </router-link></a-breadcrumb-item>
           <a-breadcrumb-item>正文</a-breadcrumb-item>
@@ -55,19 +42,36 @@
       <div class="article">
         <div class="article-head">
           <h1 class="article-head-title">{{ article.title }}</h1>
+          <div class="article-head-tag">
+            <a-tooltip placement="bottomLeft" title="分类" arrow-point-at-center>
+              <a-tag color="blue">
+                <template #icon>
+                  <profile-outlined />
+                </template>
+                {{ article.categoryName }}
+              </a-tag>
+            </a-tooltip>
+            <a-tooltip placement="bottomLeft" title="标签" arrow-point-at-center v-if="article.tags">
+              <a-tag v-for="tag in article.tags?.split(',')" :key="tag" color="cyan">
+                <template #icon>
+                  <tag-outlined />
+                </template>
+                {{ tag }}
+              </a-tag>
+            </a-tooltip>
+          </div>
           <div class="article-head-meta">
             <EditOutlined style="margin-right: 5px" />
             <span>作者：{{ article.author }}</span>
             <a-divider type="vertical"></a-divider>
-            <CalendarOutlined style="margin-right: 5px" /><span>发表于：{{ dayjs(article.updated).format('YYYY-MM-DD') }}</span
-            ><a-divider type="vertical"></a-divider> <EyeOutlined style="margin-right: 5px" /><span
-              >浏览数：{{ article.visitCount }}</span
-            ><a-divider type="vertical"></a-divider> <LikeOutlined style="margin-right: 5px" /><span
-              >点赞数：{{ article.praiseCount }}</span
-            ><a-divider type="vertical"></a-divider>
+            <CalendarOutlined style="margin-right: 5px" /><span>发表于：{{ dayjs(article.updated).format('YYYY-MM-DD')
+            }}</span><a-divider type="vertical"></a-divider>
+            <EyeOutlined style="margin-right: 5px" /><span>浏览数：{{ article.visitCount }}</span><a-divider
+              type="vertical"></a-divider>
+            <LikeOutlined style="margin-right: 5px" /><span>点赞数：{{ article.praiseCount }}</span><a-divider
+              type="vertical"></a-divider>
             <MessageOutlined style="margin-right: 5px" />
-            <span>评论数：{{ article.commentCount }}</span
-            ><br />
+            <span>评论数：{{ article.commentCount }}</span>
           </div>
         </div>
 
@@ -83,34 +87,24 @@
             </li>
             <li>
               <strong>版权声明：</strong>本博客所有文章除特别声明外，均采用
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" rel="noopener" target="_blank"
-                ><copyright-outlined />BY-NC-SA</a
-              >
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" rel="noopener"
+                target="_blank"><copyright-outlined />BY-NC-SA</a>
               许可协议，转载请注明出处！
             </li>
           </ul>
-          <div style="display: flex; justify-content: space-between">
-            <span>分类：{{ article.categoryName }}</span>
-            <div>
-              标签：
-              <a-tag v-for="tag in article.tags?.split(',')" :key="tag" color="blue">
-                <template #icon>
-                  <tag-outlined />
-                </template>
-                {{ tag }}
-              </a-tag>
-            </div>
-          </div>
+
           <a-divider :style="{ color: 'lightgrey' }">•</a-divider>
           <div class="article-foot-nav">
             <div v-if="article.prevId">
-               <router-link :to="{ path: `/articles/${article.prevId}` }"> <left-outlined />{{ article.prevTitle }} </router-link>
+              <router-link :to="{ path: `/articles/${article.prevId}` }"> <left-outlined /> {{ article.prevTitle }}
+              </router-link>
             </div>
             <div v-else>
               没有上一篇了
             </div>
             <div v-if="article.nextId">
-              <router-link :to="{ path: `/articles/${article.nextId}` }"> {{ article.nextTitle }} <right-outlined /></router-link>
+              <router-link :to="{ path: `/articles/${article.nextId}` }"> {{ article.nextTitle }} <right-outlined />
+              </router-link>
             </div>
             <div v-else>
               没有下一篇了
@@ -140,6 +134,7 @@ import {
   TagOutlined,
   FileOutlined,
   EditOutlined,
+  ProfileOutlined,
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import Comment from '@/components/Comment.vue'
@@ -300,6 +295,11 @@ async function generateAnchors(retryCount = 0) {
     color: #2c3e50;
     font-size: 2.2em;
     font-weight: 600;
+  }
+
+  .article-head-tag {
+    margin-top: -0.5em;
+    margin-bottom: 1em;
   }
 
   .article-head-meta {
