@@ -43,21 +43,22 @@
         <div class="article-head">
           <h1 class="article-head-title">{{ article.title }}</h1>
           <div class="article-head-tag">
-            <a-tooltip placement="bottomLeft" title="分类" arrow-point-at-center>
+            <a-tooltip placement="bottom" title="分类" arrow-point-at-center>
               <a-tag color="blue">
-                <template #icon>
-                  <profile-outlined />
-                </template>
-                {{ article.categoryName }}
+                <template #icon><paper-clip-outlined /></template>{{ article.categoryName }}
               </a-tag>
             </a-tooltip>
             <a-tooltip placement="bottomLeft" title="标签" arrow-point-at-center v-if="article.tags">
               <a-tag v-for="tag in article.tags?.split(',')" :key="tag" color="cyan">
-                <template #icon>
-                  <tag-outlined />
-                </template>
-                {{ tag }}
+                <template #icon><tag-outlined /></template>{{ tag }}
               </a-tag>
+            </a-tooltip>
+            <a-tooltip v-if="article.type !== 'ORIGINAL'" placement="bottom" title="外链" arrow-point-at-center>
+              <a :href="article.origin" target="_blank">
+                <a-tag color="orange">
+                  <template #icon><link-outlined /></template>原文
+                </a-tag>
+              </a>
             </a-tooltip>
           </div>
           <div class="article-head-meta">
@@ -66,6 +67,7 @@
             <a-divider type="vertical"></a-divider>
             <CalendarOutlined style="margin-right: 5px" /><span>发表于：{{ dayjs(article.updated).format('YYYY-MM-DD')
             }}</span><a-divider type="vertical"></a-divider>
+            <a-divider v-if="article.type !== 'ORIGINAL'" type="vertical"></a-divider>
             <EyeOutlined style="margin-right: 5px" /><span>浏览数：{{ article.visitCount }}</span><a-divider
               type="vertical"></a-divider>
             <LikeOutlined style="margin-right: 5px" /><span>点赞数：{{ article.praiseCount }}</span><a-divider
@@ -134,7 +136,8 @@ import {
   TagOutlined,
   FileOutlined,
   EditOutlined,
-  ProfileOutlined,
+  PaperClipOutlined,
+  LinkOutlined,
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import Comment from '@/components/Comment.vue'
@@ -222,7 +225,7 @@ async function generateAnchors(retryCount = 0) {
   await nextTick() // 等待DOM更新
   try {
     if (!viewerRef.value || !viewerRef.value.$el) {
-      console.error('viewerRef is not available');
+      // console.error('viewerRef is not available');
       // 添加重试逻辑，最多重试3次
       if (retryCount < 3) {
         console.log(`尝试重试生成目录，当前重试次数: ${retryCount + 1}`);

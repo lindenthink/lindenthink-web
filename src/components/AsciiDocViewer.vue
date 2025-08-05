@@ -300,5 +300,6 @@ watch(() => props.content, renderContent, { immediate: true })
 
 td.hdlist1 {
   font-weight: bold;
+  background-color: #f6f8fa;
 }
 </style>
