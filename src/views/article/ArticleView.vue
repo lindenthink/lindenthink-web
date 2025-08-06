@@ -206,7 +206,7 @@ onBeforeMount(() => {
 watch(
   () => route.params.id,
   (newId) => {
-    if (newId) {
+    if (newId && newId != 0) {
       loadArticle(newId)
     }
   }
