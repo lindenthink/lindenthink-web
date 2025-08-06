@@ -363,7 +363,7 @@ const saveSettings = () => {
   transition: all 0.2s;
   display: flex;
   flex-direction: column;
-  min-height: 80.1vh;
+  min-height: 80vh;
 }
 
 .ant-layout-header {

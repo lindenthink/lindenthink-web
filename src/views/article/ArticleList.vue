@@ -16,17 +16,21 @@
             </span>
           </template>
           <template #title>
-            <router-link :to="{ path: `/articles/${item.id}` }"> {{ item.title }} </router-link>
-            <span v-if="currentUser && currentUser.id === item.userId && currentHoverItem === item.id"
-              class="action-buttons">
-              <a-button type="link" size="small" @click.stop="handleEdit(item.id)">
-                <EditOutlined />
-              </a-button>
-              <a-button type="text" size="small" @click.stop="handleDelete(item.id)" danger>
-                <DeleteOutlined />
-              </a-button>
-            </span>
-          </template>
+              <router-link :to="{ path: `/articles/${item.id}` }"> {{ item.title }} </router-link>
+              <span v-if="currentUser && currentUser.id === item.userId" class="status-tag"
+                :class="item.isPublic ? 'published' : 'unpublished'">
+                {{ item.isPublic ? '已发布' : '未发布' }}
+              </span>
+              <span v-if="currentUser && currentUser.id === item.userId && currentHoverItem === item.id"
+                class="action-buttons">
+                <a-button type="link" size="small" @click.stop="handleEdit(item.id)">
+                  <EditOutlined />
+                </a-button>
+                <a-button type="link" size="small" @click.stop="handleDelete(item.id)" danger>
+                  <DeleteOutlined />
+                </a-button>
+              </span>
+            </template>
           <template #avatar><a-avatar :src="item.avatar" /></template>
         </a-list-item-meta>
         {{ item.outline }}
@@ -162,5 +166,25 @@ async function handleDelete(id) {
 
 .action-buttons .ant-btn {
   padding: 4px 15px;
+}
+
+.status-tag {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.published {
+  background-color: #e6f7ff;
+  color: #1890ff;
+  border: 1px solid #91d5ff;
+}
+
+.unpublished {
+  background-color: #fff1f0;
+  color: #ff4d4f;
+  border: 1px solid #ffccc7;
 }
 </style>
