@@ -64,7 +64,7 @@
             <a-button
               v-if="isLoggedIn"
               shape="circle"
-              @click="router.push('/articles/editor')"
+              @click="router.push('/articles/editor/0')"
               style="margin-right: 16px"
             >
               <template #icon>

@@ -21,7 +21,8 @@ const routes = [
     props: true,
   },
    {
-    path: '/articles/editor',
+    path: '/articles/editor/:id',
+    name: 'articleEditor',
     component: () => import('@/views/article/ArticleEditor.vue'),
   },
   {

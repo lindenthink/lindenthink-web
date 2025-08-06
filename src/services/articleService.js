@@ -20,3 +20,10 @@ export async function saveArticle(data) {
     body: data,
   })
 }
+
+export async function deleteArticle(id) {
+  const fetch = useApiFetch()
+  return await fetch(`/article/${id}`, {
+    method: 'DELETE',
+  })
+}

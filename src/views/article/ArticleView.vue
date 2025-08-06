@@ -294,7 +294,7 @@ async function generateAnchors(retryCount = 0) {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 70vh;
+  min-height: 40vh;
 }
 
 .article {

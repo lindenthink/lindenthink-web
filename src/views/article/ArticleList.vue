@@ -1,7 +1,8 @@
 <template>
   <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="articles" :loading="loading">
     <template #renderItem="{ item }">
-      <a-list-item key="item.title">
+      <a-list-item key="item.title" :class="{ 'article-item': true, 'hovered': currentHoverItem === item.id }"
+        @mouseenter="handleMouseEnter(item.id)" @mouseleave="handleMouseLeave" @click="handleClick(item.id)">
         <a-list-item-meta>
           <template #description>
             <span>
@@ -16,6 +17,15 @@
           </template>
           <template #title>
             <router-link :to="{ path: `/articles/${item.id}` }"> {{ item.title }} </router-link>
+            <span v-if="currentUser && currentUser.id === item.userId && currentHoverItem === item.id"
+              class="action-buttons">
+              <a-button type="link" size="small" @click.stop="handleEdit(item.id)">
+                <EditOutlined />
+              </a-button>
+              <a-button type="text" size="small" @click.stop="handleDelete(item.id)" danger>
+                <DeleteOutlined />
+              </a-button>
+            </span>
           </template>
           <template #avatar><a-avatar :src="item.avatar" /></template>
         </a-list-item-meta>
@@ -35,7 +45,7 @@
           </span>
         </template>
         <template #extra v-if="item.cover">
-          <img width="64" alt="logo" :src="item.cover" />
+          <img width="108" alt="cover" :src="item.cover" />
         </template>
       </a-list-item>
     </template>
@@ -43,15 +53,21 @@
 </template>
 
 <script setup>
-import { EyeOutlined, LikeOutlined, MessageOutlined, CalendarOutlined, EditOutlined } from '@ant-design/icons-vue'
+import { EyeOutlined, LikeOutlined, MessageOutlined, CalendarOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 import { ref, onBeforeMount } from 'vue'
-import { message } from 'ant-design-vue'
-import { queryArticles } from '@/services/articleService'
+import { message, Modal } from 'ant-design-vue'
+import { queryArticles, deleteArticle } from '@/services/articleService'
 import dayjs from 'dayjs'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
 
 const articles = ref([])
 const loading = ref(false)
+const currentHoverItem = ref(null)
+const router = useRouter()
+const userStore = useUserStore()
+const currentUser = ref(null)
 
 const pagination = {
   onChange: async (page) => {
@@ -61,6 +77,8 @@ const pagination = {
 }
 
 onBeforeMount(async () => {
+  // 获取当前用户信息
+  currentUser.value = userStore.userInfo
   handlePageChange(1)
 })
 
@@ -79,6 +97,46 @@ function handlePageChange(page) {
       loading.value = false
     })
 }
+
+function handleMouseEnter(id) {
+  currentHoverItem.value = id
+}
+
+function handleMouseLeave() {
+  currentHoverItem.value = null
+}
+
+function handleEdit(id) {
+  // 导航到编辑页面
+  router.push({ path: `/articles/editor/${id}` })
+
+}
+
+function handleClick(id) {
+  // 导航到详情页面
+  router.push({ path: `/articles/${id}` })
+}
+
+
+async function handleDelete(id) {
+  Modal.confirm({
+    title: '确认删除',
+    content: '确定要删除这篇文章吗？',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: async () => {
+      try {
+        await deleteArticle(id)
+        message.success('删除成功')
+        // 重新加载文章列表
+        handlePageChange(pagination.current || 1)
+      } catch (e) {
+        console.error(e)
+        message.error(e.message || '删除失败')
+      }
+    }
+  })
+}
 </script>
 
 <style scoped lang="less">
@@ -86,5 +144,23 @@ function handlePageChange(page) {
   text-align: center;
   padding-bottom: 10px;
   margin-top: 24px;
+}
+
+.article-item {
+  position: relative;
+  transition: all 0.3s;
+}
+
+.hovered {
+  background-color: #f7f7f7;
+}
+
+.action-buttons {
+  display: inline-flex;
+  margin-left: 10vw;
+}
+
+.action-buttons .ant-btn {
+  padding: 4px 15px;
 }
 </style>

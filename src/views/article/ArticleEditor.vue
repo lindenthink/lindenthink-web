@@ -119,7 +119,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 import ImageUploader from '@/components/ImageUploader.vue'
-import { saveArticle } from '@/services/articleService'
+import { saveArticle, getArticle } from '@/services/articleService'
 import { querySeries, queryCategory } from '@/services/materialService'
 
 // 路由和API相关
@@ -217,10 +217,12 @@ const handleRenderComplete = () => {
 };
 
 async function initArticle() {
-    const article = route.params.article
-    if (!article?.id) {
+    const id = route.params.id
+    if (id == 0) {
         return
     }
+    const res= await getArticle(id)
+    const article = res.data
     articleForm.id = article.id
     articleForm.title = article.title
     articleForm.categoryId = article.categoryId
