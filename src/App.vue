@@ -204,7 +204,7 @@ const showSettingsDrawer = ref(false)
 const savedSettings = localStorage.getItem('systemSettings')
 const initialSettings = savedSettings ? JSON.parse(savedSettings) : {}
 const audioPlayerEnabled = ref(
-  initialSettings.audioPlayerEnabled !== undefined ? initialSettings.audioPlayerEnabled : true,
+  initialSettings.audioPlayerEnabled !== undefined ? initialSettings.audioPlayerEnabled : false,
 )
 const playlistId = ref(initialSettings.audioPlayerId || '6991674483')
 
