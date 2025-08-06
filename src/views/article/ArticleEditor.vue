@@ -268,9 +268,9 @@ async function handleSubmit() {
             // 封面图片会自动包含在formData中
         };
 
-        const id = await saveArticle(formData);
+        const res = await saveArticle(formData);
         message.success(articleForm.id ? '文章更新成功' : '文章创建成功');
-        router.push(`/articles/${id}`);
+        router.push(`/articles/${res.data}`);
     } catch (error) {
         console.error('保存文章失败:', error);
         message.error('保存文章失败，请稍后重试');
