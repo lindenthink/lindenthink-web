@@ -7,8 +7,7 @@
                 style="background: #fff; padding: 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between;">
                 <h1 class="header">{{ isPreviewMode ? '文章预览' : '文章编辑' }}</h1>
                 <div>
-                    <a-button :type="isPreviewMode ? 'default' : 'primary'" @click="togglePreview" size="small"
-                        :loading="previewLoading">
+                    <a-button type="primary " @click="togglePreview" size="small" :loading="previewLoading">
                         {{ isPreviewMode ? '编辑' : '预览' }}
                     </a-button>
                     <!-- 修改保存按钮 -->

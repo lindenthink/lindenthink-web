@@ -43,6 +43,15 @@
         </a-badge-ribbon>
 
         <div class="article">
+          <div class="article-status" v-if="currentUser && currentUser.id == article.userId"
+            style="display: inline-block; margin-left: 10px;">
+            <a-tag :color="article.isPublic ? 'blue' : 'red'" style="margin-right: 5px;">
+              {{ article.isPublic ? '已发布' : '未发布' }}
+            </a-tag>
+            <a-button type="primary" size="small" @click="handleEdit" style="margin-left: 5px;">
+              编辑
+            </a-button>
+          </div>
           <div class="article-head">
             <h1 class="article-head-title">{{ article.title }}</h1>
             <div class="article-head-tag">
@@ -69,7 +78,7 @@
               <span>作者：{{ article.author }}</span>
               <a-divider type="vertical"></a-divider>
               <CalendarOutlined style="margin-right: 5px" /><span>发表于：{{ dayjs(article.updated).format('YYYY-MM-DD')
-                }}</span><a-divider type="vertical"></a-divider>
+              }}</span><a-divider type="vertical"></a-divider>
               <a-divider v-if="article.type !== 'ORIGINAL'" type="vertical"></a-divider>
               <EyeOutlined style="margin-right: 5px" /><span>浏览数：{{ article.visitCount }}</span><a-divider
                 type="vertical"></a-divider>
@@ -129,6 +138,7 @@
 <script setup>
 import { ref, onBeforeMount, nextTick, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import {
   CopyrightOutlined,
   LeftOutlined,
@@ -163,6 +173,19 @@ const isLoading = ref(false)
 const commentRef = ref()
 const viewerRef = ref()
 const activeKey = ref('2')
+// 获取用户store
+const userStore = useUserStore()
+const currentUser = ref(null)
+
+// 在组件挂载时获取当前用户信息
+onMounted(() => {
+  currentUser.value = userStore.userInfo
+})
+
+// 编辑文章
+const handleEdit = () => {
+  router.push({ path: `/articles/editor/${article.value.id}` })
+}
 const series = [
   'Racing car .',
   'Japanese princess.',
@@ -290,11 +313,21 @@ async function generateAnchors(retryCount = 0) {
 </script>
 
 <style lang="less" scoped>
+.ant-btn {
+    border-radius: 4px;
+}
+
 .loading-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 40vh;
+}
+
+.article-status {
+  position: absolute;
+  top: 10px;
+  right: 100px;
 }
 
 .article {
