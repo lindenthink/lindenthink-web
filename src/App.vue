@@ -226,7 +226,7 @@ onMounted(() => {
 
   const storedUser = localStorage.getItem('userInfo')
   if (storedUser) {
-    console.log('storedUser', storedUser)
+    // console.log('storedUser', storedUser)
     userStore.login(JSON.parse(storedUser))
   }
 })

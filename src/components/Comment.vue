@@ -2,7 +2,8 @@
   <div class="comment">
     <a-list
       class="comment-list"
-      :header="`共 ${comments.length} 条回复`"
+      :header="`共 ${pagination.total || 0} 条评论`"
+
       item-layout="horizontal"
       :data-source="comments"
       :pagination="pagination"
@@ -18,25 +19,25 @@
     <a-comment>
       <template #content>
         <a-form ref="formRef" :model="user" @finish="handleSubmit">
-          <div class="user-info">
-            <a-form-item :name="'name'" :rules="[{ required: true, message: '昵称不能为空' }]">
-              <a-input ref="usernameRef" v-model:value="user.name" placeholder="昵称">
+          <div class="user-info" v-if="!currentUser">
+            <a-form-item name="nickname" :rules="[{ required: true, message: '昵称不能为空' }]">
+              <a-input ref="usernameRef" v-model:value="user.nickname" placeholder="昵称" allow-clear>
                 <template #prefix>
                   <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
                 </template>
               </a-input>
             </a-form-item>
 
-            <a-form-item :name="'link'" :rules="[{ type: 'url', message: '链接格式不正确' }]">
-              <a-input v-model:value="user.link" placeholder="链接">
+            <a-form-item name="url" :rules="[{ type: 'url', message: '链接格式不正确' }]" >
+              <a-input v-model:value="user.url" placeholder="链接" allow-clear>
                 <template #prefix>
                   <LinkOutlined style="color: rgba(0, 0, 0, 0.25)" />
                 </template>
               </a-input>
             </a-form-item>
 
-            <a-form-item :name="'email'" :rules="[{ type: 'email', message: '邮箱格式不正确' }]">
-              <a-input v-model:value="user.email" placeholder="邮箱">
+            <a-form-item name="email" :rules="[{ type: 'email', message: '邮箱格式不正确' }]" >
+              <a-input v-model:value="user.email" placeholder="邮箱" allow-clear>
                 <template #prefix>
                   <MailOutlined style="color: rgba(0, 0, 0, 0.25)" />
                 </template>
@@ -85,11 +86,12 @@ import 'dayjs/locale/zh-cn'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { UserOutlined, LinkOutlined, MailOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { getComments, addComment } from '@/services/commentService'
+import { queryActions, saveAction } from '@/services/actionService'
+import { useUserStore } from '@/stores/user'
 import CommentView from '@/components/CommentView.vue'
 
 const props = defineProps({
-  owner: String,
+  owner: Number,
 })
 
 dayjs.locale('zh-cn')
@@ -103,28 +105,27 @@ const commentContent = ref('')
 const submitting = ref(false)
 const formRef = ref()
 const isShowQuote = ref(false)
+const userStore = useUserStore()
+const currentUser = ref()
 const pagination = {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onChange: (page) => {
-    // do nothing
+    handlePageChange(page)
   },
   showQuickJumper: true,
   pageSize: 5,
 }
 
-const user = reactive({
-  id: '',
-  type: 'ANON', // REG 注册和匿名
-  name: '',
-  email: '',
-  link: '',
-  avatar: '',
-})
-
-onMounted(async () => {
+const handlePageChange = async (page) => {
   loading.value = true
   try {
-    const res = await getComments(props.owner)
+    const res = await queryActions({
+      pagination: { ...pagination, page },
+      data : {
+        type: 'COMMENT',
+        targetId: props.owner,
+      }
+    })
+    pagination.total = res.pagination.total
     comments.value = res.data.map((item) => initItem(item))
   } catch (error) {
     console.error(error)
@@ -132,6 +133,17 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+}
+
+const user = reactive({
+  nickname: '',
+  url: '',
+  email: '',
+})
+
+onMounted(async () => {
+  currentUser.value = userStore.userInfo
+  handlePageChange(1)
 })
 
 const initItem = (item) => {
@@ -150,18 +162,21 @@ const handleSubmit = async () => {
     return
   }
   const comment = {
-    owner: props.owner,
-    userId: user.id,
-    username: user.name,
+    targetId: props.owner,
+    nickname: user.nickname,
+    url: user.url,
     email: user.email,
-    avatar: user.avatar,
     content: commentContent.value,
+    type: 'COMMENT',
     parentId: isShowQuote.value ? quoteItem.id : null,
   }
   submitting.value = true
   try {
-    await addComment(comment)
+    await saveAction(comment)
     message.success('添加成功')
+    commentContent.value = ''
+    formRef.value.resetFields()
+    handlePageChange(1)
   } catch (error) {
     console.error(error)
     message.error('添加失败: ' + error.message)

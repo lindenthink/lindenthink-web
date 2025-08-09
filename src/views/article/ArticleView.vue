@@ -43,12 +43,11 @@
         </a-badge-ribbon>
 
         <div class="article">
-          <div class="article-status" v-if="currentUser && currentUser.id == article.userId"
-            style="display: inline-block; margin-left: 10px;">
-            <a-tag :color="article.isPublic ? 'blue' : 'red'" style="margin-right: 5px;">
+          <div class="article-status" v-if="currentUser && currentUser.id == article.userId">
+            <a-tag :color="article.isPublic ? 'green' : 'red'" style="margin-right: 5px;">
               {{ article.isPublic ? '已发布' : '未发布' }}
             </a-tag>
-            <a-button type="primary" size="small" @click="handleEdit" style="margin-left: 5px;">
+            <a-button size="small" @click="handleEdit" style="margin-left: 5px;">
               编辑
             </a-button>
           </div>
@@ -327,7 +326,7 @@ async function generateAnchors(retryCount = 0) {
 .article-status {
   position: absolute;
   top: 10px;
-  right: 100px;
+  right: 25vw;
 }
 
 .article {
