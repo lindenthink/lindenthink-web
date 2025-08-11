@@ -4,7 +4,7 @@
     <template #actions>
       <span v-for="(action, index) in data.actions" :key="index" @click="emit('reply-click', data)">{{ action }}</span>
       <a-popconfirm title="确定要删除这条评论吗？" @confirm="() => handleConfirm(data, emit)" v-if="deletable">
-        <span style="margin-left: 10px; color: #f5222d; cursor: pointer;">删除</span>
+        <span class="delete-btn">删除</span>
       </a-popconfirm>
     </template>
     <template #avatar>
@@ -51,3 +51,13 @@ defineProps({
 
 const emit = defineEmits(['reply-click', 'delete-click'])
 </script>
+
+<style scoped lang="less">
+.delete-btn {
+  color: #fa5659;
+  &:hover {
+    color: #f81a25;
+  }
+  cursor: pointer;
+}
+</style>
