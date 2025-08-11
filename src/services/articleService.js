@@ -27,3 +27,9 @@ export async function deleteArticle(id) {
     method: 'DELETE',
   })
 }
+
+// 获取系列文章
+export async function getSeriesArticles(seriesId) {
+  const fetch = useApiFetch()
+  return await fetch(`/article/series/${seriesId}`)
+}

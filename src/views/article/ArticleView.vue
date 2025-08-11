@@ -1,17 +1,10 @@
 <template>
   <a-layout>
     <a-layout-sider>
-      <div v-if="anchors.length" class="article-toc">
+      <div class="article-toc">
         <a-tabs v-model:active-key="activeKey" centered>
-          <a-tab-pane key="1" tab="系列" v-if="article.seriesId">
-            <div class="article-toc-content">
-              <div v-for="(item, index) in series" :key="index" style="border-bottom: 1px #f0f2f5 solid">
-                <FileOutlined :style="{ color: 'grey' }" /> <a>{{ item }}</a>
-              </div>
-            </div>
-          </a-tab-pane>
-          <a-tab-pane key="2" tab="目录">
-            <div class="article-toc-content">
+          <a-tab-pane key="toc" tab="目录">
+            <div class="article-toc-content" v-if="anchors.length">
               <a-anchor :affix="false" :offset-top="58" show-ink-in-fixed>
                 <a-anchor-link v-for="(anchor, index) in anchors" :key="index" :href="anchor.href"
                   :title="anchor.title">
@@ -23,6 +16,27 @@
                   </a-anchor-link>
                 </a-anchor-link>
               </a-anchor>
+            </div>
+            <div v-else>
+              <p style="color: #999; text-align: center; padding: 10px 0;">暂无目录内容</p>
+            </div>
+          </a-tab-pane>
+          <a-tab-pane key="series" tab="系列" v-if="article.seriesId">
+            <div class="article-toc-content">
+              <h3 v-if="article.seriesName" class="series-title">{{ article.seriesName }}</h3>
+              <a-spin v-if="isLoadingSeries" tip="加载中..." size="small" />
+              <div v-else>
+                <div v-for="(item, index) in series" :key="index"
+                  style="border-bottom: 1px #f0f2f5 solid; padding: 0.2rem 0.5rem;">
+                  <FileOutlined :style="{ color: item.id === article.id ? '#ccc' : 'grey', marginRight: '5px' }" />
+                  <a :href="`/articles/${item.id}`"
+                    :style="{ color: item.id === article.id ? '#ccc' : '#1890ff', textDecoration: 'none' }"
+                    :class="{ 'current-article': item.id === article.id }"
+                    @click.prevent="item.id !== article.id ? router.push(`/articles/${item.id}`) : null">
+                    {{ item.title }}
+                  </a>
+                </div>
+              </div>
             </div>
           </a-tab-pane>
         </a-tabs>
@@ -157,7 +171,7 @@ import { message } from 'ant-design-vue'
 import Comment from '@/components/Comment.vue'
 import dayjs from 'dayjs'
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
-import { getArticle } from '@/services/articleService'
+import { getArticle, getSeriesArticles } from '@/services/articleService'
 // import { TagColors, showMessage, bindTip } from '@/static/linden'
 
 const props = defineProps({
@@ -172,12 +186,10 @@ const curUrl = location.href
 const isLoading = ref(false)
 const commentRef = ref()
 const viewerRef = ref()
-const activeKey = ref('2')
-// 获取用户store
+const activeKey = ref('toc')
 const userStore = useUserStore()
 const currentUser = ref(null)
 
-// 在组件挂载时获取当前用户信息
 onMounted(() => {
   currentUser.value = userStore.userInfo
 })
@@ -186,19 +198,28 @@ onMounted(() => {
 const handleEdit = () => {
   router.push({ path: `/articles/editor/${article.value.id}` })
 }
-const series = [
-  'Racing car .',
-  'Japanese princess.',
-  'Australian walks 100km.',
-  'missing wedding girl.',
-  'Los Angeles battles huge wildfires.',
-  'Australian walks 100km.',
-  'missing wedding girl.',
-  'Los Angeles battles huge wildfires.',
-  'Australian walks 100km.',
-  'missing wedding girl.',
-  'Los Angeles battles huge wildfires.',
-]
+const series = ref([])
+const isLoadingSeries = ref(false)
+
+// 加载系列文章
+const loadSeries = async (seriesId) => {
+  isLoadingSeries.value = true
+  try {
+    const res = await getSeriesArticles(seriesId)
+    if (res && res.data) {
+      series.value = res.data
+    } else {
+      series.value = []
+      message.warning('该系列没有文章')
+    }
+  } catch (e) {
+    console.error('加载系列文章失败:', e)
+    message.error('加载系列文章失败: ' + (e.message || '未知错误'))
+    series.value = []
+  } finally {
+    isLoadingSeries.value = false
+  }
+}
 
 const loadArticle = async (id) => {
   isLoading.value = true
@@ -207,6 +228,9 @@ const loadArticle = async (id) => {
     if (res) {
       article.value = res.data
       await generateAnchors() // 生成目录锚点
+      if (activeKey.value == 'series' && !article.value.seriesId) {
+        activeKey.value = 'toc'
+      }
     } else {
       message.warning('文章不存在')
       router.back()
@@ -219,6 +243,16 @@ const loadArticle = async (id) => {
     isLoading.value = false
   }
 }
+
+// 监听tab切换，点击系列tab时加载系列文章
+watch(
+  () => activeKey.value,
+  (newKey) => {
+    if (newKey === 'series' && article.value.seriesId && series.value.length === 0) {
+      loadSeries(article.value.seriesId)
+    }
+  }
+)
 
 // 初始加载
 onBeforeMount(() => {
@@ -255,7 +289,7 @@ async function generateAnchors(retryCount = 0) {
       // console.error('viewerRef is not available');
       // 添加重试逻辑，最多重试3次
       if (retryCount < 3) {
-        console.log(`尝试重试生成目录，当前重试次数: ${retryCount + 1}`);
+        // console.log(`尝试重试生成目录，当前重试次数: ${retryCount + 1}`);
         // 等待300毫秒后重试
         setTimeout(() => generateAnchors(retryCount + 1), 300);
       } else {
@@ -314,7 +348,7 @@ async function generateAnchors(retryCount = 0) {
 
 <style lang="less" scoped>
 .ant-btn {
-    border-radius: 4px;
+  border-radius: 4px;
 }
 
 .loading-container {
@@ -385,6 +419,19 @@ async function generateAnchors(retryCount = 0) {
 
   .article-toc-content {
     padding: 0 10px 10px 5px;
+  }
+
+  .series-title {
+    color: grey;
+    font-size: 16px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    text-align: center;
+  }
+
+  .current-article {
+    font-weight: bold;
+    cursor: default;
   }
 }
 </style>
