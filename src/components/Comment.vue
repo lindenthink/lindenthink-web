@@ -11,7 +11,7 @@
     >
       <template #renderItem="{ item }">
         <a-list-item>
-          <CommentView :data="item" @reply-click="clickReply" />
+          <CommentView :data="item" @reply-click="clickReply" @delete-click="handleDelete" :deletable="deletable || item.userId === currentUser.id" />
         </a-list-item>
       </template>
     </a-list>
@@ -86,12 +86,13 @@ import 'dayjs/locale/zh-cn'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { UserOutlined, LinkOutlined, MailOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { queryActions, saveAction } from '@/services/actionService'
+import { queryActions, saveAction, deleteAction } from '@/services/actionService'
 import { useUserStore } from '@/stores/user'
 import CommentView from '@/components/CommentView.vue'
 
 const props = defineProps({
   owner: Number,
+  deletable: Boolean,
 })
 
 dayjs.locale('zh-cn')
@@ -193,6 +194,17 @@ const clickReply = (item) => {
   quoteItem.created = item.created
   isShowQuote.value = true
   scrollToReply()
+}
+
+const handleDelete = async (item) => {
+  try {
+    await deleteAction(item.id)
+    message.success('删除成功')
+    handlePageChange(pagination.current || 1)
+  } catch (error) {
+    console.error(error)
+    message.error('删除失败: ' + error.message)
+  }
 }
 
 const scrollToReply = () => {

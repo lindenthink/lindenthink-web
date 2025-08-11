@@ -126,7 +126,8 @@
           </div>
         </div>
 
-        <Comment ref="commentRef" :owner="article.id" />
+        <Comment ref="commentRef" :owner="article.id" :deletable="currentUser && currentUser.id == article.userId" />
+
       </template>
     </a-layout-content>
 

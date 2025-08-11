@@ -15,3 +15,10 @@ export async function queryActions(data) {
     body: data,
   })
 }
+
+export async function deleteAction(id) {
+  const fetch = useApiFetch()
+  return await fetch(`/action/${id}`, {
+    method: 'DELETE',
+  })
+}
