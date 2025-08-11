@@ -126,6 +126,7 @@ const handlePageChange = async (page) => {
       }
     })
     pagination.total = res.pagination.total
+    pagination.current = page
     comments.value = res.data.map((item) => initItem(item))
   } catch (error) {
     console.error(error)

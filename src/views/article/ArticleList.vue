@@ -92,6 +92,7 @@ function handlePageChange(page) {
     .then((res) => {
       articles.value = res.data
       pagination.total = res.pagination.total
+      pagination.current = page
     })
     .catch((e) => {
       console.error(e)
