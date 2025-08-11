@@ -16,9 +16,9 @@ export async function queryActions(data) {
   })
 }
 
-export async function deleteAction(id) {
+export async function deleteAction(type, id) {
   const fetch = useApiFetch()
-  return await fetch(`/action/${id}`, {
+  return await fetch(`/action/${type}/${id}`, {
     method: 'DELETE',
   })
 }

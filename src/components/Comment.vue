@@ -112,7 +112,6 @@ const pagination = {
   onChange: (page) => {
     handlePageChange(page)
   },
-  showQuickJumper: true,
   pageSize: 5,
 }
 
@@ -169,7 +168,7 @@ const handleSubmit = async () => {
     email: user.email,
     content: commentContent.value,
     type: 'COMMENT',
-    parentId: isShowQuote.value ? quoteItem.id : null,
+    pid: isShowQuote.value ? quoteItem.id : null,
   }
   submitting.value = true
   try {
@@ -178,6 +177,7 @@ const handleSubmit = async () => {
     commentContent.value = ''
     formRef.value.resetFields()
     handlePageChange(1)
+    isShowQuote.value = false
   } catch (error) {
     console.error(error)
     message.error('添加失败: ' + error.message)
@@ -198,7 +198,7 @@ const clickReply = (item) => {
 
 const handleDelete = async (item) => {
   try {
-    await deleteAction(item.id)
+    await deleteAction('COMMENT', item.id)
     message.success('删除成功')
     handlePageChange(pagination.current || 1)
   } catch (error) {

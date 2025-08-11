@@ -3,7 +3,7 @@
   <a-comment :author="data.nickname">
     <template #actions>
       <span v-for="(action, index) in data.actions" :key="index" @click="emit('reply-click', data)">{{ action }}</span>
-      <a-popconfirm title="确定要删除这条评论吗？" @confirm="() => handleConfirm(data, emit)" v-if="deletable">
+      <a-popconfirm title="确定要删除这条评论吗？" @confirm="() => emit('delete-click', data)" v-if="deletable">
         <span class="delete-btn">删除</span>
       </a-popconfirm>
     </template>
@@ -25,16 +25,17 @@
         <span>{{ data.created.fromNow() }}</span>
       </a-tooltip>
     </template>
-    <CommentView v-for="child in data.children" :key="child.id" :data="child" :deletable="deletable" />
+    <CommentView v-for="child in data.children" :key="child.id" :data="child" :deletable="deletable" @reply-click="handleReplyClick" @delete-click="handleDeleteClick" />
   </a-comment>
 </template>
 
 <script setup>
+defineProps({
+  data: Object,
+  deletable: Boolean,
+})
 
-// 处理点击确认事件
-const handleConfirm = (data, emit) => {
-  emit('delete-click', data)
-}
+const emit = defineEmits(['reply-click', 'delete-click'])
 
 // 生成随机柔和颜色
 const getRandomColor = () => {
@@ -44,12 +45,14 @@ const getRandomColor = () => {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
-defineProps({
-  data: Object,
-  deletable: Boolean,
-})
+const handleReplyClick = (item) => {
+  emit('reply-click', item)
+}
 
-const emit = defineEmits(['reply-click', 'delete-click'])
+const handleDeleteClick = (item) => {
+  emit('delete-click', item)
+}
+
 </script>
 
 <style scoped lang="less">
