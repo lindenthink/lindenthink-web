@@ -41,7 +41,7 @@
           </span>
           <span>
             <LikeOutlined style="margin-right: 8px" />
-            {{ item.praiseCount }}
+            {{ item.likeCount }}
           </span>
           <span>
             <MessageOutlined style="margin-right: 8px" />

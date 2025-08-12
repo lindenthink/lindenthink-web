@@ -95,7 +95,7 @@
               <a-divider v-if="article.type !== 'ORIGINAL'" type="vertical"></a-divider>
               <EyeOutlined style="margin-right: 5px" /><span>浏览数：{{ article.visitCount }}</span><a-divider
                 type="vertical"></a-divider>
-              <LikeOutlined style="margin-right: 5px" /><span>点赞数：{{ article.praiseCount }}</span><a-divider
+              <LikeOutlined style="margin-right: 5px" /><span>点赞数：{{ article.likeCount }}</span><a-divider
                 type="vertical"></a-divider>
               <MessageOutlined style="margin-right: 5px" />
               <span>评论数：{{ article.commentCount }}</span>
@@ -414,7 +414,7 @@ async function generateAnchors(retryCount = 0) {
   top: 74px;
   z-index: 9;
   margin-right: 10px;
-  max-width: 260px;
+  max-width: 240px;
   left: 12%;
 
   .article-toc-content {
@@ -424,8 +424,6 @@ async function generateAnchors(retryCount = 0) {
   .series-title {
     color: grey;
     font-size: 16px;
-    margin-bottom: 10px;
-    padding-bottom: 5px;
     text-align: center;
   }
 
