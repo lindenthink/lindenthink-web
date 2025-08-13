@@ -41,7 +41,19 @@ const handleChange = (event) => {
       width: 100px;
       height: 100px;
       background-size: 2900px 100px;
+      transition: transform 0.3s ease;
     }
+  }
+
+  // 未选中状态下的hover效果
+  &:hover:not(:has(input:checked)) .heartbox .element {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+  }
+
+  // 选中状态下的hover效果
+  &:hover:has(input:checked) .heartbox .element {
+    transform: scale(1.1);
   }
 
   &>input {
