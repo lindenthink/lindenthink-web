@@ -3,7 +3,7 @@
     <!-- 左侧配置区 -->
     <a-col :span="12">
       <a-card title="AES加解密配置">
-        <a-form layout="vertical">
+        <a-form layout="horizontal">
           <a-form-item label="加密模式">
             <a-select v-model:value="config.mode" style="width: 200px">
               <a-select-option value="CBC">CBC</a-select-option>
@@ -11,7 +11,15 @@
             </a-select>
           </a-form-item>
 
-          <a-form-item label="密钥">
+          <a-form-item label="密钥长度">
+        <a-select v-model:value="keyLength" style="width: 200px">
+          <a-select-option value="16">AES-128 (16字节)</a-select-option>
+          <a-select-option value="24">AES-192 (24字节)</a-select-option>
+          <a-select-option value="32">AES-256 (32字节)</a-select-option>
+        </a-select>
+      </a-form-item>
+
+      <a-form-item label="密钥">
             <a-input-password v-model:value="config.key" placeholder="输入16/24/32字节密钥" allow-clear>
               <template #addonAfter>
                 <a-tooltip title="生成随机密钥">
@@ -21,6 +29,18 @@
                 </a-tooltip>
               </template>
             </a-input-password>
+          </a-form-item>
+
+          <a-form-item v-if="config.mode === 'CBC'" label="初始化向量(IV)">
+            <a-input v-model:value="iv" placeholder="输入16字节Base64格式IV" allow-clear>
+              <template #addonAfter>
+                <a-tooltip title="生成随机IV">
+                  <a-button @click="generateIv">
+                    <security-scan-outlined />
+                  </a-button>
+                </a-tooltip>
+              </template>
+            </a-input>
           </a-form-item>
 
           <a-form-item :label="mode === 'encrypt' ? '明文输入' : '密文输入'">
@@ -106,21 +126,20 @@
 import { ref } from 'vue'
 import { message } from 'ant-design-vue'
 import CryptoJS from 'crypto-js'
-import { LockOutlined, UnlockOutlined, SwapOutlined, CopyOutlined, KeyOutlined } from '@ant-design/icons-vue'
-
+import { LockOutlined, UnlockOutlined, SwapOutlined, CopyOutlined, KeyOutlined, SecurityScanOutlined } from '@ant-design/icons-vue'
 const mode = ref('encrypt')
 const inputText = ref('')
 const outputText = ref('')
 const iv = ref('')
 
+const keyLength = ref('16')
 const config = ref({
   mode: 'CBC',
   key: '',
 })
 
 const generateKey = () => {
-  const keyLengths = [16, 24, 32]
-  const length = keyLengths[Math.floor(Math.random() * 3)]
+  const length = parseInt(keyLength.value, 10)
   const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-='
 
   // 使用更安全的随机生成方式
@@ -134,14 +153,32 @@ const generateKey = () => {
   message.success(`已生成AES-${length * 8}密钥`)
 }
 
+const generateIv = () => {
+  // 生成16字节随机IV
+  const randomValues = new Uint8Array(16)
+  window.crypto.getRandomValues(randomValues)
+  iv.value = btoa(String.fromCharCode.apply(null, Array.from(randomValues)))
+  message.success('已生成随机IV')
+}
+
 const validKeyLengths = [16, 24, 32] // AES-128/192/256
 
 const handleEncrypt = () => {
   try {
     validateKey()
     const key = CryptoJS.enc.Utf8.parse(config.value.key)
-    const ivBytes = CryptoJS.lib.WordArray.random(128 / 8)
-    iv.value = CryptoJS.enc.Base64.stringify(ivBytes)
+    let ivBytes
+
+    if (config.value.mode === 'CBC') {
+      if (iv.value) {
+        // 使用用户输入的IV
+        ivBytes = CryptoJS.enc.Base64.parse(iv.value)
+      } else {
+        // 生成随机IV
+        ivBytes = CryptoJS.lib.WordArray.random(128 / 8)
+        iv.value = CryptoJS.enc.Base64.stringify(ivBytes)
+      }
+    }
 
     const encrypted = CryptoJS.AES.encrypt(inputText.value, key, {
       iv: ivBytes,
@@ -177,9 +214,13 @@ const handleDecrypt = () => {
 }
 
 const validateKey = () => {
-  const keyLength = config.value.key.length
-  if (!validKeyLengths.includes(keyLength)) {
-    throw new Error(`密钥长度需为16/24/32字节，当前为${keyLength}字节`)
+  const currentLength = config.value.key.length
+  const selectedLength = parseInt(keyLength.value, 10)
+  if (currentLength !== selectedLength) {
+    throw new Error(`密钥长度与所选长度不匹配：当前为${currentLength}字节，应匹配${selectedLength}字节`)
+  }
+  if (!validKeyLengths.includes(currentLength)) {
+    throw new Error(`密钥长度需为16/24/32字节，当前为${currentLength}字节`)
   }
 }
 

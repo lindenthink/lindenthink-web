@@ -3,7 +3,7 @@
     <!-- 左侧配置区 -->
     <a-col :span="12">
       <a-card title="密码规则配置">
-        <a-form layout="vertical">
+        <a-form layout="horizontal">
           <a-form-item label="密码长度">
             <a-slider
               v-model:value="config.length"
