@@ -40,7 +40,7 @@
             {{ item.visitCount }}
           </span>
           <span>
-            <LikeOutlined style="margin-right: 8px" />
+            <HeartOutlined style="margin-right: 8px" />
             {{ item.likeCount }}
           </span>
           <span>
@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { EyeOutlined, LikeOutlined, MessageOutlined, CalendarOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import { EyeOutlined, HeartOutlined, MessageOutlined, CalendarOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 import { ref, onBeforeMount } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 import { queryArticles, deleteArticle } from '@/services/articleService'

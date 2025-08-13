@@ -95,7 +95,7 @@
               <a-divider v-if="article.type !== 'ORIGINAL'" type="vertical"></a-divider>
               <EyeOutlined style="margin-right: 5px" /><span>浏览数：{{ article.visitCount }}</span><a-divider
                 type="vertical"></a-divider>
-              <LikeOutlined style="margin-right: 5px" /><span>点赞数：{{ article.likeCount }}</span><a-divider
+              <HeartOutlined style="margin-right: 5px" /><span>喜欢数：{{ article.likeCount }}</span><a-divider
                 type="vertical"></a-divider>
               <MessageOutlined style="margin-right: 5px" />
               <span>评论数：{{ article.commentCount }}</span>
@@ -103,6 +103,8 @@
           </div>
 
           <AsciiDocViewer ref="viewerRef" :content="article.content" />
+
+          <a-divider :style="{ color: 'lightgrey' }">•</a-divider>
 
           <div class="article-foot">
             <div style="text-align: center"></div>
@@ -120,7 +122,6 @@
               </li>
             </ul>
 
-            <a-divider :style="{ color: 'lightgrey' }">•</a-divider>
             <div class="article-foot-nav">
               <div v-if="article.prevId">
                 <router-link :to="{ path: `/articles/${article.prevId}` }"> <left-outlined /> {{ article.prevTitle }}
@@ -129,6 +130,10 @@
               <div v-else>
                 没有上一篇了
               </div>
+              <HeartAnimation
+                v-model="isLiked"
+                @change="handleLikeChange"
+              />
               <div v-if="article.nextId">
                 <router-link :to="{ path: `/articles/${article.nextId}` }"> {{ article.nextTitle }} <right-outlined />
                 </router-link>
@@ -158,7 +163,7 @@ import {
   LeftOutlined,
   RightOutlined,
   EyeOutlined,
-  LikeOutlined,
+  HeartOutlined,
   MessageOutlined,
   CalendarOutlined,
   TagOutlined,
@@ -172,6 +177,8 @@ import Comment from '@/components/Comment.vue'
 import dayjs from 'dayjs'
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 import { getArticle, getSeriesArticles } from '@/services/articleService'
+import { saveAction, deleteAction } from '@/services/actionService'
+import HeartAnimation from '@/components/HeartAnimation.vue'
 // import { TagColors, showMessage, bindTip } from '@/static/linden'
 
 const props = defineProps({
@@ -200,6 +207,7 @@ const handleEdit = () => {
 }
 const series = ref([])
 const isLoadingSeries = ref(false)
+const isLiked = ref(false)
 
 // 加载系列文章
 const loadSeries = async (seriesId) => {
@@ -227,6 +235,7 @@ const loadArticle = async (id) => {
     const res = await getArticle(id)
     if (res) {
       article.value = res.data
+      isLiked.value = article.value.likeId >= 0
       await generateAnchors() // 生成目录锚点
       if (activeKey.value == 'series' && !article.value.seriesId) {
         activeKey.value = 'toc'
@@ -268,6 +277,36 @@ watch(
     }
   }
 )
+
+// 处理点赞状态变化
+const handleLikeChange = async (liked) => {
+  try {
+    // 登陆后才可操作
+    if (!currentUser.value) {
+      message.warning('请先登录')
+      isLiked.value = !liked
+      return
+    }
+    if (liked) {
+      const res = await saveAction({
+        type: 'LIKE',
+        targetId: article.value.id,
+      });
+      article.value.likeId = res.data
+      message.success('谢谢喜欢！');
+      article.value.likeCount++;
+    } else {
+      await deleteAction('LIKE', article.value.likeId);
+      message.info('已取消喜欢');
+      article.value.likeId = -1
+      article.value.likeCount--;
+    }
+  } catch (error) {
+    console.error('点赞操作失败:', error);
+    message.error('操作失败: ' + (error.message || '未知错误'));
+    isLiked.value = !liked
+  }
+}
 
 // onMounted(() => {
 //   bindTip()
@@ -395,7 +434,7 @@ async function generateAnchors(retryCount = 0) {
   padding: 0rem 2.5rem;
 
   .article-foot-copyright {
-    padding: 0.5em 1em;
+    padding: 1em 1em;
     border: 1px solid #91d5ff;
     background-color: #e6f7ff;
     list-style: none;
@@ -404,6 +443,7 @@ async function generateAnchors(retryCount = 0) {
   .article-foot-nav {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 2rem;
   }
 }
