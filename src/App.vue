@@ -10,13 +10,8 @@
             <img src="/title.png" width="130" style="margin: 0 1.5em" />
           </div>
           <div>
-            <a-menu
-              v-if="!isMobile"
-              v-model:selected-keys="currentMenu"
-              mode="horizontal"
-              :theme="theam"
-              :style="{ fontSize: '16px' }"
-            >
+            <a-menu v-if="!isMobile" v-model:selected-keys="currentMenu" mode="horizontal" :theme="theam"
+              :style="{ fontSize: '16px' }">
               <a-menu-item key="home">首页</a-menu-item>
               <a-menu-item key="articles">文章</a-menu-item>
               <a-menu-item key="tools">工具</a-menu-item>
@@ -25,14 +20,8 @@
             <a-button v-else icon="menu" @click="drawerVisible = true" />
           </div>
           <div class="search-wrapper">
-            <a-input-search
-              v-model:value="searchKeyword"
-              placeholder="搜索文章或工具..."
-              style="max-width: 300px"
-              allow-clear
-              @search="handleSearch"
-              @blur="handleSearchBlur"
-            />
+            <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..." style="max-width: 300px" allow-clear
+              @search="handleSearch" @blur="handleSearchBlur" />
             <div v-if="showResults" class="search-results">
               <a-spin v-if="searchLoading" />
               <template v-else>
@@ -61,12 +50,8 @@
             <template #title>
               <span>写作</span>
             </template>
-            <a-button
-              v-if="isLoggedIn"
-              shape="circle"
-              @click="router.push('/articles/editor/0')"
-              style="margin-right: 16px"
-            >
+            <a-button v-if="isLoggedIn" shape="circle" @click="router.push('/articles/editor/0')"
+              style="margin-right: 16px">
               <template #icon>
                 <EditOutlined />
               </template>
@@ -177,6 +162,9 @@ import { useUserStore } from '@/stores/user'
 import LoginForm from '@/components/LoginForm.vue'
 import UserInfo from '@/components/UserInfo.vue'
 import ChangePassword from '@/components/ChangePassword.vue'
+import { searchArticles } from '@/services/articleService'
+import tools from '@/services/toolData'
+
 
 import AudioPlayer from '@/components/AudioPlayer.vue'
 
@@ -232,16 +220,16 @@ onMounted(() => {
 })
 
 const handleLoginSuccess = (loginUserInfo) => {
-    userStore.login(loginUserInfo)
-    message.success(`欢迎回来，${loginUserInfo.nickname}`)
-    window.location.reload()
-  }
+  userStore.login(loginUserInfo)
+  message.success(`欢迎回来，${loginUserInfo.nickname}`)
+  window.location.reload()
+}
 
-  const handleLogout = () => {
-    userStore.logout()
-    message.success('已退出登录')
-    window.location.reload()
-  }
+const handleLogout = () => {
+  userStore.logout()
+  message.success('已退出登录')
+  window.location.reload()
+}
 
 const debouncedSearch = useDebounceFn(async (keyword) => {
   if (!keyword) {
@@ -250,82 +238,83 @@ const debouncedSearch = useDebounceFn(async (keyword) => {
   }
   try {
     searchLoading.value = true
-    // 模拟调用接口延迟
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    // 模拟数据
-    searchResults.value = [
-      {
-        id: '1',
-        type: 'article',
-        title: 'Vue3使用指南',
-        description: '最新Vue3特性详解',
-        route: '/articles/2',
-      },
-      {
-        id: '2',
-        type: 'article',
-        title: 'Vue3使用指南',
-        description: '最新Vue3特性详解',
-        route: '/articles/2',
-      },
-      {
-        id: '3',
-        type: 'article',
-        title: 'Vue3使用指南',
-        description: '最新Vue3特性详解',
-        route: '/articles/2',
-      },
-      {
-        id: '4',
-        type: 'article',
-        title: 'Vue3使用指南',
-        description: '最新Vue3特性详解',
-        route: '/articles/2',
-      },
-      {
-        id: '5',
-        type: 'article',
-        title: 'Vue3使用指南',
-        description: '最新Vue3特性详解',
-        route: '/articles/2',
-      },
-      {
-        id: 'code-formatter',
-        type: 'tool',
-        title: '代码格式化工具',
-        description: '在线代码格式化工具',
-        route: '/tools/code-formatter',
-      },
-    ]
+    // 清空之前的搜索结果
+    searchResults.value = []
+
+    // 1. 调用接口查询文章
+    const articleResults = await searchArticles(keyword)
+    const formattedArticles = articleResults?.data?.map(article => ({
+      id: article.id,
+      type: 'article',
+      title: article.title,
+      description: article.excerpt || '暂无描述',
+      route: `/articles/${article.id}`
+    })) || []
+
+    // 2. 从toolData中获取匹配的工具
+    const toolResults = []
+    tools.forEach(category => {
+      category.children.forEach(tool => {
+        // 检查工具标题、快速名称或搜索关键词是否匹配
+        const isMatch =
+          tool.title.toLowerCase().includes(keyword.toLowerCase()) ||
+          (tool.quickName && tool.quickName.toLowerCase().includes(keyword.toLowerCase())) ||
+          (tool.searchKey && tool.searchKey.toLowerCase().includes(keyword.toLowerCase()))
+
+        if (isMatch) {
+          toolResults.push({
+            id: tool.path,
+            type: 'tool',
+            title: tool.title,
+            description: `工具: ${category.title} - ${tool.title}`,
+            route: tool.path
+          })
+        }
+      })
+    })
+
+    // 3. 合并搜索结果并限制数量
+    searchResults.value = [...formattedArticles, ...toolResults].slice(0, 20)
+  } catch (error) {
+    console.error('搜索失败:', error)
+    message.error('搜索失败，请稍后再试')
+    searchResults.value = []
   } finally {
     searchLoading.value = false
   }
 }, 500)
+
 const handleSearch = (value) => {
+  if (!value) return
   searchKeyword.value = value
+  searchResults.value = []
+  showResults.value = true
   debouncedSearch(value)
 }
+
 const handleSearchBlur = () => {
   if (!showResults.value) return
   setTimeout(() => {
     showResults.value = false
   }, 200)
 }
+
 const goToSearchResult = (item) => {
-  if (item.type === 'article') {
-    router.push({ name: 'articles', query: { keyword: item.title } })
-  } else if (item.type === 'tool') {
-    router.push({ name: 'tools', query: { keyword: item.title } })
-  }
+  router.push(item.route)
 }
 
 // 计算属性分类结果
 const resultCategories = computed(() => {
   if (!searchResults.value.length) return {}
-  return {
-    article: searchResults.value.filter((item) => item.type === 'article'),
-    tool: searchResults.value.filter((item) => item.type === 'tool'),
+  // 为空时则不展示对应分类
+  const categories = {}
+  if (searchResults.value.some((item) => item.type === 'article')) {
+    categories.article = searchResults.value.filter((item) => item.type === 'article')
   }
+  if (searchResults.value.some((item) => item.type === 'tool')) {
+    categories.tool = searchResults.value.filter((item) => item.type === 'tool')
+  }
+  return categories
 })
 
 // 监听输入变化
@@ -345,6 +334,7 @@ const highlightKeywords = (text, keyword) => {
   const regex = new RegExp(`(${escapedKeyword})`, 'gi')
   return text.replace(regex, '<span class="highlight">$1</span>')
 }
+
 // 保存系统设置
 const saveSettings = () => {
   const settings = {
@@ -547,6 +537,7 @@ const saveSettings = () => {
   margin-bottom: 16px;
   padding-bottom: 16px;
   border-bottom: 1px solid #f0f0f0;
+
   .setting-label {
     color: rgba(128, 122, 122, 0.85);
     font-size: 14px;
@@ -554,6 +545,7 @@ const saveSettings = () => {
     display: inline-block;
     width: 200px;
   }
+
   &:last-child {
     border-bottom: none;
   }

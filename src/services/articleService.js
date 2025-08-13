@@ -28,8 +28,12 @@ export async function deleteArticle(id) {
   })
 }
 
-// 获取系列文章
 export async function getSeriesArticles(seriesId) {
   const fetch = useApiFetch()
   return await fetch(`/article/series/${seriesId}`)
+}
+
+export async function searchArticles(keyword) {
+  const fetch = useApiFetch()
+  return await fetch(`/article/search?keyword=${keyword}`)
 }
