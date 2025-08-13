@@ -11,7 +11,7 @@
     >
       <template #renderItem="{ item }">
         <a-list-item>
-          <CommentView :data="item" @reply-click="clickReply" @delete-click="handleDelete" :deletable="deletable || item.userId === currentUser.id" />
+          <CommentView :data="item" @reply-click="clickReply" @delete-click="handleDelete" :deletable="deletable || item.userId === currentUser?.id" />
         </a-list-item>
       </template>
     </a-list>

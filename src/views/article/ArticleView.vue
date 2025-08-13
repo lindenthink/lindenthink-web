@@ -133,6 +133,7 @@
               <HeartAnimation
                 v-model="isLiked"
                 @change="handleLikeChange"
+                v-if="currentUser"
               />
               <div v-if="article.nextId">
                 <router-link :to="{ path: `/articles/${article.nextId}` }"> {{ article.nextTitle }} <right-outlined />
