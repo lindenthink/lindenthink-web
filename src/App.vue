@@ -154,7 +154,7 @@
         </div>
         <div class="setting-item">
           <span class="setting-label">网易云音乐列表ID</span>
-          <a-input v-model:value="playlistId" placeholder="输入音乐列表ID" :disabled="!audioPlayerEnabled" />
+          <a-input v-model:value="playlistId" placeholder="输入播放列表ID" :disabled="!audioPlayerEnabled" />
         </div>
       </div>
       <div class="drawer-actions">
@@ -232,14 +232,16 @@ onMounted(() => {
 })
 
 const handleLoginSuccess = (loginUserInfo) => {
-  userStore.login(loginUserInfo)
-  message.success(`欢迎回来，${loginUserInfo.nickname}`)
-}
+    userStore.login(loginUserInfo)
+    message.success(`欢迎回来，${loginUserInfo.nickname}`)
+    window.location.reload()
+  }
 
-const handleLogout = () => {
-  userStore.logout()
-  message.success('已退出登录')
-}
+  const handleLogout = () => {
+    userStore.logout()
+    message.success('已退出登录')
+    window.location.reload()
+  }
 
 const debouncedSearch = useDebounceFn(async (keyword) => {
   if (!keyword) {
