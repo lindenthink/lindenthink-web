@@ -3,7 +3,7 @@
     <!-- 左侧配置区 -->
     <a-col :span="12">
       <a-card title="AES加解密配置">
-        <a-form layout="horizontal">
+        <a-form layout="horizontal" :label-col="{ span: 6 }">
           <a-form-item label="加密模式">
             <a-select v-model:value="config.mode" style="width: 200px">
               <a-select-option value="CBC">CBC</a-select-option>

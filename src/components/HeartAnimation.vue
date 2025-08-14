@@ -8,6 +8,7 @@
 </template>
 
 <script setup>
+// 参考：https://leanrada.com/notes/css-sprite-sheets/
 import { defineProps, defineEmits } from 'vue'
 
 const props = defineProps({

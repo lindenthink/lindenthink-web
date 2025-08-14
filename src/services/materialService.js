@@ -12,6 +12,14 @@ export async function queryCarousel() {
   return await queryByType('CAROUSEL')
 }
 
+export async function queryPasswords() {
+  return await queryByType('PASSWORD')
+}
+
+export async function queryMessages() {
+  return await queryByType('MESSAGE')
+}
+
 export async function save(data) {
   const fetch = useApiFetch()
   const res = await fetch(`/material/save`, {
@@ -21,6 +29,13 @@ export async function save(data) {
   return res
 }
 
+export async function remove(data) {
+  const fetch = useApiFetch()
+  const { type, id } = data
+  return await fetch(`/material/${type}/${id}`, {
+    method: 'DELETE',
+  })
+}
 
 async function queryByType(type) {
   const fetch = useApiFetch()

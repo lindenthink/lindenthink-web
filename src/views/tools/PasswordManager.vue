@@ -50,31 +50,28 @@
     </a-col>
   </a-row>
 
-  <!-- 新增/编辑模态框 -->
-  <a-modal
-    v-model:visible="modalVisible"
-    :title="isEditMode ? '编辑条目' : '新增条目'"
-    @ok="submitForm"
-    @cancel="resetForm"
-  >
-    <a-form :model="formState" layout="vertical">
-      <a-form-item label="应用名称" required>
-        <a-input v-model:value="formState.appName" />
+  <a-modal v-model:visible="modalVisible" :title="isEditMode ? '编辑条目' : '新增条目'" @ok="submitForm" @cancel="resetForm">
+    <a-form :model="formState" layout="horizontal" :rules="formRules" ref="formRef" :label-col="{ span: 4 }">
+      <a-form-item label="应用名称" required name="appName">
+        <a-input v-model:value="formState.appName" placeholder="请输入应用名称" />
       </a-form-item>
-      <a-form-item label="用户名" required>
-        <a-input v-model:value="formState.username" />
+      <a-form-item label="用户名" required name="username">
+        <a-input v-model:value="formState.username" placeholder="请输入用户名" />
       </a-form-item>
-      <a-form-item label="密码" required>
-        <a-input-password v-model:value="formState.password" :visibility-toggle="false" />
+      <a-form-item label="密码" required name="password">
+        <a-input-password v-model:value="formState.password" placeholder="请输入至少6位密码" :visibility-toggle="false" />
       </a-form-item>
-      <a-form-item label="应用网址">
-        <a-input v-model:value="formState.url" addon-before="https://" />
+      <a-form-item label="应用网址" name="url">
+        <a-input v-model:value="formState.url" placeholder="请输入有效的URL" />
       </a-form-item>
       <a-form-item label="分类">
         <a-select v-model:value="formState.category">
           <a-select-option value="社交">社交</a-select-option>
           <a-select-option value="金融">金融</a-select-option>
+          <a-select-option value="娱乐">娱乐</a-select-option>
+          <a-select-option value="工具">工具</a-select-option>
           <a-select-option value="工作">工作</a-select-option>
+          <a-select-option value="其他">其他</a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item label="备注">
@@ -85,21 +82,75 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
-import { message } from 'ant-design-vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { message, Modal } from 'ant-design-vue'
 import { PlusOutlined, EditOutlined, DeleteOutlined, CopyOutlined } from '@ant-design/icons-vue'
 import CryptoJS from 'crypto-js'
+import { useUserStore } from '@/stores/user'
+import { save, remove, queryPasswords } from '@/services/materialService.js'
 
 // 加密配置
 const ENCRYPT_KEY = import.meta.env.VITE_APP_SECRET || 'default-secret-key'
 
-// 数据操作
+// 用户认证
+const userStore = useUserStore()
+const currentUser = ref(null)
 const items = ref([])
 const activeItem = ref(null)
 const searchKey = ref('')
 const loading = ref(false)
 const modalVisible = ref(false)
 const isEditMode = ref(false)
+
+
+const queryAll = async () => {
+  if (!currentUser.value) {
+    message.error('需要先登录')
+
+    return
+  }
+  loading.value = true
+  try {
+    const response = await queryPasswords()
+    items.value = response.map((item) => {
+      return {
+        ...JSON.parse(item.content),
+        id: item.id,
+      }
+    })
+  } catch (error) {
+    message.error('数据加载失败: ' + error.message)
+    items.value = []
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  currentUser.value = userStore.userInfo
+  queryAll()
+})
+// 表单引用
+const formRef = ref(null)
+
+// 表单校验规则
+const formRules = reactive({
+  appName: [
+    { required: true, message: '请输入应用名称', trigger: 'blur' },
+    { min: 1, max: 50, message: '应用名称长度在 1-50 个字符之间', trigger: 'blur' }
+  ],
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 1, max: 50, message: '用户名长度在 1-50 个字符之间', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, message: '密码长度至少为 6 个字符', trigger: 'blur' }
+  ],
+  url: [
+    { type: 'url', message: '请输入有效的 URL', trigger: 'blur' }
+  ]
+})
 
 // 表单状态
 const formState = reactive({
@@ -112,7 +163,6 @@ const formState = reactive({
   notes: '',
 })
 
-// 加密方法
 const encryptData = (text) => {
   return CryptoJS.AES.encrypt(text, ENCRYPT_KEY).toString()
 }
@@ -122,7 +172,6 @@ const decryptData = (ciphertext) => {
   return bytes.toString(CryptoJS.enc.Utf8)
 }
 
-// 列表过滤
 const filteredItems = computed(() => {
   return items.value.filter((item) => item.appName.toLowerCase().includes(searchKey.value.toLowerCase()))
 })
@@ -136,6 +185,11 @@ const selectItem = (item) => {
 }
 
 const showAddModal = () => {
+  if (!currentUser.value) {
+    message.error('需要先登录')
+    return
+  }
+  resetForm()
   isEditMode.value = false
   modalVisible.value = true
 }
@@ -149,30 +203,55 @@ const showEditModal = (item) => {
   modalVisible.value = true
 }
 
-const submitForm = () => {
-  const payload = {
-    ...formState,
-    password: encryptData(formState.password),
+const submitForm = async () => {
+  await formRef.value.validateFields()
+  try {
+    const payload = {
+      ...formState,
+      password: encryptData(formState.password),
+    }
+    const response = await save({
+      id: formState.id,
+      type: 'PASSWORD',
+      content: JSON.stringify(payload),
+    })
+    if (isEditMode.value) {
+      const index = items.value.findIndex((i) => i.id === formState.id)
+      items.value.splice(index, 1, payload)
+    } else {
+      payload.id = response.data
+      items.value.push(payload)
+    }
+    selectItem(payload)
+    message.success('保存成功')
+    resetForm()
+  } catch (error) {
+    message.error('保存失败: ' + (error.message || '未知错误'))
   }
-
-  if (isEditMode.value) {
-    const index = items.value.findIndex((i) => i.id === formState.id)
-    items.value.splice(index, 1, payload)
-  } else {
-    items.value.push({ ...payload, id: Date.now() })
-  }
-
-  message.success('保存成功')
-  resetForm()
 }
 
-const deleteItem = (id) => {
-  items.value = items.value.filter((i) => i.id !== id)
-  if (activeItem.value?.id === id) activeItem.value = null
-  message.success('删除成功')
+const deleteItem = async (id) => {
+  Modal.confirm({
+    title: '确认删除',
+    content: '确定要删除这个密码项吗？',
+    onOk: async () => {
+      try {
+        await remove({
+          type: 'PASSWORD',
+          id: id
+        })
+        items.value = items.value.filter((i) => i.id !== id)
+        activeItem.value = null
+        message.success('删除成功')
+      } catch (error) {
+        message.error('删除失败: ' + error.message)
+      }
+    }
+  })
 }
 
 const resetForm = () => {
+  // 重置表单状态
   formState.id = null
   formState.appName = ''
   formState.username = ''
@@ -180,6 +259,12 @@ const resetForm = () => {
   formState.url = ''
   formState.category = '社交'
   formState.notes = ''
+
+  // 重置表单校验
+  if (formRef.value) {
+    formRef.value.resetFields()
+  }
+
   modalVisible.value = false
 }
 
@@ -190,18 +275,12 @@ const copyPassword = (text) => {
     .catch(() => message.error('复制失败'))
 }
 
-// 初始化示例数据
-items.value = [
-  {
-    id: 1,
-    appName: '示例应用',
-    username: 'user@example.com',
-    password: encryptData('P@ssw0rd!'),
-    url: 'https://example.com',
-    category: '社交',
-    notes: '测试账号',
-  },
-]
+// 搜索处理
+const handleSearch = () => {
+  // 搜索逻辑已在computed属性filteredItems中实现
+  // 这里可以添加额外的搜索处理逻辑
+}
+
 </script>
 
 <style scoped>
