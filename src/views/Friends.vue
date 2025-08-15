@@ -61,7 +61,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onBeforeMount } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 import Comment from '@/components/Comment.vue'
 import { save, queryFriends } from '@/services/materialService'
@@ -145,7 +145,7 @@ const fetchFriends = async () => {
 }
 
 // 组件挂载时获取数据
-onBeforeMount(() => {
+onMounted(() => {
   fetchFriends()
 })
 

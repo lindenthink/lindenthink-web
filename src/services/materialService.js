@@ -9,20 +9,20 @@ export async function querySeries() {
 }
 
 export async function queryCarousel() {
-  return await queryByType('CAROUSEL')
+  return await queryPublicType('CAROUSEL')
 }
 
 export async function queryPasswords() {
   return await queryByType('PASSWORD')
 }
 
-export async function queryMessages() {
-  return await queryByType('MESSAGE')
+export async function queryFriends() {
+  return await queryPublicType('FRIEND')
 }
 
-export async function queryFriends() {
+async function queryPublicType(type) {
   const fetch = useApiFetch()
-  const res = await fetch(`/material/friend`)
+  const res = await fetch(`/material/public-type/${type}`)
   return res.data
 }
 

@@ -2,7 +2,6 @@
   <a-layout class="home-layout">
     <a-layout-sider breakpoint="lg" collapsed-width="0" />
     <a-layout-content>
-      <!-- Enhanced Carousel -->
       <a-carousel autoplay effect="fade" class="custom-carousel" :autoplay-speed="5000" arrows>
         <template #prevArrow>
           <div class="custom-slick-arrow" style="left: 10px; z-index: 1">
