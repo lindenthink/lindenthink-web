@@ -20,6 +20,12 @@ export async function queryMessages() {
   return await queryByType('MESSAGE')
 }
 
+export async function queryFriends() {
+  const fetch = useApiFetch()
+  const res = await fetch(`/material/friend`)
+  return res.data
+}
+
 export async function save(data) {
   const fetch = useApiFetch()
   const res = await fetch(`/material/save`, {
