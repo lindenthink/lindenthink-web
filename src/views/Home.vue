@@ -15,19 +15,17 @@
         </template>
 
         <div v-for="img in carouselImgs" :key="img.id" class="carousel-slide">
-          <img :src="img.url" class="carousel-image" :alt="img.desc" />
+          <img :src="img.url" class="carousel-image" :alt="img.title" />
           <div class="carousel-caption">
             <div class="caption-content">
-              <p class="poetry-text">{{ img.desc }}</p>
+              <p class="poetry-text">{{ img.title }}</p>
               <div class="gradient-overlay" />
             </div>
           </div>
         </div>
       </a-carousel>
 
-      <!-- Content Sections -->
       <div class="content-container">
-        <!-- Popular Articles Section -->
         <section class="articles-section">
           <h2 class="section-title">
             <fire-outlined class="title-icon" style="color: orangered" />
@@ -58,7 +56,7 @@
             </a-col>
           </a-row>
         </section>
-        <!-- Latest News Section -->
+        
         <section class="dynamic-section">
           <h2 class="section-title">
             <bulb-outlined class="title-icon" />
@@ -87,7 +85,7 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, onMounted } from 'vue'
 import {
   LeftCircleFilled,
   RightCircleFilled,
@@ -99,6 +97,7 @@ import {
   LikeOutlined,
   MessageOutlined,
 } from '@ant-design/icons-vue'
+import { queryCarousel } from '@/services/materialService'
 
 const popularArticles = reactive([
   {
@@ -150,34 +149,37 @@ const latestNews = reactive([
   // 其他数据...
 ])
 
-const carouselImgs = reactive([
-{
-    id: 1,
-    desc: '接天莲叶无穷碧，映日荷花别样红。',
-    url: '/1.jpg',
-  },
-  {
-    id: 2,
-    desc: '知识库+在线工具+工作台，提供一站式服务。',
-    url: '/2.jpg',
-  },
-  {
-    id: 3,
-    desc: '行至水穷处，坐看云起时。',
-    url: '/3.jpg',
-  },
-])
+const carouselImgs = reactive([])
+
+onMounted(async () => {
+  try {
+    const res = await queryCarousel()
+    const data = res.map(item => {
+      return {
+        id: item.id,
+        ...JSON.parse(item.content)
+      }
+    })
+    data.sort((a, b) => a.order - b.order)
+    carouselImgs.length = 0
+    data.forEach(item => carouselImgs.push(item))
+  } catch (error) {
+    console.error('获取轮播图数据失败:', error)
+    message.error('获取轮播图数据失败: ' + error.message)
+  }
+})
 </script>
 
 <style scoped lang="less">
 @import '@/styles/variables.less';
+
 @carousel-height: 300px;
 
 .custom-carousel {
   margin: 20px 16px 0px 16px;
   border-radius: 8px;
   overflow: hidden;
-  // box-shadow: @box-shadow-base;
+  box-shadow: @box-shadow-base;
 
   :deep(.slick-slide) {
     height: @carousel-height;
