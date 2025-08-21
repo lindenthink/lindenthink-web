@@ -26,58 +26,58 @@
       </a-carousel>
 
       <div class="content-container">
-        <section class="articles-section">
-          <h2 class="section-title">
-            <fire-outlined class="title-icon" style="color: orangered" />
-            热门文章
-          </h2>
-          <a-row :gutter="[24, 24]">
-            <a-col v-for="article in popularArticles" :key="article.id" :xs="24" :sm="12" :lg="8">
-              <a-card hoverable class="article-card">
-                <a-tag class="article-tag" color="#2db7f5">
-                  {{ article.category }}
-                </a-tag>
-                <a-card-meta :title="article.title" :description="article.summary" />
-                <div class="stats-bar">
-                  <div class="stat-item">
-                    <eye-outlined />
-                    <span>{{ article.likes }}</span>
-                  </div>
-                  <div class="stat-item">
-                    <like-outlined />
-                    <span>{{ article.likes }}</span>
-                  </div>
-                  <div class="stat-item">
-                    <message-outlined />
-                    <span>{{ article.comments }}</span>
-                  </div>
+        <a-row :gutter="[24, 24]">
+          <a-col :xs="24" :md="12">
+            <section class="articles-section">
+              <h2 class="hot-section-title">
+                <fire-outlined class="title-icon" />
+                本站热门
+              </h2>
+              <a-row :gutter="[16, 16]">
+                <a-col v-for="(article, index) in popularArticles" :key="article.id" :xs="24" :sm="12" :lg="24">
+                  <a-card hoverable :class="['article-card', {
+                    'gold-medal': index === 0,
+                    'silver-medal': index === 1,
+                    'bronze-medal': index === 2
+                  }]">
+                    <div class="medal-badge">{{ index + 1 }}</div>
+                    <a-tag class="article-tag">{{ article.category }}</a-tag>
+                    <a-card-meta :title="article.title" :description="article.summary" />
+                    <div class="stats-bar">
+                      <div class="stat-item">
+                        <eye-outlined />
+                        <span>{{ article.likes }}</span>
+                      </div>
+                      <div class="stat-item">
+                        <like-outlined />
+                        <span>{{ article.likes }}</span>
+                      </div>
+                      <div class="stat-item">
+                        <message-outlined />
+                        <span>{{ article.comments }}</span>
+                      </div>
+                    </div>
+                  </a-card>
+                </a-col>
+              </a-row>
+            </section>
+          </a-col>
+          <a-col :xs="24" :md="12">
+            <section class="dynamic-section">
+              <h2 class="section-title">
+                <bulb-outlined class="title-icon" />
+                今日资讯
+              </h2>
+              <div class="news-list">
+                <div v-for="news in latestNews" :key="news.id" class="news-item">
+                  <a :href="'#/news/' + news.id" class="news-link">
+                    {{ news.title }}
+                  </a>
                 </div>
-              </a-card>
-            </a-col>
-          </a-row>
-        </section>
-        
-        <section class="dynamic-section">
-          <h2 class="section-title">
-            <bulb-outlined class="title-icon" />
-            最新动态
-          </h2>
-          <a-row :gutter="[24, 24]">
-            <a-col v-for="news in latestNews" :key="news.id" :xs="24" :sm="12" :lg="8">
-              <a-card hoverable class="news-card" :cover="news.cover">
-                <template #actions>
-                  <span><edit-outlined /> {{ news.author }}</span>
-                  <span><clock-circle-outlined /> {{ news.date }}</span>
-                </template>
-                <a-card-meta :title="news.title" :description="news.summary">
-                  <template #avatar>
-                    <a-avatar :src="news.avatar" />
-                  </template>
-                </a-card-meta>
-              </a-card>
-            </a-col>
-          </a-row>
-        </section>
+              </div>
+            </section>
+          </a-col>
+        </a-row>
       </div>
     </a-layout-content>
     <a-layout-sider breakpoint="lg" collapsed-width="0" />
@@ -91,13 +91,12 @@ import {
   RightCircleFilled,
   BulbOutlined,
   FireOutlined,
-  EditOutlined,
   EyeOutlined,
-  ClockCircleOutlined,
   LikeOutlined,
   MessageOutlined,
 } from '@ant-design/icons-vue'
 import { queryCarousel } from '@/services/materialService'
+import { message } from 'ant-design-vue'
 
 const popularArticles = reactive([
   {
@@ -259,8 +258,8 @@ onMounted(async () => {
 }
 
 .section-title {
-  font-size: 1.75rem;
-  margin: 2rem 0 1.5rem;
+  font-size: 1.2rem;
+  margin: 1rem 0 1rem;
   color: @heading-color;
 
   .title-icon {
@@ -272,29 +271,92 @@ onMounted(async () => {
   &::after {
     content: '';
     display: block;
-    width: 120px;
-    height: 4px;
+    width: 100px;
+    height: 3px;
     background: linear-gradient(90deg, #2075f5, #19b4f1, transparent);
     border-radius: 2px;
     margin-top: 0.2em;
   }
 }
 
-.news-card,
+/* 本站热门标题样式 */
+.hot-section-title {
+  font-size: 1.2rem;
+  margin: 1rem 0 1rem;
+  color: @heading-color;
+
+  .title-icon {
+    font-size: 1.1em;
+    color: #ff7d00;
+  }
+  position: relative;
+  letter-spacing: 2px;
+  &::after {
+    content: '';
+    display: block;
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, #ff7d00, #ffb74d, transparent);
+    border-radius: 2px;
+    margin-top: 0.2em;
+  }
+}
+
 .article-card {
-  transition:
+  transition: 
     transform 0.3s @ease-in-out,
     box-shadow 0.3s @ease-in-out;
   border-radius: 8px;
   overflow: hidden;
+  position: relative;
 
   &:hover {
     transform: translateY(-4px);
     box-shadow: @box-shadow-lg;
   }
 
+  .medal-badge {
+    position: absolute;
+    top: 1.4rem;
+    left: 0.2rem;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    z-index: 2;
+  }
+
+  &.gold-medal {
+    .medal-badge {
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
+      color: #fff;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+    }
+  }
+
+  &.silver-medal {
+    .medal-badge {
+      background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
+      color: #fff;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+    }
+  }
+
+  &.bronze-medal {
+    .medal-badge {
+      background: linear-gradient(135deg, #cd7f32, #a67c52);
+      color: #fff;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+    }
+  }
+
   :deep(.ant-card-meta-title) {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 500;
   }
 
@@ -314,8 +376,8 @@ onMounted(async () => {
 .stats-bar {
   display: flex;
   justify-content: space-between;
-  padding: 1rem 0 0;
-  margin-top: 1rem;
+  padding: 0.5rem 0 0;
+  margin-top: 0.5rem;
   border-top: 1px solid @border-color-base;
 
   .stat-item {
@@ -323,11 +385,39 @@ onMounted(async () => {
     align-items: center;
     gap: 4px;
     color: @text-color-secondary;
+    font-size: 0.85rem;
 
     &:hover {
       color: @primary-color;
       cursor: pointer;
     }
+  }
+}
+
+.news-list {
+  padding: 0 1rem;
+}
+
+.news-item {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid @border-color-base;
+  transition: all 0.3s @ease-in-out;
+}
+
+.news-item:last-child {
+  border-bottom: none;
+}
+
+.news-link {
+  color: @text-color;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: block;
+  transition: color 0.3s @ease-in-out;
+
+  &:hover {
+    color: @primary-color;
+    transform: translateX(5px);
   }
 }
 

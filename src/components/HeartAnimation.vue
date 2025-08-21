@@ -9,7 +9,7 @@
 
 <script setup>
 // 参考：https://leanrada.com/notes/css-sprite-sheets/
-import { defineProps, defineEmits } from 'vue'
+import { defineEmits } from 'vue'
 
 const props = defineProps({
   modelValue: {
