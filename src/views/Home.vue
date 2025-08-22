@@ -2,80 +2,101 @@
   <a-layout class="home-layout">
     <a-layout-sider breakpoint="lg" collapsed-width="0" />
     <a-layout-content>
-      <a-carousel autoplay effect="fade" class="custom-carousel" :autoplay-speed="5000" arrows>
-        <template #prevArrow>
-          <div class="custom-slick-arrow" style="left: 10px; z-index: 1">
-            <LeftCircleFilled />
-          </div>
-        </template>
-        <template #nextArrow>
-          <div class="custom-slick-arrow" style="right: 10px">
-            <RightCircleFilled />
-          </div>
-        </template>
+      <template v-if="!isLoading">
+        <a-carousel autoplay effect="fade" class="custom-carousel" :autoplay-speed="5000" arrows>
+          <template #prevArrow>
+            <div class="custom-slick-arrow" style="left: 10px; z-index: 1">
+              <LeftCircleFilled />
+            </div>
+          </template>
+          <template #nextArrow>
+            <div class="custom-slick-arrow" style="right: 10px">
+              <RightCircleFilled />
+            </div>
+          </template>
 
-        <div v-for="img in carouselImgs" :key="img.id" class="carousel-slide">
-          <img :src="img.url" class="carousel-image" :alt="img.title" />
-          <div class="carousel-caption">
-            <div class="caption-content">
-              <p class="poetry-text">{{ img.title }}</p>
-              <div class="gradient-overlay" />
+          <div v-for="img in carouselImgs" :key="img.id" class="carousel-slide">
+            <img :src="img.url" class="carousel-image" :alt="img.title" />
+            <div class="carousel-caption">
+              <div class="caption-content">
+                <p class="poetry-text">{{ img.title }}</p>
+                <div class="gradient-overlay" />
+              </div>
             </div>
           </div>
+        </a-carousel>
+      </template>
+      <template v-else>
+        <div class="skeleton-container">
+          <Skeleton active :loading="isLoading" class="carousel-skeleton" />
         </div>
-      </a-carousel>
+      </template>
 
       <div class="content-container">
         <a-row :gutter="[24, 24]">
           <a-col :xs="24" :md="12">
-            <section class="articles-section">
-              <h2 class="hot-section-title">
-                <fire-outlined class="title-icon" />
-                本站热门
-              </h2>
-              <a-row :gutter="[16, 16]">
-                <a-col v-for="(article, index) in popularArticles" :key="article.id" :xs="24" :sm="12" :lg="24">
-                  <a-card hoverable :class="['article-card', {
-                    'gold-medal': index === 0,
-                    'silver-medal': index === 1,
-                    'bronze-medal': index === 2
-                  }]" @click="handleClick(article)">
-                    <div class="medal-badge">{{ index + 1 }}</div>
-                    <a-card-meta :title="article.title" :description="article.outline" />
-                    <div class="stats-bar">
-                      <div class="stat-item">
-                        <eye-outlined />
-                        <span>{{ article.visitCount }}</span>
+            <template v-if="!isLoading">
+              <section class="articles-section">
+                <h2 class="hot-section-title">
+                  <fire-outlined class="title-icon" />
+                  本站热门
+                </h2>
+                <a-row :gutter="[16, 16]">
+                  <a-col v-for="(article, index) in popularArticles" :key="article.id" :xs="24" :sm="12" :lg="24">
+                    <a-card hoverable :class="['article-card', {
+                      'gold-medal': index === 0,
+                      'silver-medal': index === 1,
+                      'bronze-medal': index === 2
+                    }]" @click="handleClick(article)">
+                      <div class="medal-badge">{{ index + 1 }}</div>
+                      <a-card-meta :title="article.title" :description="article.outline" />
+                      <div class="stats-bar">
+                        <div class="stat-item">
+                          <eye-outlined />
+                          <span>{{ article.visitCount }}</span>
+                        </div>
+                        <div class="stat-item">
+                          <heart-outlined />
+                          <span>{{ article.likeCount }}</span>
+                        </div>
+                        <div class="stat-item">
+                          <message-outlined />
+                          <span>{{ article.commentCount }}</span>
+                        </div>
                       </div>
-                      <div class="stat-item">
-                        <heart-outlined />
-                        <span>{{ article.likeCount }}</span>
-                      </div>
-                      <div class="stat-item">
-                        <message-outlined />
-                        <span>{{ article.commentCount }}</span>
-                      </div>
-                    </div>
-                  </a-card>
-                </a-col>
-              </a-row>
-            </section>
+                    </a-card>
+                  </a-col>
+                </a-row>
+              </section>
+            </template>
+            <template v-else>
+              <div class="skeleton-container">
+                <Skeleton active :loading="isLoading" class="articles-skeleton" />
+              </div>
+            </template>
           </a-col>
           <a-col :xs="24" :md="12">
-            <section class="dynamic-section">
-              <h2 class="section-title">
-                <bulb-outlined class="title-icon" />
-                今日资讯
-              </h2>
-              <div class="news-list">
-                <div v-for="news in latestNews" :key="news.id" class="news-item">
-                  <a :href="news.url" class="news-link" target="_blank">
-                    {{ news.title }}
-                    <span class="news-source">来源: {{ news.source }} - {{ news.date }}</span>
-                  </a>
+            <template v-if="!isLoading">
+              <section class="dynamic-section">
+                <h2 class="section-title">
+                  <bulb-outlined class="title-icon" />
+                  今日资讯
+                </h2>
+                <div class="news-list">
+                  <div v-for="news in latestNews" :key="news.id" class="news-item">
+                    <a :href="news.url" class="news-link" target="_blank">
+                      {{ news.title }}
+                      <span class="news-source">来源: {{ news.source }} - {{ news.date }}</span>
+                    </a>
+                  </div>
                 </div>
+              </section>
+            </template>
+            <template v-else>
+              <div class="skeleton-container">
+                <Skeleton active :loading="isLoading" class="news-skeleton" />
               </div>
-            </section>
+            </template>
           </a-col>
         </a-row>
       </div>
@@ -85,7 +106,7 @@
 </template>
 
 <script setup>
-import { reactive, onMounted } from 'vue'
+import { reactive, onMounted, ref } from 'vue'
 import {
   LeftCircleFilled,
   RightCircleFilled,
@@ -95,6 +116,7 @@ import {
   HeartOutlined,
   MessageOutlined,
 } from '@ant-design/icons-vue'
+import { Skeleton } from 'ant-design-vue'
 import { queryCarousel, queryNews } from '@/services/materialService'
 import { getTop3 } from '@/services/articleService'
 import { message } from 'ant-design-vue'
@@ -107,8 +129,11 @@ const latestNews = reactive([])
 
 const carouselImgs = reactive([])
 
+const isLoading = ref(true)
+
 onMounted(async () => {
   try {
+    isLoading.value = true
     // 获取轮播图数据
     let res = await queryCarousel()
     const data = res.map(item => {
@@ -139,9 +164,11 @@ onMounted(async () => {
     newsData.sort((a, b) => new Date(b.date) - new Date(a.date))
     latestNews.length = 0
     latestNews.push(...newsData)
+    isLoading.value = false
   } catch (error) {
     console.error('获取数据失败:', error)
     message.error('获取数据失败: ' + error.message)
+    isLoading.value = false
   }
 })
 
@@ -218,6 +245,7 @@ const handleClick = (article) => {
   opacity: 0.3;
   z-index: 1;
 }
+
 .custom-slick-arrow {
   width: 40px;
   height: 40px;
@@ -250,8 +278,10 @@ const handleClick = (article) => {
     font-size: 1.1em;
     color: @primary-color;
   }
+
   position: relative;
   letter-spacing: 2px;
+
   &::after {
     content: '';
     display: block;
@@ -273,8 +303,10 @@ const handleClick = (article) => {
     font-size: 1.1em;
     color: #ff7d00;
   }
+
   position: relative;
   letter-spacing: 2px;
+
   &::after {
     content: '';
     display: block;
@@ -287,7 +319,7 @@ const handleClick = (article) => {
 }
 
 .article-card {
-  transition: 
+  transition:
     transform 0.3s @ease-in-out,
     box-shadow 0.3s @ease-in-out;
   border-radius: 8px;
@@ -319,7 +351,7 @@ const handleClick = (article) => {
     .medal-badge {
       background: linear-gradient(135deg, #ffd700, #ffaa00);
       color: #fff;
-      text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
     }
   }
 
@@ -327,7 +359,7 @@ const handleClick = (article) => {
     .medal-badge {
       background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
       color: #fff;
-      text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
     }
   }
 
@@ -335,7 +367,7 @@ const handleClick = (article) => {
     .medal-badge {
       background: linear-gradient(135deg, #cd7f32, #a67c52);
       color: #fff;
-      text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
     }
   }
 
@@ -402,6 +434,24 @@ const handleClick = (article) => {
   color: @text-color-secondary;
   margin-left: 0.5rem;
   display: inline-block;
+}
+
+/* 骨架屏样式 */
+.skeleton-container {
+  margin: 20px 16px 0px 16px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.carousel-skeleton {
+  height: @carousel-height;
+  width: 100%;
+}
+
+.articles-skeleton,
+.news-skeleton {
+  margin-top: 24px;
+  width: 100%;
 }
 
 @media (max-width: @screen-sm) {
