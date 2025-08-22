@@ -11,7 +11,7 @@
           </div>
           <div>
             <a-menu v-if="!isMobile" v-model:selected-keys="currentMenu" mode="horizontal" :theme="theam"
-              :style="{ fontSize: '16px' }">
+              :style="{ fontSize: '16px' }" @click="handleMenuClick">
               <a-menu-item key="home">首页</a-menu-item>
               <a-menu-item key="articles">文章</a-menu-item>
               <a-menu-item key="tools">工具</a-menu-item>
@@ -103,7 +103,7 @@
       </a-layout-header>
 
       <a-drawer v-model:visible="drawerVisible" placement="left" :width="250">
-        <a-menu v-model:selected-keys="currentMenu" mode="vertical" :theme="theam">
+        <a-menu v-model:selected-keys="currentMenu" mode="vertical" :theme="theam" @click="handleMenuClick">
           <a-menu-item key="home"> 首页 </a-menu-item>
           <a-menu-item key="articles"> 文章 </a-menu-item>
           <a-menu-item key="tools"> 工具 </a-menu-item>
@@ -197,27 +197,33 @@ const audioPlayerEnabled = ref(
 const playlistId = ref(initialSettings.audioPlayerId || '6991674483')
 
 onMounted(() => {
-  const pathname = location.pathname
-  const routeName = pathname === '/' ? 'home' : pathname.replace('/', '')
-  if (routeName.includes('articles')) {
-    currentMenu.value = ['articles']
-  } else if (routeName.includes('tools')) {
-    currentMenu.value = ['tools']
-  } else {
-    currentMenu.value = [routeName]
-  }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  watch(currentMenu, (newValue, oldValue) => {
-    const menu = newValue[0]
-    router.push({ name: menu })
+  // 监听路由变化
+  router.afterEach((to, from) => {
+    const pathname = location.pathname
+    const routeName = pathname === '/' ? 'home' : pathname.replace('/', '')
+    if (routeName.includes('articles')) {
+      currentMenu.value = ['articles']
+    } else if (routeName.includes('tools')) {
+      currentMenu.value = ['tools']
+    } else {
+      currentMenu.value = [routeName]
+    }
   })
 
   const storedUser = localStorage.getItem('userInfo')
   if (storedUser) {
-    // console.log('storedUser', storedUser)
     userStore.login(JSON.parse(storedUser))
   }
 })
+
+const handleMenuClick = ({ key }) => {
+  router.push({ name: key })
+  // 在移动设备上，点击菜单后关闭抽屉
+  if (isMobile.value) {
+    drawerVisible.value = false
+  }
+}
+
 
 const handleLoginSuccess = (loginUserInfo) => {
   userStore.login(loginUserInfo)

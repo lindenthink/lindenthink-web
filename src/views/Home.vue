@@ -39,22 +39,21 @@
                     'gold-medal': index === 0,
                     'silver-medal': index === 1,
                     'bronze-medal': index === 2
-                  }]">
+                  }]" @click="handleClick(article)">
                     <div class="medal-badge">{{ index + 1 }}</div>
-                    <a-tag class="article-tag">{{ article.category }}</a-tag>
-                    <a-card-meta :title="article.title" :description="article.summary" />
+                    <a-card-meta :title="article.title" :description="article.outline" />
                     <div class="stats-bar">
                       <div class="stat-item">
                         <eye-outlined />
-                        <span>{{ article.likes }}</span>
+                        <span>{{ article.visitCount }}</span>
                       </div>
                       <div class="stat-item">
-                        <like-outlined />
-                        <span>{{ article.likes }}</span>
+                        <heart-outlined />
+                        <span>{{ article.likeCount }}</span>
                       </div>
                       <div class="stat-item">
                         <message-outlined />
-                        <span>{{ article.comments }}</span>
+                        <span>{{ article.commentCount }}</span>
                       </div>
                     </div>
                   </a-card>
@@ -72,6 +71,7 @@
                 <div v-for="news in latestNews" :key="news.id" class="news-item">
                   <a :href="'#/news/' + news.id" class="news-link">
                     {{ news.title }}
+                    <span class="news-source">来源: {{ news.author }}</span>
                   </a>
                 </div>
               </div>
@@ -92,41 +92,16 @@ import {
   BulbOutlined,
   FireOutlined,
   EyeOutlined,
-  LikeOutlined,
+  HeartOutlined,
   MessageOutlined,
 } from '@ant-design/icons-vue'
 import { queryCarousel } from '@/services/materialService'
+import { getTop3 } from '@/services/articleService'
 import { message } from 'ant-design-vue'
+import { useRouter } from 'vue-router'
 
-const popularArticles = reactive([
-  {
-    id: 1,
-    title: 'Vue3性能优化实战',
-    summary: '深入探讨Vue3组合式API的最佳实践...',
-    category: '前端开发',
-    likes: 245,
-    comments: 38,
-    cover: '/1.png',
-  },
-  {
-    id: 2,
-    title: 'Vue3性能优化实战',
-    summary: '深入探讨Vue3组合式API的最佳实践...',
-    category: '前端开发',
-    likes: 245,
-    comments: 38,
-    cover: '/1.png',
-  },
-  {
-    id: 3,
-    title: 'Vue3性能优化实战',
-    summary: '深入探讨Vue3组合式API的最佳实践...',
-    category: '前端开发',
-    likes: 245,
-    comments: 38,
-    cover: '/1.png',
-  },
-])
+const router = useRouter()
+const popularArticles = reactive([])
 
 const latestNews = reactive([
   {
@@ -152,6 +127,7 @@ const carouselImgs = reactive([])
 
 onMounted(async () => {
   try {
+    // 获取轮播图数据
     const res = await queryCarousel()
     const data = res.map(item => {
       return {
@@ -162,11 +138,24 @@ onMounted(async () => {
     data.sort((a, b) => a.order - b.order)
     carouselImgs.length = 0
     data.forEach(item => carouselImgs.push(item))
+
+    // 获取热门文章数据
+    const topRes = await getTop3()
+    const topArticles = topRes.data
+    popularArticles.length = 0
+    popularArticles.push(...topArticles)
   } catch (error) {
-    console.error('获取轮播图数据失败:', error)
-    message.error('获取轮播图数据失败: ' + error.message)
+    console.error('获取数据失败:', error)
+    message.error('获取数据失败: ' + error.message)
   }
 })
+
+const handleClick = (article) => {
+  router.push({
+    path: '/articles/' + article.id
+  })
+}
+
 </script>
 
 <style scoped lang="less">
@@ -253,7 +242,7 @@ onMounted(async () => {
 
 .content-container {
   max-width: 1200px;
-  margin: 2rem auto;
+  margin: 0 auto 2rem auto;
   padding: 0 1rem;
 }
 
@@ -318,7 +307,7 @@ onMounted(async () => {
   .medal-badge {
     position: absolute;
     top: 1.4rem;
-    left: 0.2rem;
+    left: 0.5rem;
     width: 18px;
     height: 18px;
     border-radius: 50%;
@@ -356,7 +345,8 @@ onMounted(async () => {
   }
 
   :deep(.ant-card-meta-title) {
-    font-size: 1rem;
+    padding-left: 0.5rem;
+    font-size: 0.9rem;
     font-weight: 500;
   }
 
@@ -364,13 +354,6 @@ onMounted(async () => {
     color: @text-color-secondary;
     line-height: 1.6;
   }
-}
-
-.article-tag {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 2;
 }
 
 .stats-bar {
@@ -394,10 +377,6 @@ onMounted(async () => {
   }
 }
 
-.news-list {
-  padding: 0 1rem;
-}
-
 .news-item {
   padding: 0.7rem 0;
   border-bottom: 1px solid @border-color-base;
@@ -414,11 +393,19 @@ onMounted(async () => {
   text-decoration: none;
   display: block;
   transition: color 0.3s @ease-in-out;
+  position: relative;
 
   &:hover {
     color: @primary-color;
-    transform: translateX(5px);
+    transform: translateX(2px);
   }
+}
+
+.news-source {
+  font-size: 0.75rem;
+  color: @text-color-secondary;
+  margin-left: 0.5rem;
+  display: inline-block;
 }
 
 @media (max-width: @screen-sm) {

@@ -37,3 +37,8 @@ export async function searchArticles(keyword) {
   const fetch = useApiFetch()
   return await fetch(`/article/search?keyword=${keyword}`)
 }
+
+export async function getTop3() {
+  const fetch = useApiFetch()
+  return await fetch(`/article/top3`)
+}
