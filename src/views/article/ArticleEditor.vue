@@ -94,6 +94,13 @@
                                 </a-form-item>
                             </a-col>
                         </a-row>
+
+                        <a-form-item name="outline" label="文章简介" :label-col="{ span: 2.5 }"
+                            :wrapper-col="{ span: 21.5 }">
+                            <a-textarea v-model:value="articleForm.outline" placeholder="请输入文章简介（非必填，最多200字符）"
+                                :max-length="200" :rows="2" />
+                        </a-form-item>
+
                         <!-- 文章内容单独一行 -->
                         <a-form-item name="content" label="文章内容" :label-col="{ span: 2.5 }"
                             :wrapper-col="{ span: 21.5 }">
@@ -150,7 +157,8 @@ const articleForm = reactive({
     content: '',
     isPublic: false,
     cover: '', // 新增封面图片字段
-    origin: '' // 新增来源地址字段
+    origin: '', // 新增来源地址字段
+    outline: '' // 新增文章简介字段
 })
 
 const newTag = ref('')
@@ -246,6 +254,7 @@ async function initArticle() {
         articleForm.isPublic = article.isPublic === 1
         articleForm.cover = article.cover
         articleForm.origin = article.origin
+        articleForm.outline = article.outline || ''
     } catch (error) {
         console.error('获取文章失败:', error)
         message.error('获取文章失败，请刷新页面重试')
@@ -285,7 +294,8 @@ async function handleSubmit() {
         const formData = {
             ...articleForm,
             tags: articleForm.tags.join(','),
-            isPublic: articleForm.isPublic ? 1 : 0
+            isPublic: articleForm.isPublic ? 1 : 0,
+            outline: articleForm.outline || ''
             // 封面图片会自动包含在formData中
         };
 
