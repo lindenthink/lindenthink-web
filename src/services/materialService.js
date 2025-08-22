@@ -20,6 +20,10 @@ export async function queryFriends() {
   return await queryPublicType('FRIEND')
 }
 
+export async function queryNews() {
+  return await queryPublicType('NEWS')
+}
+
 async function queryPublicType(type) {
   const fetch = useApiFetch()
   const res = await fetch(`/material/public-type/${type}`)

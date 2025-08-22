@@ -69,9 +69,9 @@
               </h2>
               <div class="news-list">
                 <div v-for="news in latestNews" :key="news.id" class="news-item">
-                  <a :href="'#/news/' + news.id" class="news-link">
+                  <a :href="news.url" class="news-link" target="_blank">
                     {{ news.title }}
-                    <span class="news-source">来源: {{ news.author }}</span>
+                    <span class="news-source">来源: {{ news.source }} - {{ news.date }}</span>
                   </a>
                 </div>
               </div>
@@ -95,7 +95,7 @@ import {
   HeartOutlined,
   MessageOutlined,
 } from '@ant-design/icons-vue'
-import { queryCarousel } from '@/services/materialService'
+import { queryCarousel, queryNews } from '@/services/materialService'
 import { getTop3 } from '@/services/articleService'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
@@ -103,32 +103,14 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const popularArticles = reactive([])
 
-const latestNews = reactive([
-  {
-    id: 1,
-    title: '新功能发布',
-    summary: '新增实时协作编辑功能...',
-    date: '2024-03-15',
-    author: 'Linden',
-    avatar: 'https://ui-avatars.com/api?name=jack&background=random',
-  },
-  {
-    id: 2,
-    title: '新文章发布',
-    summary: 'Vue3性能优化实战',
-    date: '2024-03-15',
-    author: 'Linden',
-    avatar: 'https://ui-avatars.com/api?name=lucy&background=random',
-  },
-  // 其他数据...
-])
+const latestNews = reactive([])
 
 const carouselImgs = reactive([])
 
 onMounted(async () => {
   try {
     // 获取轮播图数据
-    const res = await queryCarousel()
+    let res = await queryCarousel()
     const data = res.map(item => {
       return {
         id: item.id,
@@ -140,10 +122,23 @@ onMounted(async () => {
     data.forEach(item => carouselImgs.push(item))
 
     // 获取热门文章数据
-    const topRes = await getTop3()
-    const topArticles = topRes.data
+    res = await getTop3()
+    const topArticles = res.data
     popularArticles.length = 0
     popularArticles.push(...topArticles)
+
+    // 获取最新资讯数据
+    res = await queryNews()
+    const newsData = res.map(item => {
+      return {
+        id: item.id,
+        ...JSON.parse(item.content)
+      }
+    })
+    // 按日期降序排序
+    newsData.sort((a, b) => new Date(b.date) - new Date(a.date))
+    latestNews.length = 0
+    latestNews.push(...newsData)
   } catch (error) {
     console.error('获取数据失败:', error)
     message.error('获取数据失败: ' + error.message)
@@ -353,6 +348,7 @@ const handleClick = (article) => {
   :deep(.ant-card-meta-description) {
     color: @text-color-secondary;
     line-height: 1.6;
+    font-size: 0.75rem;
   }
 }
 
@@ -397,7 +393,7 @@ const handleClick = (article) => {
 
   &:hover {
     color: @primary-color;
-    transform: translateX(2px);
+    transform: translateX(0.3rem);
   }
 }
 
