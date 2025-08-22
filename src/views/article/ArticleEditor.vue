@@ -101,7 +101,6 @@
                                 :max-length="200" :rows="2" />
                         </a-form-item>
 
-                        <!-- 文章内容单独一行 -->
                         <a-form-item name="content" label="文章内容" :label-col="{ span: 2.5 }"
                             :wrapper-col="{ span: 21.5 }">
                             <a-textarea v-model:value="articleForm.content"
@@ -184,7 +183,6 @@ public class HelloWorld {
 const categoryTree = ref([])
 const seriesList = ref([])
 
-// 表单验证规则
 const formRules = {
     title: [{ required: true, message: '请输入文章标题', trigger: 'blur' }],
     categoryId: [{ required: true, message: '请选择文章分类', trigger: 'change' }],
@@ -204,7 +202,6 @@ const formRules = {
     }]
 }
 
-// 标签操作
 const addTag = () => {
     if (newTag.value && !articleForm.tags.includes(newTag.value)) {
         articleForm.tags.push(newTag.value)
@@ -216,10 +213,8 @@ const removeTag = (tag) => {
     articleForm.tags = articleForm.tags.filter(t => t !== tag)
 }
 
-// 添加预览模式状态
 const isPreviewMode = ref(false)
 
-// 添加预览加载状态
 const previewLoading = ref(false);
 
 
@@ -265,13 +260,10 @@ async function initArticle() {
 
 onMounted(() => {
     initArticle()
-    // 获取系列数据
     fetchSeries()
-    // 新增：获取分类数据
     fetchCategories()
 })
 
-// 新增：获取系列数据的方法
 async function fetchSeries() {
     try {
         const data = await querySeries()
@@ -286,8 +278,6 @@ async function fetchSeries() {
     }
 }
 
-
-// 表单提交
 async function handleSubmit() {
     try {
         submitting.value = true;
