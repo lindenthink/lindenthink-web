@@ -95,16 +95,15 @@
                             </a-col>
                         </a-row>
 
-                        <a-form-item name="outline" label="文章简介" :label-col="{ span: 2.5 }"
-                            :wrapper-col="{ span: 21.5 }">
+                        <a-form-item name="outline" label="文章简介" :label-col="{ span: 2 }"
+                            :wrapper-col="{ span: 22 }">
                             <a-textarea v-model:value="articleForm.outline" placeholder="请输入文章简介（非必填，最多200字符）"
                                 :max-length="200" :rows="2" />
                         </a-form-item>
 
-                        <a-form-item name="content" label="文章内容" :label-col="{ span: 2.5 }"
-                            :wrapper-col="{ span: 21.5 }">
+                        <a-form-item name="content" label="文章内容" :label-col="{ span: 2 }"
+                            :wrapper-col="{ span: 22 }">
                             <div class="editor-toolbar">
-                                快捷输入：
                                 <a-button size="small" @click="insertLink">链接</a-button>
                                 <a-button size="small" @click="insertImage">图片</a-button>
                                 <a-button size="small" @click="insertTable">表格</a-button>
@@ -469,13 +468,14 @@ async function fetchCategories() {
 
 /* 编辑器工具栏 */
 .editor-toolbar {
-    margin-bottom: 2px;
+    margin-bottom: 1px;
     display: flex;
-    gap: 8px;
+    gap: 5px;
     padding: 8px 12px;
     background-color: #f5f5f5;
     border-radius: 4px;
     border: 1px solid #d9d9d9;
+    border-bottom: none;
 }
 
 /* 更新提示文本 */
