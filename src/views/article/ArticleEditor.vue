@@ -103,9 +103,19 @@
 
                         <a-form-item name="content" label="文章内容" :label-col="{ span: 2.5 }"
                             :wrapper-col="{ span: 21.5 }">
+                            <div class="editor-toolbar">
+                                快捷输入：
+                                <a-button size="small" @click="insertLink">链接</a-button>
+                                <a-button size="small" @click="insertImage">图片</a-button>
+                                <a-button size="small" @click="insertTable">表格</a-button>
+                                <a-button size="small" @click="insertCodeBlock">代码块</a-button>
+                                <a-button size="small" @click="insertPlantUml">PlantUML</a-button>
+                                <a-button size="small" @click="insertFootnote">脚注</a-button>
+                                <a-button size="small" @click="insertStrikeThrough">删除线</a-button>
+                            </div>
                             <a-textarea v-model:value="articleForm.content"
                                 placeholder="请使用AsciiDoc格式编写文章内容，支持PlantUML！" :rows="15"
-                                :style="{ fontFamily: 'monospace' }" />
+                                :style="{ fontFamily: 'monospace' }" ref="contentTextarea" />
                             <p class="editor-hint">支持AsciiDoc格式语法，点击上方"预览"按钮查看效果</p>
                         </a-form-item>
                     </a-form>
@@ -130,7 +140,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
@@ -146,6 +156,7 @@ const loading = ref(false)
 
 // 表单相关
 const formRef = ref(null)
+const contentTextarea = ref(null)
 const articleForm = reactive({
     id: '',
     title: '',
@@ -318,6 +329,68 @@ const handleCancel = () => {
     router.back()
 }
 
+// 编辑器工具函数
+const insertAtCursor = (text) => {
+    nextTick(() => {
+        if (!contentTextarea.value) {
+            console.log('contentTextarea.value is null or undefined');
+            return;
+        }
+        const textarea = contentTextarea.value.$el
+        if (!textarea) {
+            console.log('Failed to get textarea element');
+            return;
+        }
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const currentValue = articleForm.content;
+        // 在光标位置插入文本
+        articleForm.content = currentValue.substring(0, start) + text + currentValue.substring(end);
+
+        // 移动光标到插入文本之后
+        nextTick(() => {
+            textarea.selectionStart = textarea.selectionEnd = start + text.length;
+            textarea.focus();
+        });
+    });
+}
+
+const insertLink = () => {
+    const linkSyntax = 'https://www.example.com[Example Link]\n';
+    insertAtCursor(linkSyntax);
+}
+
+const insertImage = () => {
+    const imageSyntax = 'image::path/to/image.jpg[alt text, width=600, height=400]\n';
+    insertAtCursor(imageSyntax);
+}
+
+const insertTable = () => {
+    const tableSyntax = '[cols="1,2"]\n|===\n|Column 1, header row |Column 2, header row\n\n|Cell in column 1, row 2\n|Cell in column 2, row 2\n|===\n';
+    insertAtCursor(tableSyntax);
+}
+
+const insertCodeBlock = () => {
+    const codeSyntax = '[source,language]\n----\n// 代码内容\n----\n';
+    insertAtCursor(codeSyntax);
+}
+
+const insertPlantUml = () => {
+    const plantUmlSyntax = '[plantuml]\n----\n@startuml\nclass Diagrama {\n  +mostrar(): void\n}\n@enduml\n----\n';
+    insertAtCursor(plantUmlSyntax);
+}
+
+const insertFootnote = () => {
+    const footnoteSyntax = 'footnote:[脚注内容]';
+    insertAtCursor(footnoteSyntax);
+}
+
+const insertStrikeThrough = () => {
+    const strikeThroughSyntax = '[.line-through]#删除线内容#';
+    insertAtCursor(strikeThroughSyntax);
+}
+
+
 async function fetchCategories() {
     try {
         const data = await queryCategory()
@@ -373,6 +446,17 @@ async function fetchCategories() {
 /* 优化按钮样式 */
 .ant-btn {
     border-radius: 4px;
+}
+
+/* 编辑器工具栏 */
+.editor-toolbar {
+    margin-bottom: 2px;
+    display: flex;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    border: 1px solid #d9d9d9;
 }
 
 /* 更新提示文本 */

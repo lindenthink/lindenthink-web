@@ -302,4 +302,9 @@ td.hdlist1 {
   font-weight: bold;
   background-color: #f6f8fa;
 }
+
+.asciidoc-viewer .line-through {
+  text-decoration: line-through;
+}
+
 </style>
