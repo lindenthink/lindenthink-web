@@ -132,6 +132,11 @@
                         <a-divider :style="{ color: 'lightgrey' }">•</a-divider>
                     </div>
                 </div>
+                <!-- 图片上传模态框 -->
+                <a-modal v-model:visible="showUploadModal" title="上传图片" :width="500" @ok="showUploadModal = false"
+                    @cancel="showUploadModal = false">
+                    <ImageUploader v-model="uploadImageUrl" upload-text="点击上传" @success="handleUploadSuccess" />
+                </a-modal>
             </template>
 
         </a-layout-content>
@@ -162,13 +167,13 @@ const articleForm = reactive({
     title: '',
     categoryId: '',
     seriesId: '',
-    type: 'ORIGINAL', // 新增文章类型字段，默认原创
+    type: 'ORIGINAL',
     tags: [],
     content: '',
     isPublic: false,
-    cover: '', // 新增封面图片字段
-    origin: '', // 新增来源地址字段
-    outline: '' // 新增文章简介字段
+    cover: '',
+    origin: '',
+    outline: '' 
 })
 
 const newTag = ref('')
@@ -254,7 +259,7 @@ async function initArticle() {
         articleForm.title = article.title
         articleForm.categoryId = article.categoryId
         articleForm.seriesId = article.seriesId
-        articleForm.type = article.type || 'ORIGINAL' // 初始化文章类型
+        articleForm.type = article.type || 'ORIGINAL'
         articleForm.tags = article.tags ? article.tags.split(',') : []
         articleForm.content = article.content
         articleForm.isPublic = article.isPublic === 1
@@ -360,9 +365,23 @@ const insertLink = () => {
     insertAtCursor(linkSyntax);
 }
 
-const insertImage = () => {
-    const imageSyntax = 'image::path/to/image.jpg[alt text, width=600, height=400]\n';
+// 图片上传相关
+const showUploadModal = ref(false);
+const uploadImageUrl = ref('');
+
+const handleUploadSuccess = (url) => {
+    console.log('上传成功', url);
+    uploadImageUrl.value = url;
+    showUploadModal.value = false;
+    // 插入图片语法到编辑器
+    const imgTitle = url.split('/').pop()
+    const imageSyntax = `\nimage::${url}[${imgTitle}]\n`;
     insertAtCursor(imageSyntax);
+};
+
+const insertImage = () => {
+    uploadImageUrl.value = '';
+    showUploadModal.value = true;
 }
 
 const insertTable = () => {

@@ -81,7 +81,7 @@ const handleUpload = async ({ file, onSuccess, onError }) => {
         const response = await uploadFile(formData)
         const avatarUrl = response.data
         emit('update:modelValue', avatarUrl)
-        onSuccess(result, file)
+        onSuccess(response, file)
         emit('success', avatarUrl)
         message.success('图片上传成功')
     } catch (error) {
