@@ -73,12 +73,12 @@
   </a-row>
 
   <a-modal v-model:visible="showEdit" :title="isNew ? '新增待办' : '编辑待办'" @ok="saveTodo">
-    <a-form layout="vertical">
-      <a-form-item label="事项内容" required>
+    <a-form ref="formRef" layout="vertical" :model="editingTodo">
+      <a-form-item label="事项内容" name="text" :rules="[{ required: true, message: '请输入事项内容' }]">
         <a-textarea v-model:value="editingTodo.text" placeholder="输入待办事项内容" />
       </a-form-item>
-      <a-form-item label="截止时间" required>
-        <a-date-picker v-model:value="editingTodo.dueDate" show-time format="YYYY-MM-DD HH:mm" />
+      <a-form-item label="截止时间" name="dueDate" :rules="[{ required: true, message: '请选择截止时间' }]">
+        <a-date-picker v-model:value="editingTodo.dueDate" show-time :format="datePattern" />
       </a-form-item>
       <a-form-item label="优先级">
         <a-select v-model:value="editingTodo.priority">
@@ -132,12 +132,15 @@ const labelMap = {
   low: '低优先级',
 }
 
+const datePattern = 'YYYY-MM-DD HH:mm'
+
 // 待办数据
 const todos = ref(JSON.parse(localStorage.getItem('todos')) || [])
 const editingTodo = ref(null)
 const showEdit = ref(false)
 const selectedFilter = ref('today')
 const showTrash = ref(false)
+const formRef = ref(null)
 
 const handleCheckChange = (item) => {
   const index = todos.value.findIndex((t) => t.id === item.id)
@@ -209,7 +212,7 @@ const showNotification = (todo) => {
 }
 
 // 日期处理
-const formatDueDate = (date) => dayjs(date).format('YYYY-MM-DD HH:mm')
+const formatDueDate = (date) => dayjs(date).format(datePattern)
 
 // 样式处理
 const getDueDateColor = (todo) => {
@@ -232,18 +235,15 @@ const createNewTodo = () => {
   editingTodo.value = {
     id: dayjs().unix(),
     text: '',
-    dueDate: dayjs().add(1, 'day'),
+    dueDate: dayjs().add(1, 'hour').startOf('hour'),
     priority: 'medium',
     completed: false,
   }
   showEdit.value = true
 }
 
-const saveTodo = () => {
-  if (!editingTodo.value.text.trim()) {
-    message.error('请输入事项内容')
-    return
-  }
+const saveTodo = async () => {
+  await formRef.value.validate()
   editingTodo.value.reminded = false
   const index = todos.value.findIndex((t) => t.id === editingTodo.value.id)
   if (index === -1) {
@@ -273,7 +273,7 @@ const editTodo = (item) => {
 
 const deleteTodo = (id) => {
   const todo = todos.value.find((t) => t.id === id)
-  deletedTodos.value.push({ ...todo, deletedAt: dayjs().format() })
+  deletedTodos.value.push({ ...todo, deletedAt: dayjs().format(datePattern) })
   todos.value = todos.value.filter((t) => t.id !== id)
   persistData()
 }

@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # LindenThink Web 项目结构规则
 
-本项目是一个基于 Vue 3 + JavaScript + Vite 的前端工具集合网站。主要项目结构如下：
+本项目是一个基于 Vue 3 + JavaScript + Vite 的前端博客网站。主要项目结构如下：
 
 ## 核心配置文件
 

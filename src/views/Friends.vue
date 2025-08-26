@@ -6,16 +6,16 @@
         @ok="submitApply">
         <a-form ref="formRef" name="custom-validation" :model="formData" :rules="rules" :label-col="{ span: 6 }"
           :wrapper-col="{ span: 18 }">
-          <a-form-item has-feedback label="网站名称" name="title">
+          <a-form-item label="网站名称" name="title">
             <a-input v-model:value="formData.title" />
           </a-form-item>
-          <a-form-item has-feedback label="网站链接" name="link">
+          <a-form-item label="网站链接" name="link">
             <a-input v-model:value="formData.link" />
           </a-form-item>
-          <a-form-item has-feedback label="网站描述" name="slogan">
+          <a-form-item label="网站描述" name="slogan">
             <a-input v-model:value="formData.slogan" />
           </a-form-item>
-          <a-form-item has-feedback label="网站图标" name="avator">
+          <a-form-item label="网站图标" name="avator">
             <a-input v-model:value="formData.avator" />
           </a-form-item>
         </a-form>
@@ -23,7 +23,7 @@
 
       <div class="main">
         <a-collapse default-active-key="" style="margin-bottom: 24px">
-          <a-collapse-panel key="1" header="友情链接说明" :showArrow="true">
+          <a-collapse-panel key="1" header="友链申请说明" :showArrow="true">
             <div>
               以下列表按照最近登录时间倒叙+申请时间正序排列，如果您的博客也想在这里展示请先添加本博客为友链然后点击<a class="link" @click="showApplyModel = true">申请</a>，
               本博客信息如下：
@@ -36,15 +36,14 @@
             </div>
           </a-collapse-panel>
         </a-collapse>
-        <a-list :grid="{ gutter: 16, column: 3 }" :data-source="friends" :loading="loading"
-          :empty-text="emptyText">
+        <a-list :grid="{ gutter: 16, column: 3 }" :data-source="friends" :loading="loading" :empty-text="emptyText">
           <template #renderItem="{ item }">
             <a-list-item>
               <a-card v-ripple hoverable class="friend-card" style="width: 100%; height: 100%" @click="clickLink(item)">
                 <a-card-meta :title="item.title" :description="item.slogan">
                   <template #avatar>
                     <a-avatar :src="item.avator" v-if="item.avator" />
-                    <a-avatar v-else  :style="{ backgroundColor: getRandomColor(), color: '#fff' }">
+                    <a-avatar v-else :style="{ backgroundColor: getRandomColor(), color: '#fff' }">
                       <span>{{ item.title.substring(0, 2) }}</span>
                     </a-avatar>
                   </template>
@@ -61,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick, watch } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 import Comment from '@/components/Comment.vue'
 import { save, queryFriends } from '@/services/materialService'
@@ -131,6 +130,15 @@ const rules = {
   ],
 }
 
+watch(() => showApplyModel.value, (visible) => {
+  if (visible) {
+    nextTick(() => {
+      formRef.value.resetFields()
+    })
+  }
+})
+
+
 const fetchFriends = async () => {
   loading.value = true
   try {
@@ -151,22 +159,16 @@ onMounted(() => {
 
 const submitApply = async () => {
   if (!formRef.value) return
-  try {
-    // 执行表单验证
-    await formRef.value.validateFields()
-    await save({
-      type: 'FRIEND',
-      content: JSON.stringify(formData)
-    })
-    message.success('申请成功，等待审核')
-    showApplyModel.value = false
-    formRef.value.resetFields()
-    fetchFriends()
-
-  } catch (error) {
-    console.error('表单验证或提交失败:', error)
-    message.error(error.message || '请检查表单填写是否正确或网络连接是否正常')
-  }
+  // 执行表单验证
+  await formRef.value.validateFields()
+  await save({
+    type: 'FRIEND',
+    content: JSON.stringify(formData)
+  })
+  message.success('申请成功，等待审核')
+  showApplyModel.value = false
+  formRef.value.resetFields()
+  fetchFriends()
 }
 
 const clickLink = (item) => {

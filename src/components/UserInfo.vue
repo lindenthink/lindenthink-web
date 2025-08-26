@@ -1,18 +1,15 @@
 <template>
   <a-modal :visible="visible" title="用户信息" :width="600" @ok="handleSubmit" @cancel="emit('update:visible', false)">
-    <a-form :model="formState" :label-col="{ span: 6 }">
+    <a-form :model="formState" :label-col="{ span: 6 }" ref="formRef">
       <a-form-item label="用户头像">
         <ImageUploader v-model="formState.avatar" upload-text="上传头像" />
       </a-form-item>
-
-      <a-form-item label="用户昵称" required>
+      <a-form-item label="用户昵称" name="nickname" :rules="[{ required: true, message: '请输入昵称' }]">
         <a-input v-model:value="formState.nickname" placeholder="请输入昵称" :maxlength="20" />
       </a-form-item>
-
-      <a-form-item label="个人邮箱">
+      <a-form-item label="个人邮箱" name="email" :rules="[{ type: 'email', message: '请输入正确的邮箱格式' }]">
         <a-input v-model:value="formState.email" placeholder="请输入邮箱" :maxlength="50" />
       </a-form-item>
-
       <a-form-item label="个人简介">
         <a-textarea v-model:value="formState.brief" placeholder="介绍一下自己吧" :rows="3" :maxlength="100" />
       </a-form-item>
@@ -21,7 +18,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import { useUserStore } from '@/stores/user'
 import { updateInfo } from '@/services/userService'
@@ -32,10 +29,14 @@ const props = defineProps({ visible: Boolean })
 const emit = defineEmits(['update:visible'])
 const formState = ref({ nickname: '', avatar: '', email: '', brief: '' })
 const uploadError = ref('')
+const formRef = ref(null)
 
 // 保留watch监听逻辑
 watch(() => props.visible, (visible) => {
   if (visible) {
+    nextTick(() => {
+      formRef.value.resetFields()
+    })
     uploadError.value = ''
     const userStore = useUserStore()
     const { userInfo } = userStore
@@ -49,9 +50,7 @@ watch(() => props.visible, (visible) => {
 })
 
 const handleSubmit = async () => {
-  if (!formState.value.nickname) {
-    return message.error('昵称不能为空')
-  }
+  await formRef.value.validateFields()
   try {
     await updateInfo(formState.value)
     useUserStore().updateInfo(formState.value)
