@@ -164,8 +164,7 @@ import UserInfo from '@/components/UserInfo.vue'
 import ChangePassword from '@/components/ChangePassword.vue'
 import { searchArticles } from '@/services/articleService'
 import tools from '@/services/toolData'
-
-
+import useTodos from '@/composables/useTodos'
 import AudioPlayer from '@/components/AudioPlayer.vue'
 
 const locale = zhCN
@@ -188,7 +187,6 @@ const showResults = ref(false)
 
 // 系统设置相关变量
 const showSettingsDrawer = ref(false)
-// 从localStorage加载设置，默认为true
 const savedSettings = localStorage.getItem('systemSettings')
 const initialSettings = savedSettings ? JSON.parse(savedSettings) : {}
 const audioPlayerEnabled = ref(
@@ -214,6 +212,8 @@ onMounted(() => {
   if (storedUser) {
     userStore.login(JSON.parse(storedUser))
   }
+  // 初始化待办事项通知服务
+  useTodos()
 })
 
 const handleMenuClick = ({ key }) => {

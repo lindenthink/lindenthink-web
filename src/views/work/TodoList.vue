@@ -106,8 +106,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { message } from 'ant-design-vue'
+import { ref } from 'vue'
 import dayjs from 'dayjs'
 import {
   EditOutlined,
@@ -120,127 +119,44 @@ import {
   RestOutlined,
 } from '@ant-design/icons-vue'
 
-const colorMap = {
-  high: 'red',
-  medium: 'orange',
-  low: 'blue',
-}
+// 导入待办管理服务
+import useTodos from '@/composables/useTodos'
 
-const labelMap = {
-  high: '高优先级',
-  medium: '中优先级',
-  low: '低优先级',
-}
+// 初始化待办管理服务
+const {
+  // 状态
+  todos,
+  selectedFilter,
+  hasNotificationPermission,
+  
+  // 计算属性
+  filteredTodos,
+  
+  // 配置
+  colorMap,
+  labelMap,
+  datePattern,
+  
+  // 方法
+  formatDueDate,
+  getDueDateColor,
+  getTodoItemClass,
+  handleCheckChange,
+  deleteFromTrash,
+  deleteTodo,
+  restoreTodo,
+  requestNotificationPermission,
+  persistData
+} = useTodos()
 
-const datePattern = 'YYYY-MM-DD HH:mm'
-
-// 待办数据
-const loadTodoData = () => {
-  try {
-    const savedData = localStorage.getItem('todos')
-    if (savedData) {
-      return JSON.parse(savedData)
-    }
-    return { saved: [], deleted: [] }
-  } catch (e) {
-    console.error('读取待办数据失败:', e)
-    return { saved: [], deleted: [] }
-  }
-}
-
-const todos = ref(loadTodoData())
+// 表单相关
 const editingTodo = ref(null)
 const showEdit = ref(false)
-const selectedFilter = ref('today')
 const showTrash = ref(false)
 const formRef = ref(null)
-
-const handleCheckChange = (item) => {
-  const index = todos.value.saved.findIndex((t) => t.id === item.id)
-  if (index > -1) {
-    todos.value.saved.splice(index, 1, item)
-    persistData()
-  }
-}
-
-const deleteFromTrash = (id) => {
-  todos.value.deleted = todos.value.deleted.filter((t) => t.id !== id)
-  persistData()
-  message.success('已永久删除')
-}
-
-const sortedTodos = computed(() => [...todos.value.saved].sort((a, b) => dayjs(a.dueDate).unix() - dayjs(b.dueDate).unix()))
-
-const filteredTodos = computed(() => {
-  const now = dayjs()
-  return sortedTodos.value.filter((todo) => {
-    if (selectedFilter.value === 'all') return true
-    const dueDate = dayjs(todo.dueDate)
-    switch (selectedFilter.value) {
-      case 'today':
-        return dueDate.isSame(now, 'day')
-      case 'yesterday':
-        return dueDate.isSame(now.subtract(1, 'day'), 'day')
-      case 'tomorrow':
-        return dueDate.isSame(now.add(1, 'day'), 'day')
-      default:
-        return true
-    }
-  })
-})
-// 提醒逻辑
-let checkInterval
-onMounted(() => {
-  checkInterval = setInterval(checkReminders, 60000) // 每分钟检查一次
-})
-onBeforeUnmount(() => clearInterval(checkInterval))
-
-const checkReminders = () => {
-  todos.value.saved.forEach((todo) => {
-    if (!todo.completed && !todo.reminded) {
-      const dueTime = dayjs(todo.dueDate).diff(dayjs(), 'minute')
-      if (dueTime <= 30 && dueTime > 0) {
-        showNotification(todo)
-        todo.reminded = true
-        persistData()
-      }
-    }
-  })
-}
-
-const showNotification = (todo) => {
-  if (Notification.permission === 'granted') {
-    new Notification(`待办事项提醒: ${todo.text}`, {
-      icon: `${location.href.replace('workbench', '')}/logo.jpg`,
-      body: `将在30分钟内到期: ${formatDueDate(todo.dueDate)}`,
-      onclick: () => {
-        // 显示浏览器
-        window.focus()
-        this.close()
-      },
-    })
-  }
-}
-
-// 日期处理
-const formatDueDate = (date) => dayjs(date).format(datePattern)
-
-// 样式处理
-const getDueDateColor = (todo) => {
-  if (todo.completed) return 'gray'
-  const diff = dayjs(todo.dueDate).diff(dayjs(), 'hour')
-  return diff < 1 ? 'red' : diff < 8 ? 'orange' : 'blue'
-}
-
-const getTodoItemClass = (todo) => ({
-  'overdue-item': isOverdue(todo),
-  'completed-item': todo.completed,
-})
-
-// 核心功能
-const isOverdue = (todo) => !todo.completed && dayjs(todo.dueDate).isBefore(dayjs())
-
 const isNew = ref(false)
+
+// 创建新待办
 const createNewTodo = () => {
   isNew.value = true
   editingTodo.value = {
@@ -253,6 +169,7 @@ const createNewTodo = () => {
   showEdit.value = true
 }
 
+// 保存待办
 const saveTodo = async () => {
   await formRef.value.validate()
   editingTodo.value.reminded = false
@@ -264,7 +181,10 @@ const saveTodo = async () => {
   }
   persistData()
   showEdit.value = false
-  Notification.requestPermission().then((permission) => {
+  
+  // 请求通知权限
+  if (!hasNotificationPermission.value) {
+    const permission = await requestNotificationPermission()
     if (permission === 'granted') {
       console.log('用户已授予通知权限')
     } else if (permission === 'denied') {
@@ -272,36 +192,15 @@ const saveTodo = async () => {
     } else {
       console.log('用户尚未做出选择')
     }
-  })
+  }
 }
 
+// 编辑待办
 const editTodo = (item) => {
   isNew.value = false
   editingTodo.value = { ...item }
   editingTodo.value.dueDate = dayjs(editingTodo.value.dueDate)
   showEdit.value = true
-}
-
-const deleteTodo = (id) => {
-  const todo = todos.value.saved.find((t) => t.id === id)
-  todos.value.deleted.push({ ...todo, deletedAt: dayjs().format(datePattern) })
-  todos.value.saved = todos.value.saved.filter((t) => t.id !== id)
-  persistData()
-}
-
-const restoreTodo = (item) => {
-  todos.value.saved.push(item)
-  todos.value.deleted = todos.value.deleted.filter((t) => t.id !== item.id)
-  persistData()
-}
-
-const persistData = () => {
-  try {
-    localStorage.setItem('todos', JSON.stringify(todos.value))
-  } catch (e) {
-    console.error('保存待办数据失败:', e)
-    message.error('数据保存失败')
-  }
 }
 </script>
 
