@@ -265,6 +265,62 @@ watch(() => props.content, renderContent, { immediate: true })
   font-weight: 600;
 }
 
+/* 时间线样式 */
+.asciidoc-viewer .timeline {
+  margin: 1.5em 0;
+  padding-left: 1em;
+  position: relative;
+}
+
+/* 时间线垂直主线 */
+.asciidoc-viewer .timeline::before {
+  content: '';
+  position: absolute;
+  left: 0.8em;
+  top: 1em;
+  bottom: 1em;
+  width: 2px;
+  background-color: #e1e4e8;
+}
+
+/* 时间点 (dt 元素) */
+.asciidoc-viewer .timeline dt {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  margin-left: -0.5em;
+  position: relative;
+  display: inline-block;
+  background-color: #fff;
+  padding-right: 0.5em;
+}
+
+.asciidoc-viewer .timeline dt::before {
+  content: '';
+  position: absolute;
+  left: -1.7em;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #0366d6;
+  z-index: 1;
+}
+
+/* 事件内容 (dd 元素) */
+.asciidoc-viewer .timeline dd {
+  margin-bottom: 1em;
+}
+
+.asciidoc-viewer .timeline dd p {
+  margin-bottom: 0.5em;
+  color: #555;
+}
+
+.asciidoc-viewer .timeline dd:last-child {
+ padding-bottom: 1rem;
+}
+
 /* 引用样式 */
 .asciidoc-viewer blockquote {
   margin: 1.5em 0;
@@ -305,6 +361,10 @@ td.hdlist1 {
 
 .asciidoc-viewer .line-through {
   text-decoration: line-through;
+}
+
+.asciidoc-viewer .dlist dd {
+  margin-left: 1em;
 }
 
 </style>

@@ -111,6 +111,7 @@
                                 <a-button size="small" @click="insertPlantUml">PlantUML</a-button>
                                 <a-button size="small" @click="insertFootnote">脚注</a-button>
                                 <a-button size="small" @click="insertStrikeThrough">删除线</a-button>
+                                <a-button size="small" @click="insertTimeline">时间线</a-button>
                             </div>
                             <a-textarea v-model:value="articleForm.content"
                                 placeholder="请使用AsciiDoc格式编写文章内容，支持PlantUML！" :rows="15"
@@ -384,7 +385,7 @@ const insertImage = () => {
 }
 
 const insertTable = () => {
-    const tableSyntax = '[cols="1,2"]\n|===\n|Column 1, header row |Column 2, header row\n\n|Cell in column 1, row 2\n|Cell in column 2, row 2\n|===\n';
+    const tableSyntax = '[cols="1,3"]\n|===\n|Column 1, header row |Column 2, header row\n\n|Cell in column 1, row 2 |Cell in column 2, row 2\n|===\n';
     insertAtCursor(tableSyntax);
 }
 
@@ -408,6 +409,10 @@ const insertStrikeThrough = () => {
     insertAtCursor(strikeThroughSyntax);
 }
 
+const insertTimeline = () => {
+    const timelineSyntax = '[timeline]\n2023-08:: 实现 Vue3 迁移\n2023-12:: 发布 1.0 版本\n2024-04:: 新增 2.0 版本\n';
+    insertAtCursor(timelineSyntax);
+}
 
 async function fetchCategories() {
     try {
