@@ -267,7 +267,7 @@ watch(() => props.content, renderContent, { immediate: true })
 
 /* 时间线样式 */
 .asciidoc-viewer .timeline {
-  margin: 1.5em 0;
+  margin: 1.5em 0 1.5em 1.5em;
   padding-left: 1em;
   position: relative;
 }
@@ -318,7 +318,7 @@ watch(() => props.content, renderContent, { immediate: true })
 }
 
 .asciidoc-viewer .timeline dd:last-child {
- padding-bottom: 1rem;
+ padding-bottom: 1.5em;
 }
 
 /* 引用样式 */
