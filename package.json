@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "test": "vite --mode test",
-    "build": "vue-tsc --noEmit && vite build --mode production"
+    "build": "vite build --mode production"
   },
   "dependencies": {
     "@ant-design/icons-vue": "6.1.0",

@@ -16,7 +16,7 @@
     <a-col :span="12">
       <a-card title="格式化内容" class="form-card">
         <div class="output-wrapper" @mouseover="showCopy = isSupported && !showCopied" @mouseleave="showCopy = false">
-          <pre class="code-output"><code ref="outputRef"><slot :formatted="formatted"></slot></code></pre>
+          <pre class="code-output"><code><slot :formatted="formatted"></slot></code></pre>
           <div class="copy-wrapper">
             <a-tooltip title="复制结果">
               <a v-if="showCopy" class="copy-btn" @click="onCopy()">

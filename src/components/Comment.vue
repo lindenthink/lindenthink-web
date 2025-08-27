@@ -21,7 +21,7 @@
         <a-form ref="formRef" :model="user" @finish="handleSubmit">
           <div class="user-info" v-if="!currentUser">
             <a-form-item name="nickname" :rules="[{ required: true, message: '昵称不能为空' }]">
-              <a-input ref="usernameRef" v-model:value="user.nickname" placeholder="昵称" allow-clear>
+              <a-input v-model:value="user.nickname" placeholder="昵称" allow-clear>
                 <template #prefix>
                   <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
                 </template>

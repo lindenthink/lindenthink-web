@@ -60,7 +60,7 @@
           />
         </template>
         <div class="gantt-container">
-          <div ref="header" class="gantt-header">
+          <div class="gantt-header">
             <div class="info-columns">
               <div class="info-cell task-info task-title">任务详情</div>
             </div>

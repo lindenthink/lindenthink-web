@@ -3,7 +3,7 @@
     <a-layout-sider></a-layout-sider>
     <a-layout-content>
       <AsciiDocViewer :content="content" />
-      <Comment ref="commentRef" owner="1" />
+      <Comment owner="1" />
     </a-layout-content>
     <a-layout-sider></a-layout-sider>
   </a-layout>
