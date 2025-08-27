@@ -45,7 +45,7 @@ let props = defineProps({
   // 存储播放器设置的 localStorage key
   storageName: {
     type: String,
-    default: 'linden-aplayer',
+    default: 'aplayer',
   },
   // 播放类型(song-歌曲, playlist-播放列表, album-专辑, search-搜索, artist-艺术家)
   songType: {

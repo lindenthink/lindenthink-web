@@ -89,7 +89,7 @@
   </a-modal>
 
   <a-drawer title="回收站" :visible="showTrash" @close="showTrash = false">
-    <a-list :data-source="deletedTodos">
+    <a-list :data-source="todos.deleted">
       <template #renderItem="{ item }">
         <a-list-item>
           <a-list-item-meta :title="item.text" :description="formatDueDate(item.dueDate)" />
@@ -135,7 +135,20 @@ const labelMap = {
 const datePattern = 'YYYY-MM-DD HH:mm'
 
 // 待办数据
-const todos = ref(JSON.parse(localStorage.getItem('todos')) || [])
+const loadTodoData = () => {
+  try {
+    const savedData = localStorage.getItem('todos')
+    if (savedData) {
+      return JSON.parse(savedData)
+    }
+    return { saved: [], deleted: [] }
+  } catch (e) {
+    console.error('读取待办数据失败:', e)
+    return { saved: [], deleted: [] }
+  }
+}
+
+const todos = ref(loadTodoData())
 const editingTodo = ref(null)
 const showEdit = ref(false)
 const selectedFilter = ref('today')
@@ -143,22 +156,20 @@ const showTrash = ref(false)
 const formRef = ref(null)
 
 const handleCheckChange = (item) => {
-  const index = todos.value.findIndex((t) => t.id === item.id)
+  const index = todos.value.saved.findIndex((t) => t.id === item.id)
   if (index > -1) {
-    todos.value.splice(index, 1, item)
+    todos.value.saved.splice(index, 1, item)
     persistData()
   }
 }
 
 const deleteFromTrash = (id) => {
-  deletedTodos.value = deletedTodos.value.filter((t) => t.id !== id)
+  todos.value.deleted = todos.value.deleted.filter((t) => t.id !== id)
   persistData()
   message.success('已永久删除')
 }
 
-const deletedTodos = ref(JSON.parse(localStorage.getItem('deletedTodos')) || [])
-
-const sortedTodos = computed(() => [...todos.value].sort((a, b) => dayjs(a.dueDate).unix() - dayjs(b.dueDate).unix()))
+const sortedTodos = computed(() => [...todos.value.saved].sort((a, b) => dayjs(a.dueDate).unix() - dayjs(b.dueDate).unix()))
 
 const filteredTodos = computed(() => {
   const now = dayjs()
@@ -185,7 +196,7 @@ onMounted(() => {
 onBeforeUnmount(() => clearInterval(checkInterval))
 
 const checkReminders = () => {
-  todos.value.forEach((todo) => {
+  todos.value.saved.forEach((todo) => {
     if (!todo.completed && !todo.reminded) {
       const dueTime = dayjs(todo.dueDate).diff(dayjs(), 'minute')
       if (dueTime <= 30 && dueTime > 0) {
@@ -245,13 +256,13 @@ const createNewTodo = () => {
 const saveTodo = async () => {
   await formRef.value.validate()
   editingTodo.value.reminded = false
-  const index = todos.value.findIndex((t) => t.id === editingTodo.value.id)
+  const index = todos.value.saved.findIndex((t) => t.id === editingTodo.value.id)
   if (index === -1) {
-    todos.value.push(editingTodo.value)
+    todos.value.saved.push(editingTodo.value)
   } else {
-    todos.value.splice(index, 1, editingTodo.value)
+    todos.value.saved.splice(index, 1, editingTodo.value)
   }
-  localStorage.setItem('todos', JSON.stringify(todos.value))
+  persistData()
   showEdit.value = false
   Notification.requestPermission().then((permission) => {
     if (permission === 'granted') {
@@ -272,21 +283,25 @@ const editTodo = (item) => {
 }
 
 const deleteTodo = (id) => {
-  const todo = todos.value.find((t) => t.id === id)
-  deletedTodos.value.push({ ...todo, deletedAt: dayjs().format(datePattern) })
-  todos.value = todos.value.filter((t) => t.id !== id)
+  const todo = todos.value.saved.find((t) => t.id === id)
+  todos.value.deleted.push({ ...todo, deletedAt: dayjs().format(datePattern) })
+  todos.value.saved = todos.value.saved.filter((t) => t.id !== id)
   persistData()
 }
 
 const restoreTodo = (item) => {
-  todos.value.push(item)
-  deletedTodos.value = deletedTodos.value.filter((t) => t.id !== item.id)
+  todos.value.saved.push(item)
+  todos.value.deleted = todos.value.deleted.filter((t) => t.id !== item.id)
   persistData()
 }
 
 const persistData = () => {
-  localStorage.setItem('todos', JSON.stringify(todos.value))
-  localStorage.setItem('deletedTodos', JSON.stringify(deletedTodos.value))
+  try {
+    localStorage.setItem('todos', JSON.stringify(todos.value))
+  } catch (e) {
+    console.error('保存待办数据失败:', e)
+    message.error('数据保存失败')
+  }
 }
 </script>
 

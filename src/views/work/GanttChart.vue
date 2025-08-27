@@ -15,7 +15,7 @@
         </template>
 
         <a-tree
-          :tree-data="projects"
+          :tree-data="projects.saved"
           :field-names="{ children: 'children', title: 'title', key: 'id' }"
           show-line
           block-node
@@ -146,7 +146,7 @@
   </a-row>
 
   <a-drawer title="回收站" :visible="showTrash" width="500" @close="showTrash = false">
-    <a-table :data-source="deletedProjects" row-key="id" :pagination="false">
+    <a-table :data-source="projects.deleted" row-key="id" :pagination="false">
       <a-table-column title="任务名称" data-index="title" />
       <a-table-column title="删除时间" data-index="deletedAt">
         <template #default="{ text }">
@@ -184,8 +184,20 @@ const formData = ref(initFormData())
 const dateRange = ref([])
 const selectedAssignees = ref([])
 const showTrash = ref(false)
-const projects = ref(JSON.parse(localStorage.getItem('projects')) || [])
-const deletedProjects = ref(JSON.parse(localStorage.getItem('deletedProjects')) || [])
+
+const loadProjectData = () => {
+  try {
+    const savedData = localStorage.getItem('projects')
+    if (savedData) {
+      return JSON.parse(savedData)
+    }
+  } catch (e) {
+    console.error('读取项目数据失败:', e)
+  }
+   return { saved: [], deleted: [] }
+}
+
+const projects = ref(loadProjectData())
 
 // 计算属性
 const timeline = computed(() => {
@@ -233,7 +245,7 @@ watch(selectedProject, () => {
 
 // 添加现有参与人选项
 const existingAssignees = computed(() =>
-  projects.value
+  projects.value.saved
     .flatMap((p) => p.assignees)
     .filter((v, i, a) => a.indexOf(v) === i)
     .map((a) => ({ value: a })),
@@ -268,8 +280,12 @@ const assigneeOptions = computed(() => {
 })
 
 const persistData = () => {
-  localStorage.setItem('projects', JSON.stringify(projects.value))
-  localStorage.setItem('deletedProjects', JSON.stringify(deletedProjects.value))
+  try {
+    localStorage.setItem('projects', JSON.stringify(projects.value))
+  } catch (e) {
+    console.error('保存项目数据失败:', e)
+    message.error('数据保存失败')
+  }
 }
 
 // 初始化表单数据
@@ -332,7 +348,7 @@ async function handleSave() {
   }
 
   if (newItem.parentId) {
-    const parent = findProject(projects.value, newItem.parentId)
+    const parent = findProject(projects.value.saved, newItem.parentId)
     if (parent) {
       if (isEditMode) {
         const index = parent.children.findIndex((c) => c.id === newItem.id)
@@ -345,12 +361,12 @@ async function handleSave() {
     }
   } else {
     if (isEditMode) {
-      const index = projects.value.findIndex((p) => p.id === newItem.id)
+      const index = projects.value.saved.findIndex((p) => p.id === newItem.id)
       if (index > -1) {
-        projects.value.splice(index, 1, newItem)
+        projects.value.saved.splice(index, 1, newItem)
       }
     } else {
-      projects.value = [...projects.value, newItem]
+      projects.value.saved = [...projects.value.saved, newItem]
     }
   }
 
@@ -375,20 +391,20 @@ function handleDelete(node) {
   const deletedItem = {
     ...node,
     deletedAt: dayjs().format(),
-    parentId: findParentId(projects.value, node.id),
+    parentId: findParentId(projects.value.saved, node.id),
   }
 
   // 使用新数组触发响应式更新
-  projects.value = deleteNode(projects.value)
+  projects.value.saved = deleteNode(projects.value.saved)
 
   // 添加到回收站
-  deletedProjects.value = [...deletedProjects.value, deletedItem]
+  projects.value.deleted = [...projects.value.deleted, deletedItem]
 
   persistData()
 
   // 强制刷新选中项目
   if (selectedProject.value?.id === node.id) {
-    selectedProject.value = projects.value[0] || null
+    selectedProject.value = projects.value.saved[0] || null
   }
   message.success('删除成功')
 }
@@ -430,7 +446,7 @@ function validateForm() {
 
   // 子任务时间范围验证
   if (formData.value.parentId) {
-    const parent = findProject(projects.value, formData.value.parentId)
+    const parent = findProject(projects.value.saved, formData.value.parentId)
     const parentStart = dayjs(parent.startDate)
     const parentEnd = dayjs(parent.endDate)
 
@@ -508,7 +524,7 @@ function handleEdit(task) {
 
 function handleRestore(item) {
   if (item.parentId) {
-    const parent = findProject(projects.value, item.parentId)
+    const parent = findProject(projects.value.saved, item.parentId)
     if (parent) {
       parent.children = parent.children ? [...parent.children, item] : [item]
     } else {
@@ -516,10 +532,10 @@ function handleRestore(item) {
       return
     }
   } else {
-    projects.value = [...projects.value, item]
+    projects.value.saved = [...projects.value.saved, item]
   }
   // 从回收站移除
-  deletedProjects.value = deletedProjects.value.filter((i) => i.id !== item.id)
+  projects.value.deleted = projects.value.deleted.filter((i) => i.id !== item.id)
   persistData()
   message.success('恢复成功')
 }
@@ -528,11 +544,11 @@ function handleRestore(item) {
 function deleteFromTrash(item) {
   let parent
   if (item.parentId) {
-    parent = findProject(deletedProjects.value, item.parentId)
+    parent = findProject(projects.value.deleted, item.parentId)
     if (parent) parent.children = parent.filter((c) => c.id !== item.id)
   }
   if (!parent) {
-    deletedProjects.value = deletedProjects.value.filter((i) => i.id !== item.id)
+    projects.value.deleted = projects.value.deleted.filter((i) => i.id !== item.id)
   }
   persistData()
   message.success('已永久删除')
