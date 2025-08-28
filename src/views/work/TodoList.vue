@@ -49,6 +49,12 @@
                   <a-checkbox v-model:checked="item.completed" @change="() => handleCheckChange(item)">
                     <span :class="{ completed: item.completed }">{{ item.text }}</span>
                   </a-checkbox>
+                  <a-tooltip v-if="item.reminded" title="已发送通知提醒" placement="right">
+                    <a-tag color="green" style="margin-left: 8px;">
+                      <bell-outlined />
+                      已提醒
+                    </a-tag>
+                  </a-tooltip>
                 </template>
                 <template #description>
                   <div class="todo-meta">
@@ -117,6 +123,7 @@ import {
   WarningFilled,
   InfoCircleFilled,
   RestOutlined,
+  BellOutlined,
 } from '@ant-design/icons-vue'
 
 // 导入待办管理服务

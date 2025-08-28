@@ -78,25 +78,46 @@ function createTodosService() {
   const showNotification = (todo) => {
     if ('Notification' in window && hasNotificationPermission.value) {
       try {
-        new Notification(`待办事项提醒: ${todo.text}`, {
+        const notification = new Notification(`待办事项提醒: ${todo.text}`, {
           icon: `${location.href.split('/').slice(0, 3).join('/')}/logo.jpg`,
           body: `将在30分钟内到期: ${dayjs(todo.dueDate).format('YYYY-MM-DD HH:mm')}`,
-          onclick: () => {
-            // 点击通知后聚焦到浏览器窗口
-            window.focus()
-            // 如果有需要，导航到待办页面
-            if (!window.location.pathname.includes('workbench')) {
-              window.location.href = '/workbench'
-            }
-          },
+          requireInteraction: true, // 要求用户交互才会关闭通知
+          tag: 'lindenthink-todo' // 添加标签以聚合相同类型的通知
         })
-        return true; // 通知成功显示
+        
+        // 点击通知事件处理
+        notification.onclick = function(event) {
+          // 阻止通知默认行为
+          event.preventDefault();
+          
+          // 聚焦到浏览器窗口
+          if (window && window.focus) {
+            window.focus();
+          }
+          
+          // 如果有需要，导航到待办页面
+          if (window && window.location && !window.location.pathname.includes('workbench')) {
+            window.location.href = '/workbench';
+          }
+          
+          // 关闭通知
+          notification.close();
+        }
+        
+        // 添加错误处理
+        notification.onerror = function(error) {
+          console.error('通知错误:', error);
+        }
+        
+        console.log('通知已显示:', todo.text);
+        return true;
       } catch (e) {
-        console.error('显示通知失败:', e)
-        return false; // 通知显示失败
+        console.error('显示通知失败:', e);
+        return false;
       }
     }
-    return false; // 不满足显示通知的条件
+    console.log('不满足显示通知的条件: Notification API不可用或未获得权限');
+    return false;
   }
   
   // 检查提醒
@@ -109,7 +130,6 @@ function createTodosService() {
           const dueTime = dayjs(todo.dueDate).diff(dayjs(), 'minute')
           if (dueTime <= 30 && dueTime > 0) {
             const notificationShown = showNotification(todo)
-            // 只有在通知成功显示的情况下才标记为已提醒
             if (notificationShown) {
               todo.reminded = true
               hasUpdated = true
@@ -127,14 +147,13 @@ function createTodosService() {
     }
   }
   
-  const startChecking = (interval = 120000) => { // 2分钟检查一次
+  const startChecking = (interval = 60000) => {
     if (checkInterval) {
       clearInterval(checkInterval)
     }
     checkInterval = setInterval(checkReminders, interval)
   }
   
-  // 停止检查
   const stopChecking = () => {
     if (checkInterval) {
       clearInterval(checkInterval)
@@ -257,14 +276,16 @@ function initializeTodosService() {
     // 在应用启动时初始化
     const init = async () => {
       try {
-        // 加载数据
+        console.log('开始初始化待办服务');
         instance.loadTodoData()
-        // 立即检查一次
-        instance.checkReminders()
-        // 请求权限
-        await instance.requestNotificationPermission()
+        const permission = await instance.requestNotificationPermission()
+        console.log('通知权限状态:', permission);
+        if (permission === 'granted') {
+          instance.checkReminders()
+        }
         // 启动定时检查
         instance.startChecking()
+        console.log('待办服务初始化完成');
       } catch (error) {
         console.error('待办服务初始化失败:', error)
       }
