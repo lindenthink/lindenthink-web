@@ -2,7 +2,7 @@
   <a-layout>
     <a-layout-sider></a-layout-sider>
     <a-layout-content>
-      <div style="position: absolute; top: 16px; right: 16px; z-index: 100;">
+      <div style="position: absolute; top: 16px; right: 16px; z-index: 2;">
         <a-tooltip v-if="userStore.isLoggedIn" title="同步数据">
           <a-button type="text" @click="handleManualSync" style="display: flex; align-items: center;">
             <span :class="['sync-icon', { spinning: isSyncing, success: !isSyncing && syncSuccess }]">

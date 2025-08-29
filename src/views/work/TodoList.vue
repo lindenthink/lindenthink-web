@@ -4,7 +4,7 @@
       <a-card title="待办列表">
         <template #extra>
           <a-space>
-            <a-button-group>
+            <a-button-group size="small">
               <a-button :type="selectedFilter === 'all' ? 'primary' : ''" @click="selectedFilter = 'all'"
                 >全部</a-button
               >
@@ -18,11 +18,11 @@
                 >明日</a-button
               >
             </a-button-group>
-            <a-button type="primary" @click="createNewTodo">
+            <a-button type="primary" @click="createNewTodo" size="small">
               <template #icon><plus-outlined /></template>
               新增  
             </a-button>
-            <a-button @click="showTrash = true">
+            <a-button @click="showTrash = true" size="small">
               <template #icon><rest-outlined /></template>
               回收站
             </a-button>
