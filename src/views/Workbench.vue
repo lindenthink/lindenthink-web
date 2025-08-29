@@ -31,7 +31,7 @@ import { useUserStore } from '@/stores/user'
 
 import TodoList from '@/views/work/TodoList.vue'
 import GanttChart from '@/views/work/GanttChart.vue'
-import { projectSyncService } from '@/services/materialService'
+import { workbenchSyncService } from '@/services/workbenchSyncService'
 import { message } from 'ant-design-vue'
 
 const activeKey = ref('1')
@@ -64,7 +64,7 @@ const handleSyncStatusChange = (syncing, success) => {
 // 手动触发同步
 const handleManualSync = () => {
   if (!isSyncing.value && userStore.isLoggedIn) {
-    projectSyncService.loadDataOnLogin().catch(err => {
+    workbenchSyncService.loadDataOnLogin().catch(err => {
       // console.error('手动同步失败:', err)
       message.error('手动同步失败:' + err.message)
     })
@@ -73,10 +73,10 @@ const handleManualSync = () => {
 
 onMounted(() => {
   // 初始化同步服务
-  projectSyncService.init()
+  workbenchSyncService.init()
   
   // 注册同步状态监听器
-  const unsubscribe = projectSyncService.onSyncStatusChange(handleSyncStatusChange)
+  const unsubscribe = workbenchSyncService.onSyncStatusChange(handleSyncStatusChange)
   
   // 组件卸载时清理监听器
   onUnmounted(() => {

@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
-import { projectSyncService } from '@/services/materialService'
+import { workbenchSyncService } from '@/services/workbenchSyncService'
 
 // 全局待办服务实例
 let instance = null
@@ -62,7 +62,7 @@ function createTodosService() {
       const savedSettings = localStorage.getItem('systemSettings')
       const settings = savedSettings ? JSON.parse(savedSettings) : {}
       if (settings.syncTodosEnabled !== false) {
-        projectSyncService.syncData('TODO').catch(err => {
+        workbenchSyncService.syncData('TODO').catch(err => {
           console.error('数据同步到服务端失败:', err)
         })
       }

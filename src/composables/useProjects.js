@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
-import { projectSyncService } from '@/services/materialService'
+import { workbenchSyncService } from '@/services/workbenchSyncService'
 
 // 全局项目服务实例
 let instance = null
@@ -44,7 +44,7 @@ function createProjectsService() {
       const savedSettings = localStorage.getItem('systemSettings')
       const settings = savedSettings ? JSON.parse(savedSettings) : {}
       if (settings.syncProjectsEnabled !== false) {
-        projectSyncService.syncData('PROJECT').catch(err => {
+        workbenchSyncService.syncData('PROJECT').catch(err => {
           console.error('数据同步到服务端失败:', err)
         })
       }
