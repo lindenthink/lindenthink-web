@@ -135,7 +135,7 @@
         <h4>音频播放器设置</h4>
         <div class="setting-item">
           <span class="setting-label">启用音乐播放器</span>
-          <a-switch v-model:checked="audioPlayerEnabled" />
+          <a-switch v-model:checked="audioPlayerEnabled" size="small" />
         </div>
         <div class="setting-item">
           <span class="setting-label">网易云音乐列表ID</span>
@@ -146,18 +146,18 @@
       <div class="setting-section">
         <h4>工作台配置</h4>
         <div class="setting-item">
-          <span class="setting-label">待办自动同步</span>
-          <a-switch v-model:checked="syncTodosEnabled" />
+          <span class="setting-label">自动同步待办</span>
+          <a-switch v-model:checked="syncTodosEnabled" size="small" />
         </div>
         <div class="setting-item">
-          <span class="setting-label">项目自动同步</span>
-          <a-switch v-model:checked="syncProjectsEnabled" />
+          <span class="setting-label">自动同步项目</span>
+          <a-switch v-model:checked="syncProjectsEnabled" size="small" />
         </div>
       </div>
       
       <div class="drawer-actions">
-        <a-button @click="showSettingsDrawer = false">取消</a-button>
-        <a-button type="primary" @click="saveSettings">保存</a-button>
+        <a-button @click="showSettingsDrawer = false" size="small">取消</a-button>
+        <a-button type="primary" @click="saveSettings" size="small">保存</a-button>
       </div>
     </a-drawer>
   </a-config-provider>
@@ -563,14 +563,13 @@ const saveSettings = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
   border-bottom: 1px solid #f0f0f0;
 
   .setting-label {
     color: rgba(128, 122, 122, 0.85);
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 13px;
     display: inline-block;
     width: 200px;
   }
@@ -582,7 +581,7 @@ const saveSettings = () => {
 
 .drawer-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 10px;
   margin-top: 20px;
 }
