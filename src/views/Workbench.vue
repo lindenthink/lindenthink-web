@@ -4,10 +4,12 @@
     <a-layout-content>
       <div style="position: absolute; top: 16px; right: 16px; z-index: 100;">
         <a-tooltip v-if="userStore.isLoggedIn" title="同步数据">
-          <a-button type="text" @click="handleManualSync">
+          <a-button type="text" @click="handleManualSync" style="display: flex; align-items: center;">
             <span :class="['sync-icon', { spinning: isSyncing, success: !isSyncing && syncSuccess }]">
               <component :is="isSyncing || !syncSuccess ? ReloadOutlined : CheckOutlined" />
             </span>
+            <span v-if="isSyncing" style="margin-left: 5px; color: #1890ff;">同步中</span>
+            <span v-else-if="syncSuccess" style="margin-left: 5px; color: #52c41a;">已同步</span>
           </a-button>
         </a-tooltip>
       </div>
