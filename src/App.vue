@@ -142,6 +142,19 @@
           <a-input v-model:value="playlistId" placeholder="输入播放列表ID" :disabled="!audioPlayerEnabled" />
         </div>
       </div>
+      
+      <div class="setting-section">
+        <h4>工作台配置</h4>
+        <div class="setting-item">
+          <span class="setting-label">待办自动同步</span>
+          <a-switch v-model:checked="syncTodosEnabled" />
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">项目自动同步</span>
+          <a-switch v-model:checked="syncProjectsEnabled" />
+        </div>
+      </div>
+      
       <div class="drawer-actions">
         <a-button @click="showSettingsDrawer = false">取消</a-button>
         <a-button type="primary" @click="saveSettings">保存</a-button>
@@ -193,6 +206,13 @@ const audioPlayerEnabled = ref(
   initialSettings.audioPlayerEnabled !== undefined ? initialSettings.audioPlayerEnabled : false,
 )
 const playlistId = ref(initialSettings.audioPlayerId || '6991674483')
+// 工作台同步设置
+const syncTodosEnabled = ref(
+  initialSettings.syncTodosEnabled !== undefined ? initialSettings.syncTodosEnabled : false,
+)
+const syncProjectsEnabled = ref(
+  initialSettings.syncProjectsEnabled !== undefined ? initialSettings.syncProjectsEnabled : false,
+)
 
 onMounted(() => {
   // 监听路由变化
@@ -346,6 +366,9 @@ const saveSettings = () => {
   const settings = {
     audioPlayerEnabled: audioPlayerEnabled.value,
     audioPlayerId: playlistId.value,
+    // 工作台同步设置
+    syncTodosEnabled: syncTodosEnabled.value,
+    syncProjectsEnabled: syncProjectsEnabled.value,
   }
   localStorage.setItem('systemSettings', JSON.stringify(settings))
   message.success('系统设置已保存')

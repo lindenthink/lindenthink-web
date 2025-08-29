@@ -34,25 +34,26 @@ function createProjectsService() {
     }
   }
 
-  // 保存数据到localStorage
   const persistData = () => {
     try {
       localStorage.setItem('projects', JSON.stringify({
         ...projects.value,
-        version: dayjs().format('YYYYMMDDHHmmssSSS') // 到毫秒级别
+        version: dayjs().format('YYYYMMDDHHmmssSSS')
       }))
       
-      // 数据变更时触发同步到服务端（仅同步项目数据）
-      projectSyncService.syncData('PROJECT').catch(err => {
-        console.error('数据同步到服务端失败:', err)
-      })
+      const savedSettings = localStorage.getItem('systemSettings')
+      const settings = savedSettings ? JSON.parse(savedSettings) : {}
+      if (settings.syncProjectsEnabled !== false) {
+        projectSyncService.syncData('PROJECT').catch(err => {
+          console.error('数据同步到服务端失败:', err)
+        })
+      }
     } catch (e) {
       console.error('保存项目数据失败:', e)
       message.error('数据保存失败')
     }
   }
 
-  // 初始化表单数据
   const initFormData = () => {
     return {
       id: '',

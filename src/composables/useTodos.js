@@ -59,9 +59,13 @@ function createTodosService() {
       }))
       
       // 数据变更时触发同步到服务端（仅同步待办数据）
-      projectSyncService.syncData('TODO').catch(err => {
-        console.error('数据同步到服务端失败:', err)
-      })
+      const savedSettings = localStorage.getItem('systemSettings')
+      const settings = savedSettings ? JSON.parse(savedSettings) : {}
+      if (settings.syncTodosEnabled !== false) {
+        projectSyncService.syncData('TODO').catch(err => {
+          console.error('数据同步到服务端失败:', err)
+        })
+      }
     } catch (e) {
       console.error('保存待办数据失败:', e)
       message.error('数据保存失败')
