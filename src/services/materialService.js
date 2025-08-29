@@ -157,7 +157,7 @@ class ProjectSyncService {
         const { loadTodoData } = useTodos()
         loadTodoData()
       } else if (type === 'PROJECT') {
-        // todo 触发项目数据更新
+        // 不同于待办，无需触发。因为待办是全局生效，在此之前就已经被加载。
       }
     } else if (this.compareVersions(localVersion, serverVersion)) {
       // 本地数据较新，需要同步到服务端

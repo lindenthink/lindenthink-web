@@ -64,7 +64,7 @@ const handleSyncStatusChange = (syncing, success) => {
 // 手动触发同步
 const handleManualSync = () => {
   if (!isSyncing.value && userStore.isLoggedIn) {
-    projectSyncService.syncData().catch(err => {
+    projectSyncService.loadDataOnLogin().catch(err => {
       // console.error('手动同步失败:', err)
       message.error('手动同步失败:' + err.message)
     })

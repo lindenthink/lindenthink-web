@@ -69,7 +69,7 @@
                 v-for="(date, index) in timeline"
                 :key="index"
                 class="time-cell"
-                :class="{ 'today-cell': isToday(date) }"
+                :class="{ 'today-cell': projectService.isToday(date) }"
               >
                 {{ date }}
               </div>
@@ -169,56 +169,31 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import dayjs from 'dayjs'
 import minMax from 'dayjs/plugin/minMax'
-import { message } from 'ant-design-vue'
 import { DeleteOutlined, PlusOutlined, EditOutlined, RestOutlined } from '@ant-design/icons-vue'
-import { projectSyncService } from '@/services/materialService'
+import useProjects from '@/composables/useProjects'
 
 dayjs.extend(minMax)
 
-// 配置参数
-const CELL_WIDTH = 60
-const ROW_HEIGHT = 40
-
 const selectedProject = ref(null)
 const showModal = ref(false)
-const formData = ref(initFormData())
+const formData = ref({})
 const dateRange = ref([])
 const selectedAssignees = ref([])
 const showTrash = ref(false)
 
-const loadProjectData = () => {
-  try {
-    const savedData = localStorage.getItem('projects')
-    if (savedData) {
-      return JSON.parse(savedData)
-    }
-  } catch (e) {
-    console.error('读取项目数据失败:', e)
-  }
-   return { saved: [], deleted: [] }
-}
-
-const projects = ref(loadProjectData())
+// 使用项目服务
+const projectService = useProjects()
+const projects = computed(() => projectService.projects.value)
+const { CELL_WIDTH, ROW_HEIGHT } = projectService
 
 // 计算属性
 const timeline = computed(() => {
   if (!selectedProject.value?.startDate) return []
-
-  const start = dayjs(selectedProject.value.startDate)
-  const end = dayjs(selectedProject.value.endDate)
-  const days = end.diff(start, 'day') + 1
-
-  return Array.from({ length: days }, (_, i) => start.add(i, 'day').format('MM/DD'))
+  return projectService.generateTimeline(selectedProject.value.startDate, selectedProject.value.endDate)
 })
 
-const isToday = (dateStr) => {
-  const date = dayjs(dateStr, 'MM/DD')
-  return date.isSame(dayjs(), 'day')
-}
-
-// 添加样式
 const todayIndex = computed(() => {
-  return timeline.value.findIndex((d) => isToday(d))
+  return projectService.getTodayIndex(timeline.value)
 })
 
 // 添加滚动方法
@@ -246,9 +221,7 @@ watch(selectedProject, () => {
 
 // 添加现有参与人选项
 const existingAssignees = computed(() =>
-  projects.value.saved
-    .flatMap((p) => p.assignees)
-    .filter((v, i, a) => a.indexOf(v) === i)
+  projectService.getAllAssignees()
     .map((a) => ({ value: a })),
 )
 
@@ -280,36 +253,9 @@ const assigneeOptions = computed(() => {
   return [...new Set(allAssignees)].map((a) => ({ label: a, value: a }))
 })
 
-const persistData = () => {
-  try {
-    localStorage.setItem('projects', JSON.stringify({
-      ...projects.value,
-      version: dayjs().format('YYYYMMDDHHmmssSSS')
-    }))
-    
-    // 数据变更时触发同步到服务端（仅同步项目数据）
-    projectSyncService.syncData('PROJECT').catch(err => {
-      console.error('数据同步到服务端失败:', err)
-    })
-  } catch (e) {
-    console.error('保存项目数据失败:', e)
-    message.error('数据保存失败')
-  }
-}
-
 // 初始化表单数据
 function initFormData() {
-  return {
-    id: '',
-    title: '',
-    startDate: null,
-    endDate: null,
-    assignees: [], // 改为数组存储
-    progress: 0,
-    progressColor: '#1890ff',
-    children: [],
-    level: 1, // 1-项目 2-子任务
-  }
+  return projectService.initFormData()
 }
 
 function handleSelectProject(keys, { node }) {
@@ -344,129 +290,23 @@ function handleAddChild(parent) {
 }
 
 async function handleSave() {
-  if (!validateForm()) return
-
-  const isEditMode = !!formData.value.id
-  const newItem = {
-    ...formData.value,
-    id: formData.value.id || Date.now().toString(),
-    startDate: dateRange.value[0].format('YYYY-MM-DD'),
-    endDate: dateRange.value[1].format('YYYY-MM-DD'),
-    progressColor: getProgressColor(formData.value.progress),
-    assignees: formData.value.assignees.filter(Boolean),
+  const newItem = await projectService.saveProject(formData.value, dateRange.value)
+  if (newItem) {
+    selectedProject.value = newItem
+    resetForm()
   }
-
-  if (newItem.parentId) {
-    const parent = findProject(projects.value.saved, newItem.parentId)
-    if (parent) {
-      if (isEditMode) {
-        const index = parent.children.findIndex((c) => c.id === newItem.id)
-        if (index > -1) {
-          parent.children.splice(index, 1, newItem)
-        }
-      } else {
-        parent.children = parent.children ? [...parent.children, newItem] : [newItem]
-      }
-    }
-  } else {
-    if (isEditMode) {
-      const index = projects.value.saved.findIndex((p) => p.id === newItem.id)
-      if (index > -1) {
-        projects.value.saved.splice(index, 1, newItem)
-      }
-    } else {
-      projects.value.saved = [...projects.value.saved, newItem]
-    }
-  }
-
-  selectedProject.value = newItem
-
-  persistData()
-  resetForm()
-  message.success(isEditMode ? '更新成功' : '创建成功')
 }
 
 function handleDelete(node) {
-  const deleteNode = (nodes) => {
-    return nodes.filter((n) => {
-      if (n.id === node.id) return false
-      if (n.children) {
-        n.children = deleteNode(n.children)
-      }
-      return true
-    })
-  }
-
-  const deletedItem = {
-    ...node,
-    deletedAt: dayjs().format(),
-    parentId: findParentId(projects.value.saved, node.id),
-  }
-
-  // 使用新数组触发响应式更新
-  projects.value.saved = deleteNode(projects.value.saved)
-
-  // 添加到回收站
-  projects.value.deleted = [...projects.value.deleted, deletedItem]
-
-  persistData()
+  projectService.deleteProject(node)
 
   // 强制刷新选中项目
   if (selectedProject.value?.id === node.id) {
     selectedProject.value = projects.value.saved[0] || null
   }
-  message.success('删除成功')
 }
 
-function findParentId(nodes, targetId, parentId = null) {
-  for (const node of nodes) {
-    if (node.id === targetId) return parentId
-    if (node.children) {
-      const found = findParentId(node.children, targetId, node.id)
-      if (found) return found
-    }
-  }
-  return null
-}
 
-function getProgressColor(progress) {
-  if (progress < 30) return '#ff4d4f'
-  if (progress < 70) return '#faad14'
-  return '#52c41a'
-}
-
-function validateForm() {
-  // 基础验证
-  if (!formData.value.title?.trim()) {
-    message.error('任务名称不能为空')
-    return false
-  }
-
-  if (!dateRange.value[0] || !dateRange.value[1]) {
-    message.error('请选择完整的时间范围')
-    return false
-  }
-
-  // 时间顺序验证
-  if (dateRange.value[0].isAfter(dateRange.value[1])) {
-    message.error('开始时间不能晚于结束时间')
-    return false
-  }
-
-  // 子任务时间范围验证
-  if (formData.value.parentId) {
-    const parent = findProject(projects.value.saved, formData.value.parentId)
-    const parentStart = dayjs(parent.startDate)
-    const parentEnd = dayjs(parent.endDate)
-
-    if (dateRange.value[0].isBefore(parentStart) || dateRange.value[1].isAfter(parentEnd)) {
-      message.error('子任务时间必须在父任务时间范围内')
-      return false
-    }
-  }
-
-  return true
-}
 
 function resetForm() {
   showModal.value = false
@@ -474,37 +314,11 @@ function resetForm() {
   dateRange.value = []
 }
 
-function findProject(nodes, id) {
-  for (const node of nodes) {
-    if (node.id === id) return node
-    if (node.children) {
-      const found = findProject(node.children, id)
-      if (found) return found
-    }
-  }
-  return null
-}
+
 
 function getRowStyle(item, index) {
-  if (!item.startDate || !item.endDate) return { display: 'none' }
-
-  const baseDate = dayjs(selectedProject.value.startDate)
-  const startDate = dayjs(item.startDate)
-  const endDate = dayjs(item.endDate)
-
-  // 计算相对于项目开始日期的偏移
-  const startOffset = startDate.diff(baseDate, 'day') * CELL_WIDTH
-  // 计算实际显示宽度
-  const durationDays = endDate.diff(startDate, 'day') + 1
-
-  return {
-    height: ROW_HEIGHT + 'px',
-    width: `${durationDays * CELL_WIDTH}px`,
-    left: `${startOffset}px`,
-    position: 'absolute',
-    top: `${ROW_HEIGHT * index}px`,
-    backgroundColor: item.level === 1 ? '#fafafa' : 'transparent',
-  }
+  if (!selectedProject.value?.startDate) return { display: 'none' }
+  return projectService.getRowStyle(item, index, dayjs(selectedProject.value.startDate))
 }
 
 function syncScroll(e) {
@@ -515,7 +329,7 @@ function syncScroll(e) {
 }
 
 function formatDate(date) {
-  return dayjs(date).format('MM/DD')
+  return projectService.formatDate(date)
 }
 
 function disabledDate(current) {
@@ -532,35 +346,12 @@ function handleEdit(task) {
 }
 
 function handleRestore(item) {
-  if (item.parentId) {
-    const parent = findProject(projects.value.saved, item.parentId)
-    if (parent) {
-      parent.children = parent.children ? [...parent.children, item] : [item]
-    } else {
-      message.error('恢复失败，请先恢复父级项目')
-      return
-    }
-  } else {
-    projects.value.saved = [...projects.value.saved, item]
-  }
-  // 从回收站移除
-  projects.value.deleted = projects.value.deleted.filter((i) => i.id !== item.id)
-  persistData()
-  message.success('恢复成功')
+  projectService.restoreProject(item)
 }
 
 // 彻底删除
 function deleteFromTrash(item) {
-  let parent
-  if (item.parentId) {
-    parent = findProject(projects.value.deleted, item.parentId)
-    if (parent) parent.children = parent.filter((c) => c.id !== item.id)
-  }
-  if (!parent) {
-    projects.value.deleted = projects.value.deleted.filter((i) => i.id !== item.id)
-  }
-  persistData()
-  message.success('已永久删除')
+  projectService.deleteFromTrash(item)
 }
 </script>
 
