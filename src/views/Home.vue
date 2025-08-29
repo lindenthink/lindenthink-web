@@ -80,7 +80,7 @@
               <section class="dynamic-section">
                 <h2 class="section-title">
                   <bulb-outlined class="title-icon" />
-                  今日资讯
+                  最新资讯
                 </h2>
                 <div class="news-list">
                   <div v-for="news in latestNews" :key="news.id" class="news-item">

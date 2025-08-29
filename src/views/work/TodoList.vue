@@ -68,6 +68,10 @@
                       <info-circle-filled v-else />
                       {{ labelMap[item.priority] }}
                     </a-tag>
+                    <a-tag color="blue">
+                      <bell-outlined />
+                      提前{{ item.remindTime || 30 }}分钟
+                    </a-tag>
                   </div>
                 </template>
               </a-list-item-meta>
