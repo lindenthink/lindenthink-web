@@ -91,6 +91,13 @@
           <a-select-option v-for="(val, key) in labelMap" :key="key">{{ val }}</a-select-option>
         </a-select>
       </a-form-item>
+      <a-form-item label="提前提醒时间">
+        <a-select v-model:value="editingTodo.remindTime" placeholder="选择提前提醒时间">
+          <a-select-option v-for="time in remindTimeOptions" :key="time">
+            {{ time }}分钟
+          </a-select-option>
+        </a-select>
+      </a-form-item>
     </a-form>
   </a-modal>
 
@@ -143,6 +150,7 @@ const {
   colorMap,
   labelMap,
   datePattern,
+  remindTimeOptions,
   
   // 方法
   formatDueDate,
@@ -172,6 +180,7 @@ const createNewTodo = () => {
     dueDate: dayjs().add(1, 'hour').startOf('hour'),
     priority: 'medium',
     completed: false,
+    remindTime: 30 // 默认提前30分钟提醒
   }
   showEdit.value = true
 }

@@ -1,6 +1,7 @@
 import { message } from 'ant-design-vue'
 import { useUserStore } from '@/stores/user'
 import useTodos from '@/composables/useTodos'
+import useProjects from '@/composables/useProjects'
 import { queryTodos, queryProjects, save } from '@/services/materialService'
 
 // 工作台同步服务
@@ -65,6 +66,8 @@ class WorkbenchSyncService {
             })
             if (!todosData.id) {
               localStorage.setItem('todos', JSON.stringify( { ...todosData, id: res.data }))
+              const { loadTodoData } = useTodos()
+              loadTodoData()
             }
           }
         }
@@ -78,6 +81,9 @@ class WorkbenchSyncService {
             })
             if (!projectsData.id) {
               localStorage.setItem('projects', JSON.stringify({ ...projectsData, id: res.data }))
+              // 项目数据重新加载
+              const { loadProjectData } = useProjects()
+              loadProjectData()
             }
           }
         }

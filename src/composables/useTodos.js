@@ -12,7 +12,10 @@ function createTodosService() {
   const todos = ref({
     saved: [],
     deleted: []
-  })
+  })  
+  
+  // 提醒时间选项（分钟）
+  const remindTimeOptions = [15, 30, 60, 120, 240, 480, 720]
 
   // 通知相关
   let checkInterval = null
@@ -140,8 +143,10 @@ function createTodosService() {
 
       todos.value.saved.forEach((todo) => {
         if (!todo.completed && !todo.reminded) {
+          // 默认提前30分钟提醒
+          const remindTime = todo.remindTime || 30
           const dueTime = dayjs(todo.dueDate).diff(dayjs(), 'minute')
-          if (dueTime <= 30 && dueTime > 0) {
+          if (dueTime <= remindTime && dueTime > 0) {
             const notificationShown = showNotification(todo)
             if (notificationShown) {
               todo.reminded = true
@@ -262,6 +267,7 @@ function createTodosService() {
     colorMap,
     labelMap,
     datePattern,
+    remindTimeOptions,
 
     // 方法
     loadTodoData,
