@@ -56,7 +56,7 @@ class WorkbenchSyncService {
         this.isSyncing = true
         this.notifySyncStatusChange(true)
         if (type === null || type === 'TODO') {
-          console.log('开始同步数据')
+          // console.log('开始同步数据')
           const todosData = this.loadTodosFromLocalStorage()
           if (todosData) {
             const res = await save({ 
@@ -88,7 +88,7 @@ class WorkbenchSyncService {
           }
         }
         this.notifySyncStatusChange(false, true)
-        console.log('数据同步成功')
+        // console.log('数据同步成功')
       } catch (error) {
         console.error('数据同步失败:', error)
         this.notifySyncStatusChange(false, false)
