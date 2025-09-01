@@ -314,6 +314,7 @@ const handleSearch = (value) => {
   if (!value) return
   searchKeyword.value = value
   searchResults.value = []
+  searchLoading.value = true // 提前设置为搜索中状态
   showResults.value = true
   debouncedSearch(value)
 }
