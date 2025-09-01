@@ -347,6 +347,7 @@ const resultCategories = computed(() => {
 // 监听输入变化
 watch(searchKeyword, (val) => {
   if (val && val.trim().length > 1) {
+    searchLoading.value = true // 提前设置为搜索中状态
     showResults.value = true
     debouncedSearch(val)
   } else {
