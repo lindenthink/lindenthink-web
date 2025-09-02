@@ -225,7 +225,7 @@ const scrollToToday = () => {
   nextTick(() => {
     const container = document.querySelector('.gantt-body')
     if (!container) return
-    const scrollLeft = todayIndex.value * CELL_WIDTH - container.clientWidth / 2 + INFO_WIDTH
+    const scrollLeft = todayIndex.value * CELL_WIDTH - container.clientWidth / 2 + INFO_WIDTH + 60
     container.scrollTo({
       left: Math.max(0, scrollLeft),
       behavior: 'smooth',
