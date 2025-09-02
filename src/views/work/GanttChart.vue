@@ -11,7 +11,7 @@
     </div>
     
     <!-- 左侧项目树 -->
-    <a-col :span="sidebarExpanded ? 8 : 0" class="sidebar-container">
+    <a-col :span="sidebarExpanded ? 10 : 0" class="sidebar-container">
       <a-card title="项目列表" class="project-list">
         <template #extra>
           <a-button type="primary" size="small" style="margin-right: 5px" @click="handleAddRoot">
@@ -58,7 +58,7 @@
     </a-col>
 
     <!-- 右侧甘特图 -->
-    <a-col :span="sidebarExpanded ? 16 : 24" class="gantt-container-col">
+    <a-col :span="sidebarExpanded ? 14 : 24" class="gantt-container-col">
       <a-card :title="`排期进度 - ${selectedProject?.title || '未选择项目'}`" class="main-content-card">
         <template #extra>
           <a-select
@@ -380,7 +380,7 @@ function toggleSidebar() {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .project-list {
