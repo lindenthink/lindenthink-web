@@ -1,7 +1,17 @@
 <template>
-  <a-row :gutter="24">
+  <a-row :gutter="24" class="gantt-main-container">
+    <!-- 侧边栏展开/收起控制按钮 -->
+    <div class="sidebar-toggle" @click="toggleSidebar">
+      <template v-if="sidebarExpanded">
+        <menu-fold-outlined />
+      </template>
+      <template v-else>
+        <menu-unfold-outlined />
+      </template>
+    </div>
+    
     <!-- 左侧项目树 -->
-    <a-col :span="8">
+    <a-col :span="sidebarExpanded ? 8 : 0" class="sidebar-container">
       <a-card title="项目列表" class="project-list">
         <template #extra>
           <a-button type="primary" size="small" style="margin-right: 5px" @click="handleAddRoot">
@@ -48,8 +58,8 @@
     </a-col>
 
     <!-- 右侧甘特图 -->
-    <a-col :span="16">
-      <a-card :title="`排期进度 - ${selectedProject?.title || '未选择项目'}`">
+    <a-col :span="sidebarExpanded ? 16 : 24" class="gantt-container-col">
+      <a-card :title="`排期进度 - ${selectedProject?.title || '未选择项目'}`" class="main-content-card">
         <template #extra>
           <a-select
             v-model:value="selectedAssignees"
@@ -175,12 +185,15 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import dayjs from 'dayjs'
 import minMax from 'dayjs/plugin/minMax'
-import { DeleteOutlined, PlusOutlined, EditOutlined, RestOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, PlusOutlined, EditOutlined, RestOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons-vue'
 import useProjects from '@/composables/useProjects'
 
 dayjs.extend(minMax)
 
 const formRef = ref(null)
+
+// 侧边栏展开状态
+const sidebarExpanded = ref(true)
 
 const selectedProject = ref(null)
 const showModal = ref(false)
@@ -354,6 +367,11 @@ function handleRestore(item) {
 function deleteFromTrash(item) {
   projectService.deleteFromTrash(item)
 }
+
+// 切换侧边栏展开/收起
+function toggleSidebar() {
+  sidebarExpanded.value = !sidebarExpanded.value
+}
 </script>
 
 <style scoped>
@@ -512,5 +530,42 @@ function deleteFromTrash(item) {
 .progress-text {
   color: #52c41a;
   margin-left: 4px;
+}
+
+/* 侧边栏展开/收起相关样式 */
+.gantt-main-container {
+  position: relative;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  left: 12px;
+  top: 18px;
+  z-index: 100;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: left 0.3s;
+}
+
+.sidebar-toggle:hover {
+  border-color: #40a9ff;
+  color: #40a9ff;
+}
+
+.sidebar-container {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.gantt-container-col {
+  transition: all 0.3s ease;
 }
 </style>
