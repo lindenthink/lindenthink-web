@@ -86,7 +86,13 @@
               >
                 <div class="info-columns">
                   <div class="info-cell task-info">
-                    {{ item.level === 1 ? '' : item.assignees.join(', ') + '：' }}{{ item.title }}({{ item.progress }}%)
+                    <template v-if="item.level !== 1">
+                      <span class="assignee-text">{{ item.assignees.join(', ') }}</span><span class="assignee-colon">：</span>
+                    </template>
+                    <!-- 第1级标题加粗 -->
+                    <span v-if="item.level === 1" class="lv1">{{ item.title }}</span>
+                    <span v-else>{{ item.title }}</span>
+                    <span class="progress-text">({{ item.progress }}%)</span>
                   </div>
                 </div>
                 <div class="task-bar">
@@ -120,9 +126,9 @@
       :title="`${formData.id ? '编辑' : '新建'}${formData.level === 1 ? '项目' : '任务'}`"
       @ok="handleSave"
     >
-      <a-form layout="vertical">
-        <a-form-item label="任务名称" required>
-          <a-input v-model:value="formData.title" />
+      <a-form layout="vertical" :model="formData" ref="formRef">
+        <a-form-item label="任务名称" name="title" :rules="[{ required: true, message: '请输入任务名称' }, {max: 20, message: '最多输入20个字符'}]">
+          <a-input v-model:value="formData.title" :maxlength="20" showCount />
         </a-form-item>
         <a-form-item label="日期范围" required>
           <a-range-picker v-model:value="dateRange" :disabled-date="disabledDate" />
@@ -174,6 +180,8 @@ import useProjects from '@/composables/useProjects'
 
 dayjs.extend(minMax)
 
+const formRef = ref(null)
+
 const selectedProject = ref(null)
 const showModal = ref(false)
 const formData = ref({})
@@ -184,7 +192,8 @@ const showTrash = ref(false)
 // 使用项目服务
 const projectService = useProjects()
 const projects = computed(() => projectService.projects.value)
-const { CELL_WIDTH, ROW_HEIGHT } = projectService
+const { CELL_WIDTH } = projectService
+const INFO_WIDTH = 200
 
 // 计算属性
 const timeline = computed(() => {
@@ -203,8 +212,7 @@ const scrollToToday = () => {
   nextTick(() => {
     const container = document.querySelector('.gantt-body')
     if (!container) return
-
-    const scrollLeft = todayIndex.value * CELL_WIDTH - container.clientWidth / 2 + 180
+    const scrollLeft = todayIndex.value * CELL_WIDTH - container.clientWidth / 2 + INFO_WIDTH
     container.scrollTo({
       left: Math.max(0, scrollLeft),
       behavior: 'smooth',
@@ -253,7 +261,6 @@ const assigneeOptions = computed(() => {
   return [...new Set(allAssignees)].map((a) => ({ label: a, value: a }))
 })
 
-// 初始化表单数据
 function initFormData() {
   return projectService.initFormData()
 }
@@ -262,7 +269,6 @@ function handleSelectProject(keys, { node }) {
   const task = node.dataRef
   selectedProject.value = task
 
-  // 初始化编辑表单
   if (task.id) {
     formData.value = {
       ...task,
@@ -273,7 +279,7 @@ function handleSelectProject(keys, { node }) {
 }
 
 function handleAddRoot() {
-  formData.value = initFormData() // 重置表单数据
+  formData.value = initFormData()
   formData.value.assignees = ['全员']
   dateRange.value = [dayjs(), dayjs().add(1, 'day')]
   showModal.value = true
@@ -290,6 +296,7 @@ function handleAddChild(parent) {
 }
 
 async function handleSave() {
+  await formRef.value.validate()
   const newItem = await projectService.saveProject(formData.value, dateRange.value)
   if (newItem) {
     selectedProject.value = newItem
@@ -299,22 +306,17 @@ async function handleSave() {
 
 function handleDelete(node) {
   projectService.deleteProject(node)
-
   // 强制刷新选中项目
   if (selectedProject.value?.id === node.id) {
     selectedProject.value = projects.value.saved[0] || null
   }
 }
 
-
-
 function resetForm() {
   showModal.value = false
   formData.value = initFormData()
   dateRange.value = []
 }
-
-
 
 function getRowStyle(item, index) {
   if (!selectedProject.value?.startDate) return { display: 'none' }
@@ -349,7 +351,6 @@ function handleRestore(item) {
   projectService.restoreProject(item)
 }
 
-// 彻底删除
 function deleteFromTrash(item) {
   projectService.deleteFromTrash(item)
 }
@@ -384,7 +385,7 @@ function deleteFromTrash(item) {
   color: rgb(95, 94, 94);
   position: sticky;
   top: 0;
-  background: white;
+  background: #fafafa;
   z-index: 2;
   overflow: hidden;
   border-bottom: 2px solid #f0f0f0;
@@ -394,7 +395,7 @@ function deleteFromTrash(item) {
   display: flex;
   height: 40px;
   background: #fafafa;
-  margin-left: 180px;
+  margin-left: calc(v-bind(INFO_WIDTH + 'px') + 60px);
 }
 
 .time-cell {
@@ -439,7 +440,7 @@ function deleteFromTrash(item) {
   min-width: 100%;
   position: relative;
   z-index: 1;
-  margin-left: 180px;
+  margin-left: calc(v-bind(INFO_WIDTH + 'px') + 60px);
   height: 24px;
   background: rgba(24, 144, 255, 0.1);
   border-radius: 4px;
@@ -463,32 +464,53 @@ function deleteFromTrash(item) {
 
 .info-columns {
   position: absolute;
-  left: 0;
-  width: 180px;
+  left: 60px;
   display: flex;
   z-index: 3;
   background: white;
-  border-right: 1px solid #f0f0f0;
   font-size: 12px;
 }
 
 .info-cell {
+  background: white;
   display: flex;
-  padding: 0 5px;
+  padding: 0 5px 0 0;
   line-height: 40px;
   align-items: center;
   justify-content: right;
   white-space: nowrap;
   text-overflow: ellipsis;
+  font-size: 12px;
 
   &.task-info {
-    width: 180px;
-    font-weight: 500;
+    width: v-bind(INFO_WIDTH + 'px');
+    .lv1 {
+      font-weight: 500;
+    }
+    font-weight: 400;
   }
 
   &.task-title {
     justify-content: center;
     background: #fafafa;
   }
+}
+
+.assignee-text {
+  color: #1890ff;
+}
+
+.assignee-colon {
+  color: #8c8c8c;
+}
+
+.task-title-text {
+  color: #262626;
+  font-weight: 500;
+}
+
+.progress-text {
+  color: #52c41a;
+  margin-left: 4px;
 }
 </style>

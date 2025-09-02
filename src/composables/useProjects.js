@@ -8,13 +8,11 @@ let instance = null
 
 // 创建项目服务
 function createProjectsService() {
-  // 项目数据
   const projects = ref({
     saved: [],
     deleted: []
   })
 
-  // 日期模式
   const datePattern = 'YYYY-MM-DD'
 
   // 配置参数
@@ -100,13 +98,7 @@ function createProjectsService() {
   }
 
   // 验证表单
-  const validateForm = (formData, dateRange, parentId) => {
-    // 基础验证
-    if (!formData.title?.trim()) {
-      message.error('任务名称不能为空')
-      return false
-    }
-
+  const validateForm = (dateRange, parentId) => {
     if (!dateRange[0] || !dateRange[1]) {
       message.error('请选择完整的时间范围')
       return false
@@ -148,7 +140,7 @@ function createProjectsService() {
 
   // 保存项目或任务
   const saveProject = async (formData, dateRange) => {
-    if (!validateForm(formData, dateRange, formData.parentId)) return false
+    if (!validateForm(dateRange, formData.parentId)) return false
 
     const isEditMode = !!formData.id
     const newItem = {
@@ -257,7 +249,7 @@ function createProjectsService() {
       left: `${startOffset}px`,
       position: 'absolute',
       top: `${ROW_HEIGHT * index}px`,
-      backgroundColor: item.level === 1 ? '#fafafa' : 'transparent',
+      color: item.level === 1 ? '#1890ff' : 'black',
     }
   }
 
