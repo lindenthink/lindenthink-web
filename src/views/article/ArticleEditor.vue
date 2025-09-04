@@ -39,7 +39,7 @@
                                 <a-form-item name="categoryId" label="所属分类" :label-col="{ span: 9 }"
                                     :wrapper-col="{ span: 15 }">
                                     <a-tree-select v-model:value="articleForm.categoryId" :tree-data="categoryTree"
-                                        placeholder="请选择分类" show-search filterTreeNode />
+                                        placeholder="请选择分类" filterTreeNode allow-clear />
                                 </a-form-item>
                             </a-col>
                             <a-col :span="6">
@@ -276,22 +276,26 @@ async function initArticle() {
 
 onMounted(() => {
     initArticle()
-    fetchSeries()
-    fetchCategories()
+    loadCategoriesAndSeries()
 })
 
-async function fetchSeries() {
-    try {
-        const data = await querySeries()
-        // 转换数据格式以适应Select组件
-        seriesList.value = data.map(item => ({
+async function loadCategoriesAndSeries() {
+  try {
+    // 并行获取分类和系列数据
+    const [categoryData, seriesData] = await Promise.all([
+      queryCategory(),
+      querySeries()
+    ])
+    
+    categoryTree.value = categoryData || []
+    seriesList.value = seriesData.map(item => ({
             id: item.id,
             name: item.content
         }))
-    } catch (error) {
-        console.error('获取系列数据失败:', error)
-        message.error('获取系列数据失败，请刷新页面重试')
-    }
+  } catch (error) {
+    console.error('加载分类和系列数据失败:', error)
+    message.error('加载筛选数据失败')
+  }
 }
 
 async function handleSubmit() {
@@ -412,16 +416,6 @@ const insertStrikeThrough = () => {
 const insertTimeline = () => {
     const timelineSyntax = '[timeline]\n2023-08:: 实现 Vue3 迁移\n2023-12:: 发布 1.0 版本\n2024-04:: 新增 2.0 版本\n';
     insertAtCursor(timelineSyntax);
-}
-
-async function fetchCategories() {
-    try {
-        const data = await queryCategory()
-        categoryTree.value = data
-    } catch (error) {
-        console.error('获取分类数据失败:', error)
-        message.error('获取分类数据失败，请刷新页面重试')
-    }
 }
 </script>
 

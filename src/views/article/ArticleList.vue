@@ -1,4 +1,29 @@
 <template>
+  <!-- 筛选条件区域，仅登录用户可见 -->
+  <div v-if="currentUser" class="filter-container">
+    <a-row :gutter="[16, 16]" justify="start" align="middle">
+      <a-col><a-checkbox v-model:checked="filterOptions.onlyMine" @change="handleFilterChange">我的</a-checkbox></a-col>
+      <a-col>
+        <a-tree-select v-model:value="filterOptions.categoryId" :tree-data="categoryTree" placeholder="请选择分类"
+          style="min-width: 120px" @change="handleFilterChange" allow-clear />
+      </a-col>
+      <a-col>
+        <a-select v-model:value="filterOptions.seriesId" placeholder="请选择系列" style="width: 120px"
+          @change="handleFilterChange" allow-clear>
+          <a-select-option v-for="series in seriesList" :key="series.id" :value="series.id">{{ series.name
+          }}</a-select-option>
+        </a-select>
+      </a-col>
+      <a-col v-if="filterOptions.onlyMine">
+        <a-select v-model:value="filterOptions.state" placeholder="请选择状态" style="width: 120px"
+          @change="handleFilterChange" allow-clear>
+          <a-select-option value="INIT">未发布</a-select-option>
+          <a-select-option value="APPROVED">已发布</a-select-option>
+        </a-select>
+      </a-col>
+    </a-row>
+  </div>
+
   <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="articles" :loading="loading">
     <template #renderItem="{ item }">
       <a-list-item key="item.title" :class="{ 'article-item': true, 'hovered': currentHoverItem === item.id }"
@@ -16,21 +41,21 @@
             </span>
           </template>
           <template #title>
-              <router-link :to="{ path: `/articles/${item.id}` }"> {{ item.title }} </router-link>
-              <span v-if="currentUser && currentUser.id === item.userId" class="status-tag"
-                :class="item.isPublic ? 'published' : 'unpublished'">
-                {{ item.isPublic ? '已发布' : '未发布' }}
-              </span>
-              <span v-if="currentUser && currentUser.id === item.userId && currentHoverItem === item.id"
-                class="action-buttons">
-                <a-button type="link" size="small" @click.stop="handleEdit(item.id)">
-                  <EditOutlined />
-                </a-button>
-                <a-button type="link" size="small" @click.stop="handleDelete(item.id)" danger>
-                  <DeleteOutlined />
-                </a-button>
-              </span>
-            </template>
+            <router-link :to="{ path: `/articles/${item.id}` }"> {{ item.title }} </router-link>
+            <span v-if="currentUser && currentUser.id === item.userId" class="status-tag"
+              :class="item.state === 'APPROVED' ? 'published' : 'unpublished'">
+              {{ item.state === 'APPROVED' ? '已发布' : '未发布' }}
+            </span>
+            <span v-if="currentUser && currentUser.id === item.userId && currentHoverItem === item.id"
+              class="action-buttons">
+              <a-button type="link" size="small" @click.stop="handleEdit(item.id)">
+                <EditOutlined />
+              </a-button>
+              <a-button type="link" size="small" @click.stop="handleDelete(item.id)" danger>
+                <DeleteOutlined />
+              </a-button>
+            </span>
+          </template>
           <template #avatar><a-avatar :src="item.avatar" /></template>
         </a-list-item-meta>
         {{ item.outline }}
@@ -61,6 +86,7 @@ import { EyeOutlined, HeartOutlined, MessageOutlined, CalendarOutlined, EditOutl
 import { ref, onBeforeMount } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 import { queryArticles, deleteArticle } from '@/services/articleService'
+import { queryCategory, querySeries } from '@/services/materialService'
 import dayjs from 'dayjs'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
@@ -73,6 +99,18 @@ const router = useRouter()
 const userStore = useUserStore()
 const currentUser = ref(null)
 
+// 筛选选项
+const filterOptions = ref({
+  onlyMine: false,
+  categoryId: null,
+  seriesId: null,
+  state: null
+})
+
+// 分类和系列列表
+const categoryTree = ref([])
+const seriesList = ref([])
+
 const pagination = {
   onChange: async (page) => {
     handlePageChange(page)
@@ -81,14 +119,42 @@ const pagination = {
 }
 
 onBeforeMount(async () => {
-  // 获取当前用户信息
   currentUser.value = userStore.userInfo
+  if (currentUser.value) {
+    await loadCategoriesAndSeries()
+  }
   handlePageChange(1)
 })
 
+async function loadCategoriesAndSeries() {
+  try {
+    // 并行获取分类和系列数据
+    const [categoryData, seriesData] = await Promise.all([
+      queryCategory(),
+      querySeries()
+    ])
+
+    categoryTree.value = categoryData || []
+    seriesList.value = seriesData.map(item => ({
+      id: item.id,
+      name: item.content
+    }))
+  } catch (error) {
+    console.error('加载分类和系列数据失败:', error)
+    message.error('加载筛选数据失败')
+  }
+}
+
 function handlePageChange(page) {
   loading.value = true
-  queryArticles({ pagination: { ...pagination, page } })
+
+  queryArticles({
+    pagination: { ...pagination, page },
+    data: {
+      ...filterOptions.value,
+      state: filterOptions.value.state === '' ? null : filterOptions.value.state
+    }
+  })
     .then((res) => {
       articles.value = res.data
       pagination.total = res.pagination.total
@@ -101,6 +167,11 @@ function handlePageChange(page) {
     .finally(() => {
       loading.value = false
     })
+}
+
+function handleFilterChange() {
+  // 重置到第一页
+  handlePageChange(1)
 }
 
 function handleMouseEnter(id) {
@@ -149,6 +220,12 @@ async function handleDelete(id) {
   text-align: center;
   padding-bottom: 10px;
   margin-top: 24px;
+}
+
+.filter-container {
+  padding: 10px;
+  margin-bottom: 16px;
+  background-color: #f7f7f7;
 }
 
 .article-item {

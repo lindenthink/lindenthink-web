@@ -58,8 +58,8 @@
 
         <div class="article">
           <div class="article-status" v-if="currentUser && currentUser.id == article.userId">
-            <a-tag :color="article.isPublic ? 'green' : 'red'" style="margin-right: 5px;">
-              {{ article.isPublic ? '已发布' : '未发布' }}
+            <a-tag :color="article.state === 'APPROVED' ? 'green' : 'red'" style="margin-right: 5px;">
+              {{ article.state === 'APPROVED' ? '已发布' : '未发布' }}
             </a-tag>
             <a-button size="small" @click="handleEdit" style="margin-left: 5px;">
               编辑
