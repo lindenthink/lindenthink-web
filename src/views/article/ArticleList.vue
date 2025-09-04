@@ -2,8 +2,10 @@
   <!-- 筛选条件区域，仅登录用户可见 -->
   <div v-if="currentUser" class="filter-container">
     <a-row :gutter="[16, 16]" justify="start" align="middle">
-      <a-col><a-checkbox v-model:checked="filterOptions.onlyMine" @change="handleFilterChange">我的</a-checkbox></a-col>
-      <a-col>
+      <a-col><a-checkbox v-model:checked="filterOptions.onlyMine" @change="handleOnlyMineChange">我的</a-checkbox></a-col>
+      <a-col><a-checkbox v-model:checked="filterOptions.myLike" @change="handleMyLikeChange">我喜欢的</a-checkbox></a-col>
+      <template v-if="filterOptions.onlyMine">
+        <a-col>
         <a-tree-select v-model:value="filterOptions.categoryId" :tree-data="categoryTree" placeholder="请选择分类"
           style="min-width: 120px" @change="handleFilterChange" allow-clear />
       </a-col>
@@ -14,13 +16,14 @@
           }}</a-select-option>
         </a-select>
       </a-col>
-      <a-col v-if="filterOptions.onlyMine">
+      <a-col>
         <a-select v-model:value="filterOptions.state" placeholder="请选择状态" style="width: 120px"
           @change="handleFilterChange" allow-clear>
           <a-select-option value="INIT">未发布</a-select-option>
           <a-select-option value="APPROVED">已发布</a-select-option>
         </a-select>
       </a-col>
+      </template>
     </a-row>
   </div>
 
@@ -102,6 +105,7 @@ const currentUser = ref(null)
 // 筛选选项
 const filterOptions = ref({
   onlyMine: false,
+  myLike: false,
   categoryId: null,
   seriesId: null,
   state: null
@@ -174,6 +178,20 @@ function handleFilterChange() {
   handlePageChange(1)
 }
 
+function handleOnlyMineChange() {
+  if (filterOptions.value.onlyMine) {
+    filterOptions.value.myLike = false
+  }
+  handlePageChange(1)
+}
+
+function handleMyLikeChange() {
+  if (filterOptions.value.myLike) {
+    filterOptions.value.onlyMine = false
+  }
+  handlePageChange(1)
+}
+
 function handleMouseEnter(id) {
   currentHoverItem.value = id
 }
@@ -224,8 +242,7 @@ async function handleDelete(id) {
 
 .filter-container {
   padding: 10px;
-  margin-bottom: 16px;
-  background-color: #f7f7f7;
+  border-bottom: 1px solid #e8e8e8;
 }
 
 .article-item {
