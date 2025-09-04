@@ -85,7 +85,7 @@
   <a-modal v-model:visible="showEdit" :title="isNew ? '新增待办' : '编辑待办'" @ok="saveTodo">
     <a-form ref="formRef" layout="vertical" :model="editingTodo">
       <a-form-item label="事项内容" name="text" :rules="[{ required: true, message: '请输入事项内容' }]">
-        <a-textarea v-model:value="editingTodo.text" placeholder="输入待办事项内容" />
+        <a-textarea v-model:value="editingTodo.text" placeholder="输入待办事项内容" :maxlength="200" show-count />
       </a-form-item>
       <a-form-item label="截止时间" name="dueDate" :rules="[{ required: true, message: '请选择截止时间' }]">
         <a-date-picker v-model:value="editingTodo.dueDate" show-time :format="datePattern" />

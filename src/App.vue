@@ -21,7 +21,7 @@
           </div>
           <div class="search-wrapper">
             <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..." style="max-width: 300px" allow-clear
-              @search="handleSearch" @blur="handleSearchBlur" />
+              @search="handleSearch" @blur="handleSearchBlur" :maxlength="20"/>
             <div v-if="showResults" class="search-results">
               <a-spin v-if="searchLoading" />
               <template v-else>

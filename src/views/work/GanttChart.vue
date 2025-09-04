@@ -137,7 +137,7 @@
       @ok="handleSave"
     >
       <a-form layout="vertical" :model="formData" ref="formRef">
-        <a-form-item label="任务名称" name="title" :rules="[{ required: true, message: '请输入任务名称' }, {max: 20, message: '最多输入20个字符'}]">
+        <a-form-item label="任务名称" name="title" :rules="[{ required: true, message: '请输入任务名称' }]">
           <a-input v-model:value="formData.title" :maxlength="20" showCount />
         </a-form-item>
         <a-form-item label="日期范围" required>

@@ -32,7 +32,7 @@
                             <a-col :span="6">
                                 <a-form-item name="title" label="文章标题" :label-col="{ span: 9 }"
                                     :wrapper-col="{ span: 15 }">
-                                    <a-input v-model:value="articleForm.title" placeholder="请输入文章标题" :max-length="64" />
+                                    <a-input v-model:value="articleForm.title" placeholder="请输入文章标题" :maxlength="32" />
                                 </a-form-item>
                             </a-col>
                             <a-col :span="6">
@@ -77,7 +77,7 @@
                                             {{ tag }}
                                         </a-tag>
                                         <a-input v-model:value="newTag" placeholder="输入标签并按回车"
-                                            :style="{ width: '140px' }" @press-enter="addTag" />
+                                            :style="{ width: '140px' }" @press-enter="addTag" :maxlength="10" />
                                     </a-space>
                                 </a-form-item>
                             </a-col>
@@ -90,15 +90,15 @@
                             <a-col :span="6" v-if="articleForm.type === 'REPRINT'">
                                 <a-form-item name="origin" label="转载来源" :label-col="{ span: 9 }"
                                     :wrapper-col="{ span: 15 }">
-                                    <a-input v-model:value="articleForm.origin" placeholder="输入转载地址" />
+                                    <a-input v-model:value="articleForm.origin" placeholder="输入转载地址" :maxlength="200" />
                                 </a-form-item>
                             </a-col>
                         </a-row>
 
                         <a-form-item name="outline" label="文章简介" :label-col="{ span: 2 }"
                             :wrapper-col="{ span: 22 }">
-                            <a-textarea v-model:value="articleForm.outline" placeholder="请输入文章简介（非必填，最多200字符）"
-                                :max-length="200" :rows="2" />
+                            <a-textarea v-model:value="articleForm.outline" placeholder="请输入文章简介"
+                                :maxlength="200"  show-count />
                         </a-form-item>
 
                         <a-form-item name="content" label="文章内容" :label-col="{ span: 2 }"
@@ -115,7 +115,7 @@
                             </div>
                             <a-textarea v-model:value="articleForm.content"
                                 placeholder="请使用AsciiDoc格式编写文章内容，支持PlantUML！" :rows="15"
-                                :style="{ fontFamily: 'monospace' }" ref="contentTextarea" />
+                                :style="{ fontFamily: 'monospace' }" ref="contentTextarea" show-count :maxlength="20000" />
                             <p class="editor-hint">支持AsciiDoc格式语法，点击上方"预览"按钮查看效果</p>
                         </a-form-item>
                     </a-form>
@@ -467,7 +467,7 @@ const insertTimeline = () => {
 
 /* 编辑器工具栏 */
 .editor-toolbar {
-    margin-bottom: 1px;
+    margin: 5px 0 1px 0;
     display: flex;
     gap: 5px;
     padding: 8px 12px;
