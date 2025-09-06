@@ -16,6 +16,11 @@ export async function queryActions(data) {
   })
 }
 
+export async function queryActionsByType(type) {
+  const fetch = useApiFetch()
+  return await fetch(`/action/${type}`)
+}
+
 export async function deleteAction(type, id) {
   const fetch = useApiFetch()
   return await fetch(`/action/${type}/${id}`, {

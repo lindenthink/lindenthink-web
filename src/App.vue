@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-v-html -->
 <template class="app">
-  <AudioPlayer v-if="audioPlayerEnabled" :id="playlistId" />
+  <AudioPlayer v-if="systemSettings.audioPlayerEnabled" :id="playlistId" />
   <a-config-provider :locale="locale">
     <a-back-top :visibility-height="200" />
     <a-layout>
@@ -21,7 +21,7 @@
           </div>
           <div class="search-wrapper">
             <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..." style="max-width: 300px" allow-clear
-              @search="handleSearch" @blur="handleSearchBlur" :maxlength="20"/>
+              @search="handleSearch" @blur="handleSearchBlur" :maxlength="20" />
             <div v-if="showResults" class="search-results">
               <a-spin v-if="searchLoading" />
               <template v-else>
@@ -46,17 +46,56 @@
               </template>
             </div>
           </div>
-          <a-tooltip>
-            <template #title>
-              <span>写作</span>
-            </template>
-            <a-button v-if="isLoggedIn" shape="circle" @click="router.push('/articles/editor/0')"
-              style="margin-right: 16px">
-              <template #icon>
-                <EditOutlined />
+          <div v-if="isLoggedIn">
+            <a-tooltip>
+              <template #title>
+                <span>写作</span>
               </template>
-            </a-button>
-          </a-tooltip>
+              <a-button shape="circle" @click="router.push('/articles/editor/0')" style="margin-right: 16px"
+                class="writing-button" size="large" >
+                <template #icon>
+                  <icon-font type="icon-xiezuo" />
+                </template>
+              </a-button>
+            </a-tooltip>
+            <!-- 消息通知按钮 -->
+            <a-dropdown>
+              <a-badge :count="unreadMessageCount" :offset="[-20, 0]">
+              <a-button shape="circle" style="margin-right: 16px; position: relative;"
+                :class="{ 'has-notification': unreadMessageCount > 0 }" size="large" >
+                <BellOutlined />
+              </a-button>
+              </a-badge>
+              <template #overlay>
+                <div class="message-dropdown-container">
+                  <div v-if="messages.length === 0" class="empty-message">
+                    暂无消息通知
+                  </div>
+                  <template v-else>
+                    <div v-for="msg in messages" :key="msg.id" :class="['message-item', { 'unread': !msg.isRead }]">
+                      <div class="message-content-wrapper">
+                        <div v-if="msg.url" @click.stop="handleMessageClick(msg)" class="message-content-link">
+                          {{ msg.content }}
+                        </div>
+                        <div v-else class="message-content-text">
+                          {{ msg.content }}
+                        </div>
+                        <div class="message-footer">
+                          <div class="message-time">
+                            {{ msg.createTime.fromNow() }}
+                          </div>
+                          <a-button v-if="!msg.isRead" size="small" type="text" class="mark-read-button"
+                            @click.stop="markMessageAsRead(msg)">
+                            已读
+                          </a-button>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </template>
+            </a-dropdown>
+          </div>
           <a-dropdown>
             <a style="margin-right: 2em" @click.prevent>
               <template v-if="!isLoggedIn">
@@ -67,7 +106,7 @@
                 </a-avatar>
               </template>
               <template v-else-if="userInfo?.avatar">
-                <a-avatar :size="32" :src="userInfo.avatar" alt="用户头像" />
+                <a-avatar :size="40" :src="userInfo.avatar" alt="用户头像" />
               </template>
               <template v-else>
                 <a-avatar :size="32" style="background-color: #1890ff">
@@ -116,7 +155,7 @@
       </a-layout-content>
 
       <a-layout-footer>
-        <template v-if="!audioPlayerEnabled">
+        <template v-if="!systemSettings.audioPlayerEnabled">
           <div>菩提思 ©2023-{{ new Date().getFullYear() }} 版权所有</div>
           <div>
             <a href="/about" target="_blank">关于本站</a>
@@ -135,26 +174,27 @@
         <h4>音频播放器设置</h4>
         <div class="setting-item">
           <span class="setting-label">启用音乐播放器</span>
-          <a-switch v-model:checked="audioPlayerEnabled" size="small" />
+          <a-switch v-model:checked="systemSettings.audioPlayerEnabled" size="small" />
         </div>
         <div class="setting-item">
           <span class="setting-label">网易云音乐列表ID</span>
-          <a-input v-model:value="playlistId" placeholder="输入播放列表ID" :disabled="!audioPlayerEnabled" />
+          <a-input v-model:value="systemSettings.audioPlayerId" placeholder="输入播放列表ID"
+            :disabled="!systemSettings.audioPlayerEnabled" />
         </div>
       </div>
-      
+
       <div class="setting-section">
         <h4>工作台配置</h4>
         <div class="setting-item">
           <span class="setting-label">自动同步待办</span>
-          <a-switch v-model:checked="syncTodosEnabled" size="small" />
+          <a-switch v-model:checked="systemSettings.syncTodosEnabled" size="small" />
         </div>
         <div class="setting-item">
           <span class="setting-label">自动同步项目</span>
-          <a-switch v-model:checked="syncProjectsEnabled" size="small" />
+          <a-switch v-model:checked="systemSettings.syncProjectsEnabled" size="small" />
         </div>
       </div>
-      
+
       <div class="drawer-actions">
         <a-button @click="showSettingsDrawer = false" size="small">取消</a-button>
         <a-button type="primary" @click="saveSettings" size="small">保存</a-button>
@@ -164,11 +204,14 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch, computed } from 'vue'
+import { onMounted, ref, watch, computed, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { UserOutlined, EditOutlined } from '@ant-design/icons-vue'
+import { UserOutlined, BellOutlined, createFromIconfontCN } from '@ant-design/icons-vue'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import { useMediaQuery, useDebounceFn } from '@vueuse/core'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/zh-cn'
 import { message } from 'ant-design-vue'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
@@ -179,6 +222,14 @@ import { searchArticles } from '@/services/articleService'
 import tools from '@/services/toolData'
 import useTodos from '@/composables/useTodos'
 import AudioPlayer from '@/components/AudioPlayer.vue'
+import { queryActionsByType, saveAction } from '@/services/actionService'
+
+const IconFont = createFromIconfontCN({
+  scriptUrl: '//at.alicdn.com/t/c/font_5014425_5vgj3xdawbb.js',
+});
+
+dayjs.locale('zh-cn')
+dayjs.extend(relativeTime)
 
 const locale = zhCN
 const theam = 'light'
@@ -201,18 +252,16 @@ const showResults = ref(false)
 // 系统设置相关变量
 const showSettingsDrawer = ref(false)
 const savedSettings = localStorage.getItem('systemSettings')
-const initialSettings = savedSettings ? JSON.parse(savedSettings) : {}
-const audioPlayerEnabled = ref(
-  initialSettings.audioPlayerEnabled !== undefined ? initialSettings.audioPlayerEnabled : false,
-)
-const playlistId = ref(initialSettings.audioPlayerId || '6991674483')
-// 工作台同步设置
-const syncTodosEnabled = ref(
-  initialSettings.syncTodosEnabled !== undefined ? initialSettings.syncTodosEnabled : false,
-)
-const syncProjectsEnabled = ref(
-  initialSettings.syncProjectsEnabled !== undefined ? initialSettings.syncProjectsEnabled : false,
-)
+const systemSettings = reactive(savedSettings ? JSON.parse(savedSettings) : {
+  audioPlayerEnabled: false,
+  audioPlayerId: '6991674483',
+  syncTodosEnabled: false,
+  syncProjectsEnabled: false,
+})
+
+// 消息通知相关变量
+const unreadMessageCount = ref(0) // 未读消息数量
+const messages = ref([]) // 消息列表
 
 onMounted(() => {
   // 监听路由变化
@@ -234,6 +283,11 @@ onMounted(() => {
   }
   // 初始化待办事项通知服务
   useTodos()
+
+  // 初始化消息通知
+  if (isLoggedIn.value) {
+    initMessages()
+  }
 })
 
 const handleMenuClick = ({ key }) => {
@@ -243,7 +297,6 @@ const handleMenuClick = ({ key }) => {
     drawerVisible.value = false
   }
 }
-
 
 const handleLoginSuccess = (loginUserInfo) => {
   userStore.login(loginUserInfo)
@@ -255,6 +308,60 @@ const handleLogout = () => {
   userStore.logout()
   message.success('已退出登录')
   window.location.reload()
+}
+
+// 初始化消息通知
+async function initMessages() {
+  await fetchMessages()
+  // 定时检查新消息
+  setInterval(async () => {
+    if (isLoggedIn.value) {
+      await fetchMessages()
+    }
+  }, 60000)
+}
+
+async function fetchMessages() {
+  try {
+    const res = await queryActionsByType('MESSAGE')
+    messages.value = res.data.map(item => ({
+      ...JSON.parse(item.content),
+      id: item.id,
+      url: item.url,
+      createTime: dayjs(item.created),
+    })) || []
+    unreadMessageCount.value = messages.value.filter(msg => !msg.isRead).length
+  } catch (error) {
+    console.error('获取未读消息失败:', error)
+    message.error('获取未读消息失败')
+  }
+}
+
+async function markMessageAsRead(message) {
+  try {
+    message.isRead = true
+    await saveAction({
+      id: message.id,
+      type: 'MESSAGE',
+      content: JSON.stringify({
+        content: message.content,
+        isRead: true,
+      }),
+    })
+    unreadMessageCount.value = messages.value.filter(msg => !msg.isRead).length
+  } catch (error) {
+    console.error('标记消息为已读失败:', error)
+    message.error('标记消息为已读失败')
+  }
+}
+
+function handleMessageClick(message) {
+  if (!message.isRead) {
+    markMessageAsRead(message)
+  }
+  if (message.url) {
+    router.push(message.url)
+  }
 }
 
 const debouncedSearch = useDebounceFn(async (keyword) => {
@@ -365,14 +472,7 @@ const highlightKeywords = (text, keyword) => {
 
 // 保存系统设置
 const saveSettings = () => {
-  const settings = {
-    audioPlayerEnabled: audioPlayerEnabled.value,
-    audioPlayerId: playlistId.value,
-    // 工作台同步设置
-    syncTodosEnabled: syncTodosEnabled.value,
-    syncProjectsEnabled: syncProjectsEnabled.value,
-  }
-  localStorage.setItem('systemSettings', JSON.stringify(settings))
+  localStorage.setItem('systemSettings', JSON.stringify(systemSettings))
   message.success('系统设置已保存')
   showSettingsDrawer.value = false
 }
@@ -587,4 +687,110 @@ const saveSettings = () => {
   gap: 10px;
   margin-top: 20px;
 }
+
+/* 消息通知样式 */
+.has-notification {
+  animation: notification-pulse 2s infinite;
+}
+
+/* 消息下拉框样式 */
+.message-dropdown-container {
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  margin-top: 14px;
+}
+
+/* 空消息提示 */
+.empty-message {
+  text-align: center;
+  padding: 16px;
+  color: #999;
+}
+
+/* 消息项样式 */
+.message-item {
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+
+  &.unread {
+    background-color: #e6f7ff;
+  }
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+  }
+}
+
+/* 消息内容容器 */
+.message-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 有URL的消息内容 */
+.message-content-link {
+  color: #1890ff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* 无URL的消息内容 */
+.message-content-text {
+  word-wrap: break-word;
+  cursor: default;
+}
+
+/* 消息底部 */
+.message-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+/* 消息时间 */
+.message-time {
+  font-size: 12px;
+  color: #999;
+}
+
+/* 已读按钮 */
+.mark-read-button {
+  font-size: 12px;
+  color: #fff;
+  background-color: #1890ff;
+  border-color: #1890ff;
+  padding: 2px 10px;
+  border-radius: 12px;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: #40a9ff;
+    border-color: #40a9ff;
+    color: #fff;
+  }
+}
+
+@keyframes notification-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 8px rgba(24, 144, 255, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0);
+  }
+}
+
 </style>
