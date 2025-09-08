@@ -33,10 +33,7 @@
         @mouseenter="handleMouseEnter(item.id)" @mouseleave="handleMouseLeave" @click="handleClick(item.id)">
         <a-list-item-meta>
           <template #description>
-            <span>
-              <EditOutlined style="margin-right: 8px" />
-              <UserCard :user-info="item">{{ item.author }}</UserCard>
-            </span>
+            <span><EditOutlined style="margin-right: 8px" />{{ item.author }}</span>
             <a-divider type="vertical"></a-divider>
             <span>
               <CalendarOutlined style="margin-right: 8px" />
@@ -59,7 +56,7 @@
               </a-button>
             </span>
           </template>
-          <template #avatar><a-avatar :src="item.avatar" /></template>
+          <template #avatar>  <UserCard :user-info="item"><a-avatar :src="item.avatar" /></UserCard></template>
         </a-list-item-meta>
         {{ item.outline }}
         <template #actions>
