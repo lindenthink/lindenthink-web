@@ -35,7 +35,7 @@
           <template #description>
             <span>
               <EditOutlined style="margin-right: 8px" />
-              {{ item.author }}
+              <UserCard :user-info="item">{{ item.author }}</UserCard>
             </span>
             <a-divider type="vertical"></a-divider>
             <span>
@@ -93,6 +93,7 @@ import { queryCategory, querySeries } from '@/services/materialService'
 import dayjs from 'dayjs'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import UserCard from '@/components/UserCard.vue'
 
 
 const articles = ref([])

@@ -88,7 +88,9 @@
             </div>
             <div class="article-head-meta">
               <EditOutlined style="margin-right: 5px" />
-              <span>作者：{{ article.author }}</span>
+              作者： <UserCard :user-info="authorInfo"> <span style="cursor: pointer; color: #1890ff;"> {{ article.author
+              }} </span>
+              </UserCard>
               <a-divider type="vertical"></a-divider>
               <CalendarOutlined style="margin-right: 5px" /><span>发表于：{{ dayjs(article.updated).format('YYYY-MM-DD')
               }}</span><a-divider type="vertical"></a-divider>
@@ -130,11 +132,7 @@
               <div v-else>
                 没有上一篇了
               </div>
-              <HeartAnimation
-                v-model="isLiked"
-                @change="handleLikeChange"
-                v-if="currentUser"
-              />
+              <HeartAnimation v-model="isLiked" @change="handleLikeChange" v-if="currentUser" />
               <div v-if="article.nextId">
                 <router-link :to="{ path: `/articles/${article.nextId}` }"> {{ article.nextTitle }} <right-outlined />
                 </router-link>
@@ -180,6 +178,7 @@ import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 import { getArticle, getSeriesArticles } from '@/services/articleService'
 import { saveAction, deleteAction } from '@/services/actionService'
 import HeartAnimation from '@/components/HeartAnimation.vue'
+import UserCard from '@/components/UserCard.vue'
 // import { TagColors, showMessage, bindTip } from '@/static/linden'
 
 const props = defineProps({
@@ -197,6 +196,7 @@ const viewerRef = ref()
 const activeKey = ref('toc')
 const userStore = useUserStore()
 const currentUser = ref(null)
+const authorInfo = ref({})
 
 onMounted(() => {
   currentUser.value = userStore.userInfo
@@ -237,6 +237,13 @@ const loadArticle = async (id) => {
     if (res) {
       article.value = res.data
       isLiked.value = article.value.likeId >= 0
+      authorInfo.value = {
+        userId: article.value.userId,
+        nickname: article.value.author,
+        avatar: article.value.avatar,
+        brief: article.value.brief,
+        email: article.value.email,
+      }
       await generateAnchors() // 生成目录锚点
       if (activeKey.value == 'series' && !article.value.seriesId) {
         activeKey.value = 'toc'

@@ -8,14 +8,16 @@
       </a-popconfirm>
     </template>
     <template #avatar>
-      <template v-if="data?.avatar">
-        <a-avatar :size="32" :src="data.avatar" alt="用户头像" />
-      </template>
-      <template v-else>
-        <a-avatar :size="32" :style="{ backgroundColor: getRandomColor(), color: '#fff' }">
-          {{ data?.nickname?.[0].toUpperCase() || 'U' }}
-        </a-avatar>
-      </template>
+      <UserCard :user-info="data">
+        <template v-if="data?.avatar">
+          <a-avatar :size="32" :src="data.avatar" alt="用户头像" style="cursor: pointer;" />
+        </template>
+        <template v-else>
+          <a-avatar :size="32" :style="{ backgroundColor: getRandomColor(), color: '#fff' }" style="cursor: pointer;">
+            {{ data?.nickname?.[0].toUpperCase() || 'U' }}
+          </a-avatar>
+        </template>
+      </UserCard>
     </template>
     <template #content>
       {{ data.content }}
@@ -30,6 +32,8 @@
 </template>
 
 <script setup>
+import UserCard from '@/components/UserCard.vue'
+
 defineProps({
   data: Object,
   deletable: Boolean,

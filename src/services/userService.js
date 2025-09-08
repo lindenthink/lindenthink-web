@@ -29,3 +29,8 @@ export async function updatePassword(data) {
 export async function uploadFile(data) {
   return await fetch('/user/upload/file', { method: 'POST', body: data, form: true })
 }
+
+// 获取用户信息
+export async function getUserInfo(userId) {
+  return await fetch(`/user/info/${userId}`, { method: 'GET' })
+}
