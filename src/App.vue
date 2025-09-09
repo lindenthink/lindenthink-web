@@ -714,12 +714,17 @@ const saveSettings = () => {
 /* 消息项样式 */
 .message-item {
   padding: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 0;
   border-radius: 6px;
   cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
 
   &.unread {
     background-color: #e6f7ff;
+  }
+
+  &:last-child {
+    border-bottom: none;
   }
 
   &:hover {
