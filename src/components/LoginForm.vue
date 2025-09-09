@@ -18,7 +18,10 @@
       <a-form-item name="captcha" label="验证码" :rules="[{ required: true, message: '请输入验证码' }]">
         <div class="captcha-container">
           <a-input style="width: 120px" v-model:value="formModel.captcha" />
-          <img :src="captchaUrl" alt="验证码" @click="refreshCaptcha" class="captcha-img" />
+          <div class="captcha-wrapper" @click="refreshCaptcha">
+            <img v-if="!captchaLoading && captchaUrl" :src="captchaUrl" alt="验证码" class="captcha-img" />
+            <a-spin v-else class="captcha-loading" />
+          </div>
         </div>
       </a-form-item>
       <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
@@ -42,7 +45,10 @@
       <a-form-item name="captcha" label="验证码" :rules="[{ required: true, message: '请输入验证码' }]">
         <div class="captcha-container">
           <a-input style="width: 120px" v-model:value="formModel.captcha" />
-          <img :src="captchaUrl" alt="验证码" @click="refreshCaptcha" class="captcha-img" />
+           <div class="captcha-wrapper" @click="refreshCaptcha">
+            <img v-if="!captchaLoading && captchaUrl" :src="captchaUrl" alt="验证码" class="captcha-img" />
+            <a-spin v-else class="captcha-loading" />
+          </div>
         </div>
       </a-form-item>
       <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
@@ -73,13 +79,17 @@ const formModel = reactive({
 const usernameInput = ref(null)
 const loginLoading = ref(false)
 const registerLoading = ref(false)
+const captchaLoading = ref(false)
 
 const refreshCaptcha = async () => {
+  captchaLoading.value = true
   try {
     captchaUrl.value = await getCaptcha()
   } catch (error) {
     console.error('获取验证码失败:', error)
     message.error('获取验证码失败: ' + error.message)
+  } finally {
+    captchaLoading.value = false
   }
 }
 
@@ -167,8 +177,23 @@ watch(activeKey, (key) => {
   align-items: center;
 }
 
-.captcha-img {
+.captcha-wrapper {
   margin-left: 10px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 32px;
+}
+
+.captcha-img {
+  max-width: 100px;
+  max-height: 32px;
+}
+
+.captcha-loading {
+  width: 100px;
+  height: 32px;
 }
 </style>
