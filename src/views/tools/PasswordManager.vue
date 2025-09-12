@@ -34,8 +34,14 @@
         <a-descriptions v-if="activeItem" bordered :column="1">
           <a-descriptions-item label="用户名">{{ activeItem.username }}</a-descriptions-item>
           <a-descriptions-item label="密码">
-            <span class="password-field">{{ activeItem.password }}</span>
-            <a-button type="link" @click="copyPassword(activeItem.password)">
+            <span class="password-field">
+              {{ showPassword ? activeItem.password : '********' }}
+            </span>
+            <a-button type="link" @click="togglePasswordVisibility">
+              <EyeInvisibleOutlined v-if="!showPassword" />
+              <EyeOutlined v-else />
+            </a-button>
+              <a-button type="link" @click="copyPassword(activeItem.password)">
               <copy-outlined />
             </a-button>
           </a-descriptions-item>
@@ -84,7 +90,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { message, Modal } from 'ant-design-vue'
-import { PlusOutlined, EditOutlined, DeleteOutlined, CopyOutlined } from '@ant-design/icons-vue'
+import { PlusOutlined, EditOutlined, DeleteOutlined, CopyOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons-vue'
 import CryptoJS from 'crypto-js'
 import { useUserStore } from '@/stores/user'
 import { save, remove, queryPasswords } from '@/services/materialService.js'
@@ -101,6 +107,7 @@ const searchKey = ref('')
 const loading = ref(false)
 const modalVisible = ref(false)
 const isEditMode = ref(false)
+const showPassword = ref(false)
 
 
 const queryAll = async () => {
@@ -273,6 +280,10 @@ const copyPassword = (text) => {
     .writeText(text)
     .then(() => message.success('已复制密码'))
     .catch(() => message.error('复制失败'))
+}
+
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value
 }
 
 // 搜索处理
