@@ -1,30 +1,37 @@
 <template>
   <!-- 筛选条件区域，仅登录用户可见 -->
-  <div v-if="currentUser" class="filter-container">
-    <a-row :gutter="[16, 16]" justify="start" align="middle">
-      <a-col><a-checkbox v-model:checked="filterOptions.onlyMine" @change="handleOnlyMineChange">我的</a-checkbox></a-col>
-      <a-col><a-checkbox v-model:checked="filterOptions.myLike" @change="handleMyLikeChange">我喜欢的</a-checkbox></a-col>
-      <template v-if="filterOptions.onlyMine">
+  <div v-if="currentUser" class="filter-wrapper">
+    <div class="filter-header" @click="toggleFilter">
+      <span class="filter-title">筛选条件</span>
+      <DownOutlined v-if="!isFilterExpanded" />
+      <UpOutlined v-else />
+    </div>
+    <div v-if="isFilterExpanded" class="filter-container">
+      <a-row :gutter="[16, 16]" justify="start" align="middle">
+        <a-col><a-checkbox v-model:checked="filterOptions.onlyMine" @change="handleOnlyMineChange">我的</a-checkbox></a-col>
+        <a-col><a-checkbox v-model:checked="filterOptions.myLike" @change="handleMyLikeChange">我喜欢的</a-checkbox></a-col>
+        <template v-if="filterOptions.onlyMine">
+          <a-col>
+          <a-tree-select v-model:value="filterOptions.categoryId" :tree-data="categoryTree" placeholder="请选择分类"
+            style="min-width: 120px" @change="handleFilterChange" allow-clear />
+        </a-col>
         <a-col>
-        <a-tree-select v-model:value="filterOptions.categoryId" :tree-data="categoryTree" placeholder="请选择分类"
-          style="min-width: 120px" @change="handleFilterChange" allow-clear />
-      </a-col>
-      <a-col>
-        <a-select v-model:value="filterOptions.seriesId" placeholder="请选择系列" style="width: 120px"
-          @change="handleFilterChange" allow-clear>
-          <a-select-option v-for="series in seriesList" :key="series.id" :value="series.id">{{ series.name
-          }}</a-select-option>
-        </a-select>
-      </a-col>
-      <a-col>
-        <a-select v-model:value="filterOptions.state" placeholder="请选择状态" style="width: 120px"
-          @change="handleFilterChange" allow-clear>
-          <a-select-option value="INIT">未发布</a-select-option>
-          <a-select-option value="APPROVED">已发布</a-select-option>
-        </a-select>
-      </a-col>
-      </template>
-    </a-row>
+          <a-select v-model:value="filterOptions.seriesId" placeholder="请选择系列" style="width: 120px"
+            @change="handleFilterChange" allow-clear>
+            <a-select-option v-for="series in seriesList" :key="series.id" :value="series.id">{{ series.name
+            }}</a-select-option>
+          </a-select>
+        </a-col>
+        <a-col>
+          <a-select v-model:value="filterOptions.state" placeholder="请选择状态" style="width: 120px"
+            @change="handleFilterChange" allow-clear>
+            <a-select-option value="INIT">未发布</a-select-option>
+            <a-select-option value="APPROVED">已发布</a-select-option>
+          </a-select>
+        </a-col>
+        </template>
+      </a-row>
+    </div>
   </div>
 
   <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="articles" :loading="loading">
@@ -82,7 +89,7 @@
 </template>
 
 <script setup>
-import { EyeOutlined, HeartOutlined, MessageOutlined, CalendarOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import { EyeOutlined, HeartOutlined, MessageOutlined, CalendarOutlined, EditOutlined, DeleteOutlined, DownOutlined, UpOutlined } from '@ant-design/icons-vue'
 import { ref, onBeforeMount } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 import { queryArticles, deleteArticle } from '@/services/articleService'
@@ -108,6 +115,9 @@ const filterOptions = ref({
   seriesId: null,
   state: null
 })
+
+// 筛选区域展开状态
+const isFilterExpanded = ref(false)
 
 // 分类和系列列表
 const categoryTree = ref([])
@@ -145,6 +155,11 @@ async function loadCategoriesAndSeries() {
     console.error('加载分类和系列数据失败:', error)
     message.error('加载筛选数据失败')
   }
+}
+
+// 切换筛选区域展开/收起状态
+function toggleFilter() {
+  isFilterExpanded.value = !isFilterExpanded.value
 }
 
 function handlePageChange(page) {
@@ -238,9 +253,30 @@ async function handleDelete(id) {
   margin-top: 24px;
 }
 
+.filter-wrapper {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.filter-header:hover {
+  background-color: #f5f5f5;
+}
+
+.filter-title {
+  font-weight: 500;
+}
+
 .filter-container {
   padding: 10px;
-  border-bottom: 1px solid #e8e8e8;
+  border-top: 1px solid #f0f0f0;
 }
 
 .article-item {
