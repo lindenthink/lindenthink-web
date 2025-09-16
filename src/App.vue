@@ -20,7 +20,7 @@
             <a-button v-else icon="menu" @click="drawerVisible = true" />
           </div>
           <div class="search-wrapper">
-            <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..." style="max-width: 300px" allow-clear
+            <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..." style="max-width: 200px" allow-clear
               @search="handleSearch" @blur="handleSearchBlur" :maxlength="20" />
             <div v-if="showResults" class="search-results">
               <a-spin v-if="searchLoading" />
@@ -46,6 +46,17 @@
               </template>
             </div>
           </div>
+          <!-- 系统消息轮播区域 -->
+          <div v-if="systemMessages.length > 0 && !isMobile" class="system-message-banner">
+            <a-alert 
+              :message="currentSystemMessage?.content || ''"
+              :type="'info'"
+              :closable="false"
+              :showIcon="false"
+              class="system-message-alert"
+              v-if="currentSystemMessage"
+            />
+          </div>
           <div v-if="isLoggedIn">
             <a-tooltip>
               <template #title>
@@ -68,30 +79,30 @@
               </a-badge>
               <template #overlay>
                 <div class="message-dropdown-container">
-                  <div v-if="messages.length === 0" class="empty-message">
-                    暂无消息通知
-                  </div>
-                  <template v-else>
-                    <div v-for="msg in messages" :key="msg.id" :class="['message-item', { 'unread': !msg.isRead }]">
-                      <div class="message-content-wrapper">
-                        <div v-if="msg.url" @click.stop="handleMessageClick(msg)" class="message-content-link">
-                          {{ msg.content }}
-                        </div>
-                        <div v-else class="message-content-text">
-                          {{ msg.content }}
-                        </div>
-                        <div class="message-footer">
-                          <div class="message-time">
-                            {{ msg.createTime.fromNow() }}
+                  <div v-if="userMessages.length === 0" class="empty-message">
+                      暂无消息通知
+                    </div>
+                    <template v-else>
+                      <div v-for="msg in userMessages" :key="msg.id" :class="['message-item', { 'unread': !msg.isRead }]">
+                        <div class="message-content-wrapper">
+                          <div v-if="msg.url" @click.stop="handleMessageClick(msg)" class="message-content-link">
+                            {{ msg.content }}
                           </div>
-                          <a-button v-if="!msg.isRead" size="small" type="text" class="mark-read-button"
-                            @click.stop="markMessageAsRead(msg)">
-                            已读
-                          </a-button>
+                          <div v-else class="message-content-text">
+                            {{ msg.content }}
+                          </div>
+                          <div class="message-footer">
+                            <div class="message-time">
+                              {{ msg.createTime.fromNow() }}
+                            </div>
+                            <a-button v-if="!msg.isRead" size="small" type="text" class="mark-read-button"
+                              @click.stop="markMessageAsRead(msg)">
+                              已读
+                            </a-button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </template>
+                    </template>
                 </div>
               </template>
             </a-dropdown>
@@ -262,6 +273,24 @@ const systemSettings = reactive(savedSettings ? JSON.parse(savedSettings) : {
 // 消息通知相关变量
 const unreadMessageCount = ref(0) // 未读消息数量
 const messages = ref([]) // 消息列表
+const currentSystemMessageIndex = ref(0) // 当前系统消息索引
+const systemMessagesInterval = ref(null) // 系统消息轮播定时器
+
+// 计算属性：系统消息列表(userId=-1)
+const systemMessages = computed(() => {
+  return messages.value.filter(msg => msg.userId === -1)
+})
+
+// 计算属性：用户消息列表(userId!=-1)
+const userMessages = computed(() => {
+  return messages.value.filter(msg => msg.userId !== -1)
+})
+
+// 计算属性：当前轮播的系统消息
+const currentSystemMessage = computed(() => {
+  if (systemMessages.value.length === 0) return null
+  return systemMessages.value[currentSystemMessageIndex.value]
+})
 
 onMounted(() => {
   // 监听路由变化
@@ -319,6 +348,31 @@ async function initMessages() {
       await fetchMessages()
     }
   }, 60000)
+  
+  // 启动系统消息轮播
+  startSystemMessagesCarousel()
+}
+
+// 启动系统消息轮播
+function startSystemMessagesCarousel() {
+  if (systemMessagesInterval.value) {
+    clearInterval(systemMessagesInterval.value)
+  }
+  
+  systemMessagesInterval.value = setInterval(() => {
+    if (systemMessages.value.length > 1) {
+      currentSystemMessageIndex.value = 
+        (currentSystemMessageIndex.value + 1) % systemMessages.value.length
+    }
+  }, 5000) // 5秒切换一次
+}
+
+// 停止系统消息轮播
+function stopSystemMessagesCarousel() {
+  if (systemMessagesInterval.value) {
+    clearInterval(systemMessagesInterval.value)
+    systemMessagesInterval.value = null
+  }
 }
 
 async function fetchMessages() {
@@ -329,15 +383,25 @@ async function fetchMessages() {
       id: item.id,
       url: item.url,
       createTime: dayjs(item.created),
+      userId: item.userId
     })) || []
     unreadMessageCount.value = messages.value.filter(msg => !msg.isRead).length
   } catch (error) {
     console.error('获取未读消息失败:', error)
     message.error('获取未读消息失败')
+    }
   }
-}
 
-async function markMessageAsRead(message) {
+  // 监听系统消息变化，重新启动轮播
+  watch(systemMessages, (newMessages) => {
+    if (newMessages.length > 0) {
+      startSystemMessagesCarousel()
+    } else {
+      stopSystemMessagesCarousel()
+    }
+  }, { deep: true })
+  
+  async function markMessageAsRead(message) {
   try {
     message.isRead = true
     await saveAction({
@@ -566,7 +630,7 @@ const saveSettings = () => {
 .search-wrapper {
   position: relative;
   flex: 1;
-  max-width: 500px;
+  max-width: 200px;
   margin: 0 20px;
   display: flex;
   align-items: center; // 新增垂直居中
@@ -647,8 +711,38 @@ const saveSettings = () => {
 }
 
 .ant-divider-vertical {
-  border-left: 1px solid #d0dadf;
-}
+    border-left: 1px solid #d0dadf;
+  }
+
+  /* 系统消息轮播样式 */
+  .system-message-banner {
+    position: relative;
+    flex: 1;
+    max-width: 360px;
+    margin: 0 20px;
+    overflow: hidden;
+  }
+
+  .system-message-alert {
+    padding: 4px 16px;
+    margin: 0;
+    background-color: #e6f7ff;
+    border: 1px solid #91d5ff;
+    border-radius: 16px;
+    box-shadow: none;
+    animation: slideIn 0.5s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
 
 .setting-section {
   margin-bottom: 20px;
