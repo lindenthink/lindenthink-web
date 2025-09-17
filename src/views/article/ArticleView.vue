@@ -58,11 +58,15 @@
 
         <div class="article">
           <div class="article-status" v-if="currentUser && currentUser.id == article.userId">
-            <a-tag :color="article.state === 'APPROVED' ? 'green' : 'red'" style="margin-right: 5px;">
+            <a-tag :color="article.state === 'APPROVED' ? 'green' : 'red'" style="margin-right: 2vw;">
               {{ article.state === 'APPROVED' ? '已发布' : '未发布' }}
             </a-tag>
-            <a-button size="small" @click="handleEdit" style="margin-left: 5px;">
-              编辑
+            <a-button size="small" type="link" @click="handleEdit">
+              <FormOutlined />编辑
+            </a-button>
+            <!-- 分享功能区域 -->
+            <a-button type="link" @click="handleShare" v-if="article.state === 'APPROVED'">
+              <ShareAltOutlined />分享
             </a-button>
           </div>
           <div class="article-head">
@@ -78,7 +82,8 @@
                   <template #icon><tag-outlined /></template>{{ tag }}
                 </a-tag>
               </a-tooltip>
-              <a-tooltip v-if="article.type !== 'ORIGINAL'" placement="bottom" title="外链" arrow-point-at-center>
+              <a-tooltip v-if="article.type !== 'ORIGINAL'" placement="bottom" :title="article.origin"
+                arrow-point-at-center>
                 <a :href="article.origin" target="_blank">
                   <a-tag color="orange">
                     <template #icon><link-outlined /></template>原文
@@ -170,6 +175,8 @@ import {
   EditOutlined,
   PaperClipOutlined,
   LinkOutlined,
+  ShareAltOutlined,
+  FormOutlined,
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import Comment from '@/components/Comment.vue'
@@ -286,6 +293,16 @@ watch(
   }
 )
 
+// 分享功能 - 仅复制链接
+const handleShare = async () => {
+  try {
+    await navigator.clipboard.writeText(curUrl)
+    message.success('链接已复制到剪贴板')
+  } catch (err) {
+    message.error('复制链接失败: ' + (err.message || '未知错误'))
+  }
+}
+
 // 处理点赞状态变化
 const handleLikeChange = async (liked) => {
   try {
@@ -333,7 +350,6 @@ async function generateAnchors(retryCount = 0) {
   await nextTick() // 等待DOM更新
   try {
     if (!viewerRef.value || !viewerRef.value.$el) {
-      // console.error('viewerRef is not available');
       // 添加重试逻辑，最多重试3次
       if (retryCount < 3) {
         // console.log(`尝试重试生成目录，当前重试次数: ${retryCount + 1}`);
@@ -408,7 +424,7 @@ async function generateAnchors(retryCount = 0) {
 .article-status {
   position: absolute;
   top: 10px;
-  right: 25vw;
+  right: 16vw;
 }
 
 .article {
