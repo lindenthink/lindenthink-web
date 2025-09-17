@@ -15,7 +15,7 @@ function createTodosService() {
   })  
   
   // 提醒时间选项（分钟）
-  const remindTimeOptions = [15, 30, 60, 120, 240, 480, 720]
+  const remindTimeOptions = [15, 30, 60, 90, 120, 240, 480, 720]
 
   // 通知相关
   let checkInterval = null

@@ -219,7 +219,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch, computed, reactive } from 'vue'
+import { onMounted, ref, watch, computed, reactive, defineAsyncComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { UserOutlined, BellOutlined, createFromIconfontCN } from '@ant-design/icons-vue'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
@@ -236,8 +236,9 @@ import ChangePassword from '@/components/ChangePassword.vue'
 import { searchArticles } from '@/services/articleService'
 import tools from '@/services/toolData'
 import useTodos from '@/composables/useTodos'
-import AudioPlayer from '@/components/AudioPlayer.vue'
 import { queryActionsByType, saveAction } from '@/services/actionService'
+
+const AudioPlayer = defineAsyncComponent(() => import('@/components/AudioPlayer.vue'))
 
 const IconFont = createFromIconfontCN({
   scriptUrl: '//at.alicdn.com/t/c/font_5014425_5vgj3xdawbb.js',
