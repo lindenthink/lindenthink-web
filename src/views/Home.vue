@@ -134,36 +134,37 @@ const isLoading = ref(true)
 onMounted(async () => {
   try {
     isLoading.value = true
-    // 获取轮播图数据
-    let res = await queryCarousel()
-    const data = res.map(item => {
-      return {
-        id: item.id,
-        ...JSON.parse(item.content)
-      }
-    })
-    data.sort((a, b) => a.order - b.order)
+    
+    const [carouselRes, articlesRes, newsRes] = await Promise.all([
+      queryCarousel(),
+      getTop3(),
+      queryNews()
+    ])
+    
+    // 处理轮播图数据
+    const carouselData = carouselRes.map(item => ({
+      id: item.id,
+      ...JSON.parse(item.content)
+    }))
+    carouselData.sort((a, b) => a.order - b.order)
     carouselImgs.length = 0
-    data.forEach(item => carouselImgs.push(item))
-
-    // 获取热门文章数据
-    res = await getTop3()
-    const topArticles = res.data
+    carouselData.forEach(item => carouselImgs.push(item))
+    
+    // 处理热门文章数据
+    const topArticles = articlesRes.data
     popularArticles.length = 0
     popularArticles.push(...topArticles)
-
-    // 获取最新资讯数据
-    res = await queryNews()
-    const newsData = res.map(item => {
-      return {
-        id: item.id,
-        ...JSON.parse(item.content)
-      }
-    })
+    
+    // 处理最新资讯数据
+    const newsData = newsRes.map(item => ({
+      id: item.id,
+      ...JSON.parse(item.content)
+    }))
     // 按日期降序排序
     newsData.sort((a, b) => new Date(b.date) - new Date(a.date))
     latestNews.length = 0
     latestNews.push(...newsData)
+    
     isLoading.value = false
   } catch (error) {
     console.error('获取数据失败:', error)
