@@ -20,7 +20,7 @@
             <a-button v-else icon="menu" @click="drawerVisible = true" />
           </div>
           <div class="search-wrapper">
-            <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..." style="max-width: 200px" allow-clear
+            <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..." allow-clear
               @search="handleSearch" @blur="handleSearchBlur" :maxlength="20" />
             <div v-if="showResults" class="search-results">
               <a-spin v-if="searchLoading" />
@@ -48,16 +48,20 @@
           </div>
           <!-- 系统消息轮播区域 -->
           <div v-if="systemMessages.length > 0 && !isMobile" class="system-message-banner">
-            <a-alert 
-              :message="currentSystemMessage?.content || ''"
-              :type="'info'"
-              :closable="false"
-              :showIcon="false"
-              class="system-message-alert"
-              v-if="currentSystemMessage"
-            />
+            <div class="message-carousel" ref="messageCarousel">
+              <a-alert 
+                v-for="(msg, index) in systemMessages" 
+                :key="msg.id"
+                :message="msg.content"
+                :type="'info'"
+                :closable="false"
+                :showIcon="false"
+                class="system-message-alert"
+                :style="{ transform: `translateY(${index === currentSystemMessageIndex ? 0 : 100}%)` }"
+              />
+            </div>
           </div>
-          <div v-if="isLoggedIn">
+          <div v-if="isLoggedIn" style="min-width: 120px;">
             <a-tooltip>
               <template #title>
                 <span>写作</span>
@@ -107,8 +111,8 @@
               </template>
             </a-dropdown>
           </div>
-          <a-dropdown>
-            <a style="margin-right: 2em" @click.prevent>
+          <a-dropdown style="min-width: 300px ">
+            <a style="margin-right: 2em;min-width: 140px" @click.prevent>
               <template v-if="!isLoggedIn">
                 <a-avatar :size="32">
                   <template #icon>
@@ -273,7 +277,6 @@ const systemSettings = reactive(savedSettings ? JSON.parse(savedSettings) : {
 // 消息通知相关变量
 const unreadMessageCount = ref(0) // 未读消息数量
 const messages = ref([]) // 消息列表
-const currentSystemMessageIndex = ref(0) // 当前系统消息索引
 const systemMessagesInterval = ref(null) // 系统消息轮播定时器
 
 // 计算属性：系统消息列表(userId=-1)
@@ -286,11 +289,8 @@ const userMessages = computed(() => {
   return messages.value.filter(msg => msg.userId !== -1)
 })
 
-// 计算属性：当前轮播的系统消息
-const currentSystemMessage = computed(() => {
-  if (systemMessages.value.length === 0) return null
-  return systemMessages.value[currentSystemMessageIndex.value]
-})
+// 当前轮播的系统消息索引
+const currentSystemMessageIndex = ref(0)
 
 onMounted(() => {
   // 监听路由变化
@@ -631,6 +631,7 @@ const saveSettings = () => {
   position: relative;
   flex: 1;
   max-width: 200px;
+  min-width: 200px;
   margin: 0 20px;
   display: flex;
   align-items: center; // 新增垂直居中
@@ -719,29 +720,34 @@ const saveSettings = () => {
     position: relative;
     flex: 1;
     max-width: 360px;
+    min-width: 240px;
     margin: 0 20px;
     overflow: hidden;
+    height: 36px;
+  }
+
+  .message-carousel {
+    position: relative;
+    height: 100%;
   }
 
   .system-message-alert {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     padding: 4px 16px;
     margin: 0;
     background-color: #e6f7ff;
     border: 1px solid #91d5ff;
     border-radius: 16px;
     box-shadow: none;
-    animation: slideIn 0.5s ease-out;
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+    opacity: 0;
   }
 
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateX(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+  .system-message-alert[style*="translateY(0%)"] {
+    opacity: 1;
   }
 
 .setting-section {
