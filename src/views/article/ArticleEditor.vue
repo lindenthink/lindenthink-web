@@ -7,15 +7,15 @@
                 style="background: #fff; padding: 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between;">
                 <h1 class="header">{{ isPreviewMode ? '文章预览' : '文章编辑' }}</h1>
                 <div>
-                    <a-button type="primary " @click="togglePreview" size="small" :loading="previewLoading">
+                    <a-button type="primary " @click="togglePreview" :loading="previewLoading">
                         {{ isPreviewMode ? '编辑' : '预览' }}
                     </a-button>
                     <!-- 修改保存按钮 -->
                     <a-button v-if="!isPreviewMode" type="primary" :loading="submitting" style="margin-left: 10px"
-                        size="small" @click="handleSave">
+                        @click="handleSave">
                         保存
                     </a-button>
-                    <a-button @click="handleCancel" style="margin-left: 10px" size="small">取消</a-button>
+                    <a-button @click="handleCancel" style="margin-left: 10px" >取消</a-button>
                 </div>
             </div>
 
@@ -40,6 +40,9 @@
                                     :wrapper-col="{ span: 15 }">
                                     <a-tree-select v-model:value="articleForm.categoryId" :tree-data="categoryTree"
                                         placeholder="请选择分类" filterTreeNode allow-clear />
+                                    <a-button type="link" @click="openCategoryModal" size="small" style="margin-left: 8px">
+                                        编辑
+                                    </a-button>
                                 </a-form-item>
                             </a-col>
                             <a-col :span="6">
@@ -50,6 +53,9 @@
                                             {{ series.name }}
                                         </a-select-option>
                                     </a-select>
+                                    <a-button type="link" @click="openSeriesModal" size="small" style="margin-left: 8px">
+                                        编辑
+                                    </a-button>
                                 </a-form-item>
                             </a-col>
                             <a-col :span="6">
@@ -137,6 +143,68 @@
                     @cancel="showUploadModal = false">
                     <ImageUploader v-model="uploadImageUrl" upload-text="点击上传" @success="handleUploadSuccess" />
                 </a-modal>
+
+                <!-- 分类维护模态框 -->
+                <a-modal v-model:visible="showCategoryModal" title="文章分类" :width="600" @ok="showCategoryModal = false"
+                    @cancel="showCategoryModal = false">
+                    <div class="category-management">
+                        <div style="color: violet; margin-bottom: 5px;">
+                            <div v-if="addingSubCategory">
+                                正在添加"{{ addingSubCategory.label }}"的子分类：
+                            </div>
+                            <div v-else-if="editingCategory">
+                                正在编辑分类：
+                            </div>
+                            <div v-else>
+                                正在添加主分类：
+                            </div>
+                        </div>
+                        <div class="category-form">
+                            <a-input v-model:value="categoryForm.content" placeholder="请输入分类名称" />
+                                <a-button type="primary" @click="handleSaveCategory" style="margin-left: 10px">保存</a-button>
+                                <a-button @click="resetCategoryForm" style="margin-left: 10px">重置</a-button>
+                            </div>
+                        <div class="category-list" style="margin-top: 20px; max-height: 300px; overflow-y: auto;">
+                            <div v-for="category in categoryData" :key="category.id" class="category-item" :style="{ marginLeft: category.level * 20 + 'px' }">
+                                <span>{{ category.label }}</span>
+                                <a-button type="link" size="small" @click="handleAddSubCategory(category)">添加子分类</a-button>
+                                <a-button type="link" size="small" @click="handleEditCategory(category)">编辑</a-button>
+                                <a-popconfirm title="确定要删除这个分类吗？" @confirm="handleDeleteCategory(category)">
+                                    <a-button type="link" size="small" danger>删除</a-button>
+                                </a-popconfirm>
+                            </div>
+                        </div>
+                    </div>
+                </a-modal>
+
+                <!-- 系列维护模态框 -->
+                <a-modal v-model:visible="showSeriesModal" title="文章系列" :width="500" @ok="showSeriesModal = false"
+                    @cancel="showSeriesModal = false">
+                    <div class="series-management">
+                        <div style="color: violet; margin-bottom: 5px;">
+                            <div v-if="editingSeries">
+                                正在编辑系列：
+                            </div>
+                            <div v-else>
+                                正在添加新系列：
+                            </div>
+                        </div>
+                        <div class="series-form">
+                            <a-input v-model:value="seriesForm.content" placeholder="请输入系列名称"/>
+                                <a-button type="primary" @click="handleSaveSeries" style="margin-left: 10px">保存</a-button>
+                                <a-button @click="resetSeriesForm" style="margin-left: 10px">重置</a-button>
+                            </div>
+                        <div class="series-list" style="margin-top: 20px; max-height: 300px; overflow-y: auto;">
+                            <div v-for="series in seriesData" :key="series.id" class="series-item">
+                                <span>{{ series.content }}</span>
+                                <a-button type="link" size="small" @click="handleEditSeries(series)">编辑</a-button>
+                                <a-popconfirm title="确定要删除这个系列吗？" @confirm="handleDeleteSeries(series)">
+                                    <a-button type="link" size="small" danger>删除</a-button>
+                                </a-popconfirm>
+                            </div>
+                        </div>
+                    </div>
+                </a-modal>
             </template>
 
         </a-layout-content>
@@ -151,7 +219,7 @@ import { message } from 'ant-design-vue'
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 import ImageUploader from '@/components/ImageUploader.vue'
 import { saveArticle, getArticle } from '@/services/articleService'
-import { querySeries, queryCategory } from '@/services/materialService'
+import { querySeries, queryCategory, save, remove } from '@/services/materialService'
 
 // 路由和API相关
 const router = useRouter()
@@ -383,6 +451,196 @@ const handleUploadSuccess = (url) => {
     insertAtCursor(imageSyntax);
 };
 
+// 分类维护相关
+const showCategoryModal = ref(false);
+const categoryData = ref([]);
+const categoryForm = reactive({
+    id: '',
+    content: '',
+});
+const addingSubCategory = ref(null);
+const editingCategory = ref(null);
+
+const openCategoryModal = async () => {
+    await loadCategoryData();
+    showCategoryModal.value = true;
+};
+
+const loadCategoryData = async () => {
+    try {
+        const data = await queryCategory();
+        // 转换为平面结构
+        const flatten = (nodes, level = 0) => {
+            let result = [];
+            nodes.forEach(node => {
+                result.push({
+                    ...node,
+                    level
+                });
+                if (node.children && node.children.length > 0) {
+                    result = result.concat(flatten(node.children, level + 1));
+                }
+            });
+            return result;
+        };
+        categoryData.value = flatten(data);
+    } catch (error) {
+        console.error('加载分类数据失败:', error);
+        message.error('加载分类数据失败：' + error.message);
+    }
+};
+
+const resetCategoryForm = () => {
+    addingSubCategory.value = null;
+    editingCategory.value = null;
+    Object.assign(categoryForm, {
+        id: '',
+        content: '',
+        pid: null
+    });
+};
+
+const handleAddSubCategory = (category) => {
+    addingSubCategory.value = category;
+    editingCategory.value = null;
+    Object.assign(categoryForm, {
+        id: '',
+        content: '',
+        pid: category.value,
+    });
+};
+
+const handleEditCategory = (category) => {
+    editingCategory.value = category;
+    addingSubCategory.value = null;
+    Object.assign(categoryForm, {
+        id: category.value,
+        content: category.label,
+        pid: category.pid
+    });
+};
+
+const handleDeleteCategory = async (category) => {
+    try {
+        if (category.children && category.children.length > 0) {
+            message.error('请先删除子分类');
+            return;
+        }
+        await remove({ type: 'CATEGORY', id: category.value });
+        message.success('删除成功');
+        await loadCategoryData();
+        await loadCategoriesAndSeries();
+        resetCategoryForm();
+        // 如果当前文章使用了被删除的分类，清除它
+        if (articleForm.categoryId === category.value) {
+            articleForm.categoryId = '';
+        }
+    } catch (error) {
+        console.error('删除分类失败:', error);
+        message.error('删除失败：' + error.message);
+    }
+};
+
+const handleSaveCategory = async () => {
+    if (!categoryForm.content.trim()) {
+        message.error('请输入分类名称');
+        return;
+    }
+    try {
+        await save({
+            id: categoryForm.id,
+            type: 'CATEGORY',
+            content: categoryForm.content,
+            pid: categoryForm.pid
+        });
+        message.success('保存成功');
+        await loadCategoryData();
+        await loadCategoriesAndSeries();
+        resetCategoryForm();
+    } catch (error) {
+        console.error('保存分类失败:', error);
+        message.error('保存失败：' + error.message);
+    }
+};
+
+// 系列维护相关
+const showSeriesModal = ref(false);
+const seriesData = ref([]);
+const seriesForm = reactive({
+    id: '',
+    content: ''
+});
+const editingSeries = ref(null);
+
+const openSeriesModal = async () => {
+    await loadSeriesData();
+    showSeriesModal.value = true;
+};
+
+const loadSeriesData = async () => {
+    try {
+        const data = await querySeries();
+        seriesData.value = data || [];
+    } catch (error) {
+        console.error('加载系列数据失败:', error);
+        message.error('加载系列数据失败');
+    }
+};
+
+const resetSeriesForm = () => {
+    editingSeries.value = null;
+    Object.assign(seriesForm, {
+        id: '',
+        content: ''
+    });
+};
+
+const handleEditSeries = (series) => {
+    editingSeries.value = series;
+    Object.assign(seriesForm, {
+        id: series.id,
+        content: series.content
+    });
+};
+
+const handleDeleteSeries = async (series) => {
+    try {
+        await remove({ type: 'SERIES', id: series.id });
+        message.success('删除成功');
+        await loadSeriesData();
+        await loadCategoriesAndSeries();
+        resetSeriesForm()
+        // 如果当前文章使用了被删除的系列，清除它
+        if (articleForm.seriesId === series.id) {
+            articleForm.seriesId = '';
+        }
+    } catch (error) {
+        console.error('删除系列失败:', error);
+        message.error('删除失败：' + error.message);
+    }
+};
+
+const handleSaveSeries = async () => {
+    if (!seriesForm.content.trim()) {
+        message.error('请输入系列名称');
+        return;
+    }
+    try {
+        await save({
+            id: seriesForm.id,
+            type: 'SERIES',
+            content: seriesForm.content
+        });
+        message.success('保存成功');
+        await loadSeriesData();
+        await loadCategoriesAndSeries();
+        resetSeriesForm();
+    } catch (error) {
+        console.error('保存系列失败:', error);
+        message.error('保存失败：' + error.message);
+    }
+};
+
 const insertImage = () => {
     uploadImageUrl.value = '';
     showUploadModal.value = true;
@@ -506,10 +764,47 @@ const insertTimeline = () => {
     min-height: calc(100vh - 180px);
 }
 
+/* 预览加载状态 */
 .preview-loading {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 300px;
+}
+
+/* 分类管理样式 */
+.category-management,
+.series-management {
+    padding: 10px 0;
+}
+
+.category-form,
+.series-form {
+    display: flex;
+    align-items: center;
+}
+
+.category-item,
+.series-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.category-item:last-child,
+.series-item:last-child {
+    border-bottom: none;
+}
+
+.category-item span,
+.series-item span {
+    flex: 1;
+    font-size: 14px;
+}
+
+.category-list,
+.series-list {
+    margin-top: 15px;
 }
 </style>

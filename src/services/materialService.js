@@ -72,17 +72,13 @@ async function queryByType(type) {
       children: [],
     }
     if (cur.pid) {
+      // 只有叶子结点可以选择
+      acc[cur.pid].selectable = false
       acc[cur.pid].children.push(acc[cur.id])
     }
     return acc
   }, {})
   // 过滤出根节点
   const rootNodes = Object.values(tree).filter((item) => !item.pid)
-  // 只有叶子结点可以选择
-  rootNodes.forEach((item) => {
-    if (item.children.length > 0) {
-      item.selectable = false
-    }
-  })
   return rootNodes
 }
