@@ -1,10 +1,10 @@
 <template>
   <a-layout>
-    <a-layout-sider></a-layout-sider>
+    <a-layout-sider breakpoint="md" collapsed-width="1"></a-layout-sider>
     <a-layout-content>
       <ArticleList />
     </a-layout-content>
-    <a-layout-sider></a-layout-sider>
+    <a-layout-sider breakpoint="md" collapsed-width="1"></a-layout-sider>
   </a-layout>
 </template>
 

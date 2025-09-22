@@ -1,8 +1,9 @@
 <template>
   <a-layout class="home-layout">
-    <a-layout-sider breakpoint="lg" collapsed-width="0" />
+    <a-layout-sider breakpoint="md" collapsed-width="1" />
     <a-layout-content>
-      <template v-if="!isLoading">
+      <!-- 轮播图 - 仅在非移动端显示 -->
+      <template v-if="!isLoading && !isMobile">
         <a-carousel autoplay effect="fade" class="custom-carousel" :autoplay-speed="5000" arrows>
           <template #prevArrow>
             <div class="custom-slick-arrow" style="left: 10px; z-index: 1">
@@ -26,9 +27,15 @@
           </div>
         </a-carousel>
       </template>
+      <template v-else-if="!isLoading && isMobile">
+        <!-- 移动端不显示轮播图 -->
+      </template>
       <template v-else>
-        <div class="skeleton-container">
+        <div v-if="!isMobile" class="skeleton-container">
           <Skeleton active :loading="isLoading" class="carousel-skeleton" />
+        </div>
+        <div v-else class="mobile-placeholder skeleton-container">
+          <Skeleton active :loading="isLoading" class="mobile-skeleton" />
         </div>
       </template>
 
@@ -101,7 +108,7 @@
         </a-row>
       </div>
     </a-layout-content>
-    <a-layout-sider breakpoint="lg" collapsed-width="0" />
+    <a-layout-sider breakpoint="md"  collapsed-width="2" />
   </a-layout>
 </template>
 
@@ -121,6 +128,7 @@ import { queryCarousel, queryNews } from '@/services/materialService'
 import { getTop3 } from '@/services/articleService'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
+import { useMediaQuery } from '@vueuse/core'
 
 const router = useRouter()
 const popularArticles = reactive([])
@@ -130,40 +138,70 @@ const latestNews = reactive([])
 const carouselImgs = reactive([])
 
 const isLoading = ref(true)
+const isMobile = useMediaQuery('(max-width: 768px)')
 
 onMounted(async () => {
   try {
     isLoading.value = true
     
-    const [carouselRes, articlesRes, newsRes] = await Promise.all([
-      queryCarousel(),
-      getTop3(),
-      queryNews()
-    ])
+    // 使用Promise.all并行发起请求，提高处理速度
+    // 在移动端只请求文章和资讯数据，不请求轮播图数据
+    const requests = [getTop3(), queryNews()]
+    if (!isMobile.value) {
+      requests.unshift(queryCarousel())
+    }
     
-    // 处理轮播图数据
-    const carouselData = carouselRes.map(item => ({
-      id: item.id,
-      ...JSON.parse(item.content)
-    }))
-    carouselData.sort((a, b) => a.order - b.order)
-    carouselImgs.length = 0
-    carouselData.forEach(item => carouselImgs.push(item))
+    const results = await Promise.all(requests)
     
-    // 处理热门文章数据
-    const topArticles = articlesRes.data
-    popularArticles.length = 0
-    popularArticles.push(...topArticles)
-    
-    // 处理最新资讯数据
-    const newsData = newsRes.map(item => ({
-      id: item.id,
-      ...JSON.parse(item.content)
-    }))
-    // 按日期降序排序
-    newsData.sort((a, b) => new Date(b.date) - new Date(a.date))
-    latestNews.length = 0
-    latestNews.push(...newsData)
+    // 处理轮播图数据（仅在非移动端）
+    if (!isMobile.value) {
+      const carouselRes = results[0]
+      const carouselData = carouselRes.map(item => ({
+        id: item.id,
+        ...JSON.parse(item.content)
+      }))
+      carouselData.sort((a, b) => a.order - b.order)
+      carouselImgs.length = 0
+      carouselData.forEach(item => carouselImgs.push(item))
+      
+      // 文章和资讯数据索引
+      const articlesRes = results[1]
+      const newsRes = results[2]
+      
+      // 处理热门文章数据
+      const topArticles = articlesRes.data
+      popularArticles.length = 0
+      popularArticles.push(...topArticles)
+      
+      // 处理最新资讯数据
+      const newsData = newsRes.map(item => ({
+        id: item.id,
+        ...JSON.parse(item.content)
+      }))
+      // 按日期降序排序
+      newsData.sort((a, b) => new Date(b.date) - new Date(a.date))
+      latestNews.length = 0
+      latestNews.push(...newsData)
+    } else {
+      // 移动端数据索引
+      const articlesRes = results[0]
+      const newsRes = results[1]
+      
+      // 处理热门文章数据
+      const topArticles = articlesRes.data
+      popularArticles.length = 0
+      popularArticles.push(...topArticles)
+      
+      // 处理最新资讯数据
+      const newsData = newsRes.map(item => ({
+        id: item.id,
+        ...JSON.parse(item.content)
+      }))
+      // 按日期降序排序
+      newsData.sort((a, b) => new Date(b.date) - new Date(a.date))
+      latestNews.length = 0
+      latestNews.push(...newsData)
+    }
     
     isLoading.value = false
   } catch (error) {
@@ -185,6 +223,7 @@ const handleClick = (article) => {
 @import '@/styles/variables.less';
 
 @carousel-height: 300px;
+@mobile-placeholder-height: 1px;
 
 .custom-carousel {
   margin: 20px 16px 0px 16px;
@@ -437,6 +476,18 @@ const handleClick = (article) => {
   display: inline-block;
 }
 
+/* 移动端占位样式 */
+.mobile-placeholder {
+  height: @mobile-placeholder-height;
+  width: 100%;
+  margin: 20px 16px 0px 16px;
+}
+
+.mobile-skeleton {
+  height: @mobile-placeholder-height;
+  width: 100%;
+}
+
 /* 骨架屏样式 */
 .skeleton-container {
   margin: 20px 16px 0px 16px;
@@ -462,10 +513,6 @@ const handleClick = (article) => {
 
   .carousel-caption .poetry-text {
     font-size: 1.1rem;
-  }
-
-  .section-title {
-    font-size: 1.5rem;
   }
 }
 </style>

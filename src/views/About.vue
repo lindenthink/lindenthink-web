@@ -1,11 +1,11 @@
 <template>
   <a-layout>
-    <a-layout-sider></a-layout-sider>
+    <a-layout-sider breakpoint="md" collapsed-width="1"></a-layout-sider>
     <a-layout-content>
       <AsciiDocViewer :content="content" />
       <Comment owner="1" />
     </a-layout-content>
-    <a-layout-sider></a-layout-sider>
+    <a-layout-sider breakpoint="md" collapsed-width="1"></a-layout-sider>
   </a-layout>
 </template>
 

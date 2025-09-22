@@ -142,14 +142,23 @@ watch(() => props.content, renderContent, { immediate: true })
   font-size: 2em;
   border-bottom: 2px solid #eee;
   padding-bottom: 0.3em;
+  @media (max-width: 768px) {
+    font-size: 1.5em;
+  }
 }
 
 .asciidoc-viewer h2 {
   font-size: 1.75em;
+  @media (max-width: 768px) {
+    font-size: 1.3em;
+  }
 }
 
 .asciidoc-viewer h3 {
   font-size: 1.5em;
+  @media (max-width: 768px) {
+    font-size: 1.1em;
+  }
 }
 
 /* 段落样式 */

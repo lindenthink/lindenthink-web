@@ -1,46 +1,57 @@
 <template>
-  <a-layout>
-    <a-layout-sider>
-      <div class="article-toc">
-        <a-tabs v-model:active-key="activeKey" centered>
-          <a-tab-pane key="toc" tab="目录">
-            <div class="article-toc-content" v-if="anchors.length">
-              <a-anchor :affix="false" :offset-top="58" show-ink-in-fixed>
-                <a-anchor-link v-for="(anchor, index) in anchors" :key="index" :href="anchor.href"
-                  :title="anchor.title">
-                  <a-anchor-link v-for="(anchor2, index2) in anchor.children" v-if="anchor.hasChildren" :key="index2"
-                    :href="anchor2.href" :title="anchor2.title">
-                    <a-anchor-link v-for="(anchor3, index3) in anchor2.children" v-if="anchor2.hasChildren"
-                      :key="index3" :href="anchor3.href" :title="anchor3.title">
-                    </a-anchor-link>
+  <DefineTemplate>
+    <div class="article-toc">
+      <a-tabs v-model:active-key="activeKey" centered>
+        <a-tab-pane key="toc" tab="目录">
+          <div class="article-toc-content" v-if="anchors.length">
+            <a-anchor :affix="false" :offset-top="58" show-ink-in-fixed>
+              <a-anchor-link v-for="(anchor, index) in anchors" :key="index" :href="anchor.href" :title="anchor.title">
+                <a-anchor-link v-for="(anchor2, index2) in anchor.children" v-if="anchor.hasChildren" :key="index2"
+                  :href="anchor2.href" :title="anchor2.title">
+                  <a-anchor-link v-for="(anchor3, index3) in anchor2.children" v-if="anchor2.hasChildren" :key="index3"
+                    :href="anchor3.href" :title="anchor3.title">
                   </a-anchor-link>
                 </a-anchor-link>
-              </a-anchor>
-            </div>
+              </a-anchor-link>
+            </a-anchor>
+          </div>
+          <div v-else>
+            <p style="color: #999; text-align: center; padding: 10px 0;">暂无目录内容</p>
+          </div>
+        </a-tab-pane>
+        <a-tab-pane key="series" tab="系列" v-if="article.seriesId">
+          <div class="article-toc-content">
+            <h3 v-if="article.seriesName" class="series-title">{{ article.seriesName }}</h3>
+            <a-spin v-if="isLoadingSeries" tip="加载中..." size="small" />
             <div v-else>
-              <p style="color: #999; text-align: center; padding: 10px 0;">暂无目录内容</p>
-            </div>
-          </a-tab-pane>
-          <a-tab-pane key="series" tab="系列" v-if="article.seriesId">
-            <div class="article-toc-content">
-              <h3 v-if="article.seriesName" class="series-title">{{ article.seriesName }}</h3>
-              <a-spin v-if="isLoadingSeries" tip="加载中..." size="small" />
-              <div v-else>
-                <div v-for="(item, index) in series" :key="index"
-                  style="border-bottom: 1px #f0f2f5 solid; padding: 0.2rem 0.5rem;">
-                  <FileOutlined :style="{ color: item.id === article.id ? '#ccc' : 'grey', marginRight: '5px' }" />
-                  <a :href="`/articles/${item.id}`"
-                    :style="{ color: item.id === article.id ? '#ccc' : '#1890ff', textDecoration: 'none' }"
-                    :class="{ 'current-article': item.id === article.id }"
-                    @click.prevent="item.id !== article.id ? router.push(`/articles/${item.id}`) : null">
-                    {{ item.title }}
-                  </a>
-                </div>
+              <div v-for="(item, index) in series" :key="index"
+                style="border-bottom: 1px #f0f2f5 solid; padding: 0.2rem 0.5rem;">
+                <FileOutlined :style="{ color: item.id === article.id ? '#ccc' : 'grey', marginRight: '5px' }" />
+                <a :href="`/articles/${item.id}`"
+                  :style="{ color: item.id === article.id ? '#ccc' : '#1890ff', textDecoration: 'none' }"
+                  :class="{ 'current-article': item.id === article.id }"
+                  @click.prevent="item.id !== article.id ? router.push(`/articles/${item.id}`) : null">
+                  {{ item.title }}
+                </a>
               </div>
             </div>
-          </a-tab-pane>
-        </a-tabs>
-      </div>
+          </div>
+        </a-tab-pane>
+      </a-tabs>
+    </div>
+  </DefineTemplate>
+
+  <a-drawer v-model:visible="showMobileMenu" placement="left" :width="250">
+    <ReuseTemplate />
+  </a-drawer>
+  <a-affix :offset-top="180" v-if="isMobile">
+    <a-button @click="showMobileMenu = true"><MenuUnfoldOutlined /></a-button>
+  </a-affix>
+  <a-layout>
+    <a-layout-sider breakpoint="md" collapsed-width="1">
+      <template v-if="!isMobile">
+        <ReuseTemplate />
+      </template>
     </a-layout-sider>
 
     <a-layout-content>
@@ -154,7 +165,7 @@
       </template>
     </a-layout-content>
 
-    <a-layout-sider> </a-layout-sider>
+    <a-layout-sider breakpoint="md" collapsed-width="1"> </a-layout-sider>
   </a-layout>
 </template>
 
@@ -177,8 +188,11 @@ import {
   LinkOutlined,
   ShareAltOutlined,
   FormOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
+import { useMediaQuery, createReusableTemplate } from '@vueuse/core'
 import Comment from '@/components/Comment.vue'
 import dayjs from 'dayjs'
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
@@ -192,6 +206,9 @@ const props = defineProps({
   id: String,
 })
 
+const showMobileMenu = ref(false)
+const isMobile = useMediaQuery('(max-width: 768px)')
+const [DefineTemplate, ReuseTemplate] = createReusableTemplate()
 const router = useRouter()
 const route = useRoute()
 const article = ref({})

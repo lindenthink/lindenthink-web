@@ -5,9 +5,12 @@
     <a-back-top :visibility-height="200" />
     <a-layout>
       <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
-        <div style="display: flex; align-items: center; justify-content: space-between; width: 99%">
+        <div class="header-container">
           <div>
-            <img src="/title.png" width="130" style="margin: 0 1.5em" />
+            <a-button v-if="isMobile" @click="drawerVisible = true" type="text"> 
+              <MenuOutlined />
+            </a-button>
+            <img src="/title.png" :width="isMobile ? 80: 130" style="margin: 0 1.5em" />
           </div>
           <div>
             <a-menu v-if="!isMobile" v-model:selected-keys="currentMenu" mode="horizontal" :theme="theam"
@@ -17,9 +20,8 @@
               <a-menu-item key="tools">工具</a-menu-item>
               <a-menu-item key="workbench">工作台</a-menu-item>
             </a-menu>
-            <a-button v-else icon="menu" @click="drawerVisible = true" />
           </div>
-          <div class="search-wrapper">
+          <div class="search-wrapper" v-if="!isMobile">
             <a-input-search v-model:value="searchKeyword" placeholder="搜索文章或工具..." allow-clear
               @search="handleSearch" @blur="handleSearchBlur" :maxlength="20" />
             <div v-if="showResults" class="search-results">
@@ -61,7 +63,7 @@
               />
             </div>
           </div>
-          <div v-if="isLoggedIn" style="min-width: 120px;">
+          <div v-if="isLoggedIn && !isMobile" style="min-width: 120px;">
             <a-tooltip>
               <template #title>
                 <span>写作</span>
@@ -111,20 +113,20 @@
               </template>
             </a-dropdown>
           </div>
-          <a-dropdown style="min-width: 300px ">
-            <a style="margin-right: 2em;min-width: 140px" @click.prevent>
+          <a-dropdown>
+            <a class="user-dropdown" @click.prevent>
               <template v-if="!isLoggedIn">
-                <a-avatar :size="32">
+                <a-avatar :size="isMobile ? 32 : 40">
                   <template #icon>
                     <UserOutlined />
                   </template>
                 </a-avatar>
               </template>
               <template v-else-if="userInfo?.avatar">
-                <a-avatar :size="40" :src="userInfo.avatar" alt="用户头像" />
+                <a-avatar :size="isMobile ? 32 : 40" :src="userInfo.avatar" alt="用户头像" />
               </template>
               <template v-else>
-                <a-avatar :size="32" style="background-color: #1890ff">
+                <a-avatar :size="isMobile ? 32 : 40" style="background-color: #1890ff">
                   {{ userInfo?.username?.[0].toUpperCase() || 'U' }}
                 </a-avatar>
               </template>
@@ -160,8 +162,7 @@
         <a-menu v-model:selected-keys="currentMenu" mode="vertical" :theme="theam" @click="handleMenuClick">
           <a-menu-item key="home"> 首页 </a-menu-item>
           <a-menu-item key="articles"> 文章 </a-menu-item>
-          <a-menu-item key="tools"> 工具 </a-menu-item>
-          <a-menu-item key="workbench"> 工作台 </a-menu-item>
+          <a-menu-item key="about"> 关于 </a-menu-item>
         </a-menu>
       </a-drawer>
 
@@ -172,7 +173,7 @@
       <a-layout-footer>
         <template v-if="!systemSettings.audioPlayerEnabled">
           <div>菩提思 ©2023-{{ new Date().getFullYear() }} 版权所有</div>
-          <div>
+          <div v-if="!isMobile">
             <a href="/about" target="_blank">关于本站</a>
             <a-divider type="vertical" />
             <a href="/friends" target="_blank">友情链接</a>
@@ -221,7 +222,7 @@
 <script setup>
 import { onMounted, ref, watch, computed, reactive, defineAsyncComponent } from 'vue'
 import { useRouter } from 'vue-router'
-import { UserOutlined, BellOutlined, createFromIconfontCN } from '@ant-design/icons-vue'
+import { UserOutlined, BellOutlined, MenuOutlined, createFromIconfontCN } from '@ant-design/icons-vue'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import { useMediaQuery, useDebounceFn } from '@vueuse/core'
 import dayjs from 'dayjs'
@@ -546,12 +547,13 @@ const saveSettings = () => {
 <style lang="less" scoped>
 @import '@/styles/variables.less';
 
-.ant-layout {
+:deep(.ant-layout) {
   background: #f0f2f5 !important;
   transition: all 0.2s;
   display: flex;
   flex-direction: column;
   min-height: 80vh;
+  width: 100%;
 }
 
 .ant-layout-header {
@@ -559,6 +561,13 @@ const saveSettings = () => {
   min-width: 1000px;
   z-index: 10 !important;
   padding: 0;
+  
+  // 响应式调整
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 0 8px;
+    min-width: 0;
+  }
 }
 
 :deep(.ant-layout-content) {
@@ -570,16 +579,29 @@ const saveSettings = () => {
   margin: 10px;
   border-radius: 5px;
   padding: 0 !important;
+  
+  // 响应式调整
+  @media (max-width: 768px) {
+    margin: 4px;
+    padding: 0 !important;
+    min-width: 0;
+  }
 }
 
 :deep(.ant-layout-sider) {
   position: relative;
-  min-width: 200px;
+  min-width: 0;
   max-width: 600px !important;
   opacity: 1;
   background: #f0f2f5;
   transition: all 0.2s;
   flex: 1 1 15% !important;
+
+  @media (max-width: 768px) {
+    margin: 0px;
+    padding: 0 !important;
+    max-width: 0px !important;
+  }
 }
 
 .ant-back-top {
@@ -598,6 +620,29 @@ const saveSettings = () => {
   width: 40px;
   height: 40px;
   cursor: pointer;
+  
+  // 响应式调整
+  @media (max-width: 768px) {
+    right: 20px;
+    bottom: 60px;
+  }
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.user-dropdown {
+  margin-right: 2em;
+  min-width: 140px;
+  @media (max-width: 768px) {
+    margin-right: 1em;
+    min-width: 80px;
+  }
 }
 
 .ant-avatar {
@@ -626,6 +671,10 @@ const saveSettings = () => {
   margin-left: 8px;
   color: #555;
   font-weight: 600;
+  // 响应式调整
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
 }
 
 .search-wrapper {
@@ -660,6 +709,7 @@ const saveSettings = () => {
     width: 90vw;
     left: 5vw;
     transform: none;
+    top: 48px;
   }
 
   .empty-tips {
