@@ -1,172 +1,178 @@
 <template>
-  <DefineTemplate>
-    <div class="article-toc">
-      <a-tabs v-model:active-key="activeKey" centered>
-        <a-tab-pane key="toc" tab="目录">
-          <div class="article-toc-content" v-if="anchors.length">
-            <a-anchor :affix="false" :offset-top="58" show-ink-in-fixed>
-              <a-anchor-link v-for="(anchor, index) in anchors" :key="index" :href="anchor.href" :title="anchor.title">
-                <a-anchor-link v-for="(anchor2, index2) in anchor.children" v-if="anchor.hasChildren" :key="index2"
-                  :href="anchor2.href" :title="anchor2.title">
-                  <a-anchor-link v-for="(anchor3, index3) in anchor2.children" v-if="anchor2.hasChildren" :key="index3"
-                    :href="anchor3.href" :title="anchor3.title">
+  <div class="article-view-container">
+    <DefineTemplate>
+      <div class="article-toc">
+        <a-tabs v-model:active-key="activeKey" centered>
+          <a-tab-pane key="toc" tab="目录">
+            <div class="article-toc-content" v-if="anchors.length">
+              <a-anchor :affix="false" :offset-top="58" show-ink-in-fixed>
+                <a-anchor-link v-for="(anchor, index) in anchors" :key="index" :href="anchor.href"
+                  :title="anchor.title">
+                  <a-anchor-link v-for="(anchor2, index2) in anchor.children" v-if="anchor.hasChildren" :key="index2"
+                    :href="anchor2.href" :title="anchor2.title">
+                    <a-anchor-link v-for="(anchor3, index3) in anchor2.children" v-if="anchor2.hasChildren"
+                      :key="index3" :href="anchor3.href" :title="anchor3.title">
+                    </a-anchor-link>
                   </a-anchor-link>
                 </a-anchor-link>
-              </a-anchor-link>
-            </a-anchor>
-          </div>
-          <div v-else>
-            <p style="color: #999; text-align: center; padding: 10px 0;">暂无目录内容</p>
-          </div>
-        </a-tab-pane>
-        <a-tab-pane key="series" tab="系列" v-if="article.seriesId">
-          <div class="article-toc-content">
-            <h3 v-if="article.seriesName" class="series-title">{{ article.seriesName }}</h3>
-            <a-spin v-if="isLoadingSeries" tip="加载中..." size="small" />
+              </a-anchor>
+            </div>
             <div v-else>
-              <div v-for="(item, index) in series" :key="index"
-                style="border-bottom: 1px #f0f2f5 solid; padding: 0.2rem 0.5rem;">
-                <FileOutlined :style="{ color: item.id === article.id ? '#ccc' : 'grey', marginRight: '5px' }" />
-                <a :href="`/articles/${item.id}`"
-                  :style="{ color: item.id === article.id ? '#ccc' : '#1890ff', textDecoration: 'none' }"
-                  :class="{ 'current-article': item.id === article.id }"
-                  @click.prevent="item.id !== article.id ? router.push(`/articles/${item.id}`) : null">
-                  {{ item.title }}
-                </a>
+              <p style="color: #999; text-align: center; padding: 10px 0;">暂无目录内容</p>
+            </div>
+          </a-tab-pane>
+          <a-tab-pane key="series" tab="系列" v-if="article.seriesId">
+            <div class="article-toc-content">
+              <h3 v-if="article.seriesName" class="series-title">{{ article.seriesName }}</h3>
+              <a-spin v-if="isLoadingSeries" tip="加载中..." size="small" />
+              <div v-else>
+                <div v-for="(item, index) in series" :key="index"
+                  style="border-bottom: 1px #f0f2f5 solid; padding: 0.2rem 0.5rem;">
+                  <FileOutlined :style="{ color: item.id === article.id ? '#ccc' : 'grey', marginRight: '5px' }" />
+                  <a :href="`/articles/${item.id}`"
+                    :style="{ color: item.id === article.id ? '#ccc' : '#1890ff', textDecoration: 'none' }"
+                    :class="{ 'current-article': item.id === article.id }"
+                    @click.prevent="item.id !== article.id ? router.push(`/articles/${item.id}`) : null">
+                    {{ item.title }}
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
-        </a-tab-pane>
-      </a-tabs>
-    </div>
-  </DefineTemplate>
-
-  <a-drawer v-model:visible="showMobileMenu" placement="left" :width="250">
-    <ReuseTemplate />
-  </a-drawer>
-  <a-affix :offset-top="180" v-if="isMobile">
-    <a-button @click="showMobileMenu = true"><MenuUnfoldOutlined /></a-button>
-  </a-affix>
-  <a-layout>
-    <a-layout-sider breakpoint="md" collapsed-width="1">
-      <template v-if="!isMobile">
-        <ReuseTemplate />
-      </template>
-    </a-layout-sider>
-
-    <a-layout-content>
-      <div class="loading-container" v-if="isLoading || !article.id">
-        <a-spin tip="文章加载中..." />
+          </a-tab-pane>
+        </a-tabs>
       </div>
-      <template v-else>
-        <a-badge-ribbon :text="article.type == 'ORIGINAL' ? '原创' : '转载'"
-          :color="article.type == 'ORIGINAL' ? 'blue' : 'orange'" style="z-index: 9">
-          <a-breadcrumb style="margin: 0 20px; padding: 10px 0; border-bottom: 1px #f0f2f5 solid">
-            <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 列表 </router-link></a-breadcrumb-item>
-            <a-breadcrumb-item>正文</a-breadcrumb-item>
-          </a-breadcrumb>
-        </a-badge-ribbon>
+    </DefineTemplate>
 
-        <div class="article">
-          <div class="article-status" v-if="currentUser && currentUser.id == article.userId">
-            <a-tag :color="article.state === 'APPROVED' ? 'green' : 'red'" style="margin-right: 2vw;">
-              {{ article.state === 'APPROVED' ? '已发布' : '未发布' }}
-            </a-tag>
-            <a-button size="small" type="link" @click="handleEdit">
-              <FormOutlined />编辑
-            </a-button>
-            <!-- 分享功能区域 -->
-            <a-button type="link" @click="handleShare" v-if="article.state === 'APPROVED'">
-              <ShareAltOutlined />分享
-            </a-button>
-          </div>
-          <div class="article-head">
-            <h1 class="article-head-title">{{ article.title }}</h1>
-            <div class="article-head-tag">
-              <a-tooltip placement="bottom" title="分类" arrow-point-at-center>
-                <a-tag color="blue">
-                  <template #icon><paper-clip-outlined /></template>{{ article.categoryName }}
-                </a-tag>
-              </a-tooltip>
-              <a-tooltip placement="bottomLeft" title="标签" arrow-point-at-center v-if="article.tags">
-                <a-tag v-for="tag in article.tags?.split(',')" :key="tag" color="cyan">
-                  <template #icon><tag-outlined /></template>{{ tag }}
-                </a-tag>
-              </a-tooltip>
-              <a-tooltip v-if="article.type !== 'ORIGINAL'" placement="bottom" :title="article.origin"
-                arrow-point-at-center>
-                <a :href="article.origin" target="_blank">
-                  <a-tag color="orange">
-                    <template #icon><link-outlined /></template>原文
-                  </a-tag>
-                </a>
-              </a-tooltip>
-            </div>
-            <div class="article-head-meta">
-              <EditOutlined style="margin-right: 5px" />
-              作者： <UserCard :user-info="authorInfo"> <span style="cursor: pointer; color: #1890ff;"> {{ article.author
-              }} </span>
-              </UserCard>
-              <a-divider type="vertical"></a-divider>
-              <CalendarOutlined style="margin-right: 5px" /><span>发表于：{{ dayjs(article.updated).format('YYYY-MM-DD')
-              }}</span><a-divider type="vertical"></a-divider>
-              <a-divider v-if="article.type !== 'ORIGINAL'" type="vertical"></a-divider>
-              <EyeOutlined style="margin-right: 5px" /><span>浏览数：{{ article.visitCount }}</span><a-divider
-                type="vertical"></a-divider>
-              <HeartOutlined style="margin-right: 5px" /><span>喜欢数：{{ article.likeCount }}</span><a-divider
-                type="vertical"></a-divider>
-              <MessageOutlined style="margin-right: 5px" />
-              <span>评论数：{{ article.commentCount }}</span>
-            </div>
-          </div>
+    <a-drawer v-model:visible="showMobileMenu" placement="left" :width="250">
+      <ReuseTemplate />
+    </a-drawer>
+    <a-affix :offset-top="180" v-if="isMobile">
+      <a-button @click="showMobileMenu = true">
+        <MenuUnfoldOutlined />
+      </a-button>
+    </a-affix>
+    <a-layout>
+      <a-layout-sider breakpoint="md" collapsed-width="1">
+        <template v-if="!isMobile">
+          <ReuseTemplate />
 
-          <AsciiDocViewer ref="viewerRef" :content="article.content" />
+        </template>
+      </a-layout-sider>
 
-          <a-divider :style="{ color: 'lightgrey' }">•</a-divider>
-
-          <div class="article-foot">
-            <div style="text-align: center"></div>
-            <ul class="article-foot-copyright">
-              <li><strong>本文作者：</strong>{{ article.author }}</li>
-              <li>
-                <strong>本文链接：</strong>
-                <a href="{{curUrl}}" title="解放C盘">{{ curUrl }}</a>
-              </li>
-              <li>
-                <strong>版权声明：</strong>本博客所有文章除特别声明外，均采用
-                <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" rel="noopener"
-                  target="_blank"><copyright-outlined />BY-NC-SA</a>
-                许可协议，转载请注明出处！
-              </li>
-            </ul>
-
-            <div class="article-foot-nav">
-              <div v-if="article.prevId">
-                <router-link :to="{ path: `/articles/${article.prevId}` }"> <left-outlined /> {{ article.prevTitle }}
-                </router-link>
-              </div>
-              <div v-else>
-                没有上一篇了
-              </div>
-              <HeartAnimation v-model="isLiked" @change="handleLikeChange" v-if="currentUser" />
-              <div v-if="article.nextId">
-                <router-link :to="{ path: `/articles/${article.nextId}` }"> {{ article.nextTitle }} <right-outlined />
-                </router-link>
-              </div>
-              <div v-else>
-                没有下一篇了
-              </div>
-            </div>
-          </div>
+      <a-layout-content>
+        <div class="loading-container" v-if="isLoading || !article.id">
+          <a-spin tip="文章加载中..." />
         </div>
+        <template v-else>
+          <a-badge-ribbon :text="article.type == 'ORIGINAL' ? '原创' : '转载'"
+            :color="article.type == 'ORIGINAL' ? 'blue' : 'orange'" style="z-index: 9">
+            <a-breadcrumb style="margin: 0 20px; padding: 10px 0; border-bottom: 1px #f0f2f5 solid">
+              <a-breadcrumb-item> <router-link :to="{ path: '/articles' }"> 列表 </router-link></a-breadcrumb-item>
+              <a-breadcrumb-item>正文</a-breadcrumb-item>
+            </a-breadcrumb>
+          </a-badge-ribbon>
 
-        <Comment ref="commentRef" :owner="article.id" :deletable="currentUser && currentUser.id == article.userId" />
+          <div class="article">
+            <div class="article-status" v-if="currentUser && currentUser.id == article.userId">
+              <a-tag :color="article.state === 'APPROVED' ? 'green' : 'red'" style="margin-right: 2vw;" v-if="!isMobile">
+                {{ article.state === 'APPROVED' ? '已发布' : '未发布' }}
+              </a-tag>
+              <a-button size="small" type="link" @click="handleEdit" v-if="!isMobile">
+                <FormOutlined />编辑
+              </a-button>
+              <!-- 分享功能区域 -->
+              <a-button type="link" @click="handleShare" v-if="article.state === 'APPROVED'">
+                <ShareAltOutlined />分享
+              </a-button>
+            </div>
+            <div class="article-head">
+              <h1 class="article-head-title">{{ article.title }}</h1>
+              <div class="article-head-tag">
+                <a-tooltip placement="bottom" title="分类" arrow-point-at-center>
+                  <a-tag color="blue">
+                    <template #icon><paper-clip-outlined /></template>{{ article.categoryName }}
+                  </a-tag>
+                </a-tooltip>
+                <a-tooltip placement="bottomLeft" title="标签" arrow-point-at-center v-if="article.tags">
+                  <a-tag v-for="tag in article.tags?.split(',')" :key="tag" color="cyan">
+                    <template #icon><tag-outlined /></template>{{ tag }}
+                  </a-tag>
+                </a-tooltip>
+                <a-tooltip v-if="article.type !== 'ORIGINAL'" placement="bottom" :title="article.origin"
+                  arrow-point-at-center>
+                  <a :href="article.origin" target="_blank">
+                    <a-tag color="orange">
+                      <template #icon><link-outlined /></template>原文
+                    </a-tag>
+                  </a>
+                </a-tooltip>
+              </div>
+              <div class="article-head-meta">
+                <EditOutlined style="margin-right: 5px" />
+                作者： <UserCard :user-info="authorInfo"> <span style="cursor: pointer; color: #1890ff;"> {{ article.author
+                    }} </span>
+                </UserCard>
+                <a-divider type="vertical"></a-divider>
+                <CalendarOutlined style="margin-right: 5px" /><span>发表于：{{ dayjs(article.updated).format('YYYY-MM-DD')
+                  }}</span><a-divider type="vertical"></a-divider>
+                <a-divider v-if="article.type !== 'ORIGINAL'" type="vertical"></a-divider>
+                <EyeOutlined style="margin-right: 5px" /><span>浏览数：{{ article.visitCount }}</span><a-divider
+                  type="vertical"></a-divider>
+                <HeartOutlined style="margin-right: 5px" /><span>喜欢数：{{ article.likeCount }}</span><a-divider
+                  type="vertical"></a-divider>
+                <MessageOutlined style="margin-right: 5px" />
+                <span>评论数：{{ article.commentCount }}</span>
+              </div>
+            </div>
 
-      </template>
-    </a-layout-content>
+            <AsciiDocViewer ref="viewerRef" :content="article.content" />
 
-    <a-layout-sider breakpoint="md" collapsed-width="1"> </a-layout-sider>
-  </a-layout>
+            <a-divider :style="{ color: 'lightgrey' }">•</a-divider>
+
+            <div class="article-foot">
+              <div style="text-align: center"></div>
+              <ul class="article-foot-copyright">
+                <li><strong>本文作者：</strong>{{ article.author }}</li>
+                <li>
+                  <strong>本文链接：</strong>
+                  <a href="{{curUrl}}" title="解放C盘">{{ curUrl }}</a>
+                </li>
+                <li>
+                  <strong>版权声明：</strong>本博客所有文章除特别声明外，均采用
+                  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" rel="noopener"
+                    target="_blank"><copyright-outlined />BY-NC-SA</a>
+                  许可协议，转载请注明出处！
+                </li>
+              </ul>
+
+              <div class="article-foot-nav">
+                <div v-if="article.prevId">
+                  <router-link :to="{ path: `/articles/${article.prevId}` }"> <left-outlined /> {{ article.prevTitle }}
+                  </router-link>
+                </div>
+                <div v-else>
+                  没有上一篇了
+                </div>
+                <HeartAnimation v-model="isLiked" @change="handleLikeChange" v-if="currentUser" />
+                <div v-if="article.nextId">
+                  <router-link :to="{ path: `/articles/${article.nextId}` }"> {{ article.nextTitle }} <right-outlined />
+                  </router-link>
+                </div>
+                <div v-else>
+                  没有下一篇了
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Comment ref="commentRef" :owner="article.id" :deletable="currentUser && currentUser.id == article.userId" />
+
+        </template>
+      </a-layout-content>
+
+      <a-layout-sider breakpoint="md" collapsed-width="1"> </a-layout-sider>
+    </a-layout>
+  </div>
 </template>
 
 <script setup>
@@ -428,6 +434,7 @@ async function generateAnchors(retryCount = 0) {
 
 <style lang="less" scoped>
 @import '@/styles/variables.less';
+
 .ant-btn {
   border-radius: 4px;
 }
@@ -441,7 +448,7 @@ async function generateAnchors(retryCount = 0) {
 
 .article-status {
   position: absolute;
-  top: 10px;
+  top: 5px;
   right: 16vw;
 }
 
@@ -457,6 +464,7 @@ async function generateAnchors(retryCount = 0) {
     color: #2c3e50;
     font-size: 2.2em;
     font-weight: 600;
+
     @media (max-width: @screen-md) {
       font-size: 1.7em;
     }
@@ -472,6 +480,7 @@ async function generateAnchors(retryCount = 0) {
     font-family: 'Lato', 'PingFang SC', 'Microsoft YaHei', sans-serif;
     font-size: 0.9em;
     text-align: center;
+
     @media (max-width: @screen-md) {
       margin: 0 1rem;
     }
@@ -480,6 +489,7 @@ async function generateAnchors(retryCount = 0) {
 
 .article-foot {
   padding: 0rem 2.5rem;
+
   @media (max-width: @screen-md) {
     padding: 0rem 1rem;
   }
@@ -507,6 +517,7 @@ async function generateAnchors(retryCount = 0) {
   margin-right: 10px;
   max-width: 240px;
   left: 12%;
+
   @media (max-width: @screen-md) {
     top: 0;
     left: 6%;
