@@ -427,6 +427,7 @@ async function generateAnchors(retryCount = 0) {
 </script>
 
 <style lang="less" scoped>
+@import '@/styles/variables.less';
 .ant-btn {
   border-radius: 4px;
 }
@@ -456,6 +457,9 @@ async function generateAnchors(retryCount = 0) {
     color: #2c3e50;
     font-size: 2.2em;
     font-weight: 600;
+    @media (max-width: @screen-md) {
+      font-size: 1.7em;
+    }
   }
 
   .article-head-tag {
@@ -468,11 +472,17 @@ async function generateAnchors(retryCount = 0) {
     font-family: 'Lato', 'PingFang SC', 'Microsoft YaHei', sans-serif;
     font-size: 0.9em;
     text-align: center;
+    @media (max-width: @screen-md) {
+      margin: 0 1rem;
+    }
   }
 }
 
 .article-foot {
   padding: 0rem 2.5rem;
+  @media (max-width: @screen-md) {
+    padding: 0rem 1rem;
+  }
 
   .article-foot-copyright {
     padding: 1em 1em;
@@ -497,6 +507,10 @@ async function generateAnchors(retryCount = 0) {
   margin-right: 10px;
   max-width: 240px;
   left: 12%;
+  @media (max-width: @screen-md) {
+    top: 0;
+    left: 6%;
+  }
 
   .article-toc-content {
     padding: 0 10px 10px 5px;

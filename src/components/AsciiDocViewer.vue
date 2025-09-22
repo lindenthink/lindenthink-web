@@ -277,7 +277,7 @@ watch(() => props.content, renderContent, { immediate: true })
 /* 时间线样式 */
 .asciidoc-viewer .timeline {
   margin: 1.5em 0 1.5em 1.5em;
-  padding-left: 1em;
+  padding-left: 0;
   position: relative;
 }
 
@@ -285,7 +285,7 @@ watch(() => props.content, renderContent, { immediate: true })
 .asciidoc-viewer .timeline::before {
   content: '';
   position: absolute;
-  left: 0.8em;
+  left: 0;
   top: 1em;
   bottom: 1em;
   width: 2px;
@@ -306,7 +306,7 @@ watch(() => props.content, renderContent, { immediate: true })
 .asciidoc-viewer .timeline dt::before {
   content: '';
   position: absolute;
-  left: -1.7em;
+  left: -1.2em;
   top: 50%;
   transform: translateY(-50%);
   width: 8px;

@@ -505,14 +505,4 @@ const handleClick = (article) => {
   margin-top: 24px;
   width: 100%;
 }
-
-@media (max-width: @screen-sm) {
-  .custom-carousel :deep(.slick-slide) {
-    height: 300px;
-  }
-
-  .carousel-caption .poetry-text {
-    font-size: 1.1rem;
-  }
-}
 </style>

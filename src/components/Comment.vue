@@ -217,6 +217,8 @@ defineExpose({ scrollToReply })
 </script>
 
 <style scoped lang="less">
+@import '@/styles/variables.less';
+
 .comment > .ant-comment {
   margin-top: 10px;
   padding-right: 10px;
@@ -243,7 +245,7 @@ defineExpose({ scrollToReply })
 .user-info {
   display: flex;
   justify-content: space-between;
-  @media (max-width: 768px) {
+  @media (max-width: @screen-md) {
     flex-direction: column;
   }
 }

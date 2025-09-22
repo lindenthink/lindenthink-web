@@ -563,7 +563,7 @@ const saveSettings = () => {
   padding: 0;
   
   // 响应式调整
-  @media (max-width: 768px) {
+  @media (max-width: @screen-md) {
     width: 100%;
     padding: 0 8px;
     min-width: 0;
@@ -581,7 +581,7 @@ const saveSettings = () => {
   padding: 0 !important;
   
   // 响应式调整
-  @media (max-width: 768px) {
+  @media (max-width: @screen-md) {
     margin: 4px;
     padding: 0 !important;
     min-width: 0;
@@ -597,7 +597,7 @@ const saveSettings = () => {
   transition: all 0.2s;
   flex: 1 1 15% !important;
 
-  @media (max-width: 768px) {
+  @media (max-width: @screen-md) {
     margin: 0px;
     padding: 0 !important;
     max-width: 0px !important;
@@ -622,7 +622,7 @@ const saveSettings = () => {
   cursor: pointer;
   
   // 响应式调整
-  @media (max-width: 768px) {
+  @media (max-width: @screen-md) {
     right: 20px;
     bottom: 60px;
   }
@@ -639,7 +639,7 @@ const saveSettings = () => {
 .user-dropdown {
   margin-right: 2em;
   min-width: 140px;
-  @media (max-width: 768px) {
+  @media (max-width: @screen-md) {
     margin-right: 1em;
     min-width: 80px;
   }
@@ -672,7 +672,7 @@ const saveSettings = () => {
   color: #555;
   font-weight: 600;
   // 响应式调整
-  @media (max-width: 768px) {
+  @media (max-width: @screen-md) {
     font-size: 12px;
   }
 }
@@ -705,7 +705,7 @@ const saveSettings = () => {
     0 9px 28px 8px rgba(0, 0, 0, 0.05);
 
   // 移动端适配
-  @media (max-width: 768px) {
+  @media (max-width: @screen-md) {
     width: 90vw;
     left: 5vw;
     transform: none;
