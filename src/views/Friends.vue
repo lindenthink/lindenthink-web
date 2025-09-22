@@ -53,7 +53,7 @@
           </template>
         </a-list>
       </div>
-      <Comment owner="2" />
+      <Comment :owner="id" />
     </a-layout-content>
     <a-layout-sider></a-layout-sider>
   </a-layout>
@@ -65,6 +65,7 @@ import { message, Modal } from 'ant-design-vue'
 import Comment from '@/components/Comment.vue'
 import { save, queryFriends } from '@/services/materialService'
 
+const id = 2
 const showApplyModel = ref(false)
 const friends = ref([])
 const formRef = ref(null)
