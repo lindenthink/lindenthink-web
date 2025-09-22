@@ -3,7 +3,7 @@
     <a-layout-sider breakpoint="md" collapsed-width="1"></a-layout-sider>
     <a-layout-content>
       <AsciiDocViewer :content="content" />
-      <Comment owner="1" />
+      <Comment :owner="id" />
     </a-layout-content>
     <a-layout-sider breakpoint="md" collapsed-width="1"></a-layout-sider>
   </a-layout>
@@ -13,6 +13,7 @@
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
 import Comment from '@/components/Comment.vue'
 
+const id = 1
 const content = `
 
 = 关于本站

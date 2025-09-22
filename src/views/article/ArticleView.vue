@@ -47,7 +47,7 @@
       <ReuseTemplate />
     </a-drawer>
     <a-affix :offset-top="180" v-if="isMobile">
-      <a-button @click="showMobileMenu = true">
+      <a-button @click="showMobileMenu = true" style="background-color:rgba(0, 0, 0, 0.6); color: #fff;">
         <MenuUnfoldOutlined />
       </a-button>
     </a-affix>
