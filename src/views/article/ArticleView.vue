@@ -146,19 +146,19 @@
               </ul>
 
               <div class="article-foot-nav">
-                <div v-if="article.prevId">
+                <div v-if="article.prevId" class="article-foot-nav-prev">
                   <router-link :to="{ path: `/articles/${article.prevId}` }"> <left-outlined /> {{ article.prevTitle }}
                   </router-link>
                 </div>
-                <div v-else>
+                <div v-else class="article-foot-nav-prev">
                   没有上一篇了
                 </div>
                 <HeartAnimation v-model="isLiked" @change="handleLikeChange" v-if="currentUser" />
-                <div v-if="article.nextId">
+                <div v-if="article.nextId" class="article-foot-nav-next">
                   <router-link :to="{ path: `/articles/${article.nextId}` }"> {{ article.nextTitle }} <right-outlined />
                   </router-link>
                 </div>
-                <div v-else>
+                <div v-else class="article-foot-nav-next">
                   没有下一篇了
                 </div>
               </div>
@@ -480,7 +480,7 @@ async function generateAnchors(retryCount = 0) {
     font-family: 'Lato', 'PingFang SC', 'Microsoft YaHei', sans-serif;
     font-size: 0.9em;
     text-align: center;
-
+    line-height: 1.5rem;
     @media (max-width: @screen-md) {
       margin: 0 1rem;
     }
@@ -506,6 +506,14 @@ async function generateAnchors(retryCount = 0) {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+  }
+  
+  .article-foot-nav-prev,
+  .article-foot-nav-next {
+     width: 35%;
+  }
+  .article-foot-nav-next {
+    text-align: right;
   }
 }
 

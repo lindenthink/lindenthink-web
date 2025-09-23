@@ -232,6 +232,10 @@ defineExpose({ scrollToReply })
   margin-top: 10px;
   background-color: white;
 
+  @media (max-width: @screen-md) {
+    padding: 1rem 0.5rem;
+  }
+
   .comment-quote {
     display: flex;
     justify-content: space-between;
