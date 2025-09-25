@@ -5,8 +5,8 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 
-import APlayer from 'APlayer'
-import 'APlayer/dist/APlayer.min.css'
+import APlayer from 'aplayer'
+import 'aplayer/dist/APlayer.min.css'
 import useLive2d from '@/composables/useLive2d'
 import useApiFetch from '@/composables/useApiFetch'
 
