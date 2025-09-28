@@ -204,6 +204,12 @@ watch(() => props.content, renderContent, { immediate: true })
   /* 圆角 */
   font-family: 'Courier New', Courier, monospace;
   /* 字体 */
+  white-space: pre-wrap;
+  /* 支持换行 */
+  word-break: break-word;
+  /* 在单词内换行 */
+  overflow-wrap: break-word;
+  /* 在长单词或URL地址内部换行 */
 }
 
 .line-number {

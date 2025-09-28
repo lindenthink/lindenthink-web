@@ -125,6 +125,12 @@
               </div>
             </div>
 
+            <!-- 引言展示区域 -->
+            <div v-if="article.outline" class="article-outline">
+              <div class="article-outline-title">引言</div>
+              <div class="article-outline-content">{{ article.outline }}</div>
+            </div>
+
             <AsciiDocViewer ref="viewerRef" :content="article.content" />
 
             <a-divider :style="{ color: 'lightgrey' }">•</a-divider>
@@ -484,6 +490,35 @@ async function generateAnchors(retryCount = 0) {
     @media (max-width: @screen-md) {
       margin: 0 1rem;
     }
+  }
+}
+
+/* 引言样式 */
+.article-outline {
+  margin: 2rem auto;
+  padding: 1.5rem;
+  max-width: 90%;
+  background-color: #f8f9fa;
+  border-left: 4px solid #979a9c;
+  border-radius: 0 4px 4px 0;
+
+  .article-outline-title {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #63686b;
+    margin-bottom: 0.8rem;
+  }
+
+  .article-outline-content {
+    font-size: 1em;
+    line-height: 1.8;
+    color: #333;
+    text-align: justify;
+  }
+
+  @media (max-width: @screen-md) {
+    margin: 1rem;
+    padding: 1rem;
   }
 }
 

@@ -81,7 +81,7 @@
           </span>
         </template>
         <template #extra v-if="!isMobile && item.cover">
-          <img width="400" alt="cover" :src="item.cover" />
+          <a-image :width="400" alt="cover" :src="item.cover" @click.stop />
         </template>
       </a-list-item>
     </template>

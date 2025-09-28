@@ -443,7 +443,7 @@ const insertAtCursor = (text) => {
 }
 
 const insertLink = () => {
-    const linkSyntax = 'https://www.example.com[Example Link]\n';
+    const linkSyntax = ' https://www.example.com[Example Link] ';
     insertAtCursor(linkSyntax);
 }
 
@@ -672,12 +672,12 @@ const insertPlantUml = () => {
 }
 
 const insertFootnote = () => {
-    const footnoteSyntax = 'footnote:[脚注内容]\n';
+    const footnoteSyntax = ' footnote:[脚注内容] ';
     insertAtCursor(footnoteSyntax);
 }
 
 const insertStrikeThrough = () => {
-    const strikeThroughSyntax = '[.line-through]#删除线内容#\n';
+    const strikeThroughSyntax = ' [.line-through]#删除线内容# ';
     insertAtCursor(strikeThroughSyntax);
 }
 
