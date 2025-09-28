@@ -411,24 +411,34 @@ const insertAtCursor = (text) => {
     nextTick(() => {
         if (!contentTextarea.value) {
             console.log('contentTextarea.value is null or undefined');
+            // 如果组件还未挂载，直接追加到内容末尾
+            articleForm.content += text;
             return;
         }
-        const textarea = contentTextarea.value.$el
-        if (!textarea) {
-            console.log('Failed to get textarea element');
-            return;
-        }
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const currentValue = articleForm.content;
-        // 在光标位置插入文本
-        articleForm.content = currentValue.substring(0, start) + text + currentValue.substring(end);
+        
+        // 获取原生textarea元素（考虑Ant Design组件的嵌套结构）
+        let textarea =  contentTextarea.value.$el.querySelector('textarea');
 
-        // 移动光标到插入文本之后
-        nextTick(() => {
-            textarea.selectionStart = textarea.selectionEnd = start + text.length;
-            textarea.focus();
-        });
+        if (textarea && typeof textarea.selectionStart === 'number') {
+            // 组件已挂载且能获取光标位置时，在光标位置插入
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const currentValue = articleForm.content;
+            
+            // 在光标位置插入文本
+            articleForm.content = currentValue.substring(0, start) + text + currentValue.substring(end);
+            
+            // 移动光标到插入文本之后（在下一个tick中）
+            nextTick(() => {
+                if (textarea) {
+                    textarea.selectionStart = textarea.selectionEnd = start + text.length;
+                    textarea.focus();
+                }
+            });
+        } else {
+            // 无法获取光标位置时，直接追加到内容末尾
+            articleForm.content += text;
+        }
     });
 }
 
@@ -662,12 +672,12 @@ const insertPlantUml = () => {
 }
 
 const insertFootnote = () => {
-    const footnoteSyntax = 'footnote:[脚注内容]';
+    const footnoteSyntax = 'footnote:[脚注内容]\n';
     insertAtCursor(footnoteSyntax);
 }
 
 const insertStrikeThrough = () => {
-    const strikeThroughSyntax = '[.line-through]#删除线内容#';
+    const strikeThroughSyntax = '[.line-through]#删除线内容#\n';
     insertAtCursor(strikeThroughSyntax);
 }
 

@@ -80,8 +80,8 @@
             {{ item.commentCount }}
           </span>
         </template>
-        <template #extra v-if="item.cover">
-          <img width="108" alt="cover" :src="item.cover" />
+        <template #extra v-if="!isMobile && item.cover">
+          <img width="400" alt="cover" :src="item.cover" />
         </template>
       </a-list-item>
     </template>
@@ -96,10 +96,12 @@ import { queryArticles, deleteArticle } from '@/services/articleService'
 import { queryCategory, querySeries } from '@/services/materialService'
 import dayjs from 'dayjs'
 import { useRouter } from 'vue-router'
+import { useMediaQuery } from '@vueuse/core'
 import { useUserStore } from '@/stores/user'
 import UserCard from '@/components/UserCard.vue'
 
 
+const isMobile = useMediaQuery('(max-width: 768px)')
 const articles = ref([])
 const loading = ref(false)
 const currentHoverItem = ref(null)
