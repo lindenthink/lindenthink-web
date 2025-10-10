@@ -200,11 +200,10 @@ import {
   LinkOutlined,
   ShareAltOutlined,
   FormOutlined,
-  MenuFoldOutlined,
   MenuUnfoldOutlined
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
-import { useMediaQuery, createReusableTemplate } from '@vueuse/core'
+import { useMediaQuery, createReusableTemplate, useClipboard } from '@vueuse/core'
 import Comment from '@/components/Comment.vue'
 import dayjs from 'dayjs'
 import AsciiDocViewer from '@/components/AsciiDocViewer.vue'
@@ -322,13 +321,16 @@ watch(
   }
 )
 
-// 分享功能 - 仅复制链接
+// 使用vueuse的useClipboard实现分享功能
+const { copy, isSupported } = useClipboard()
+
 const handleShare = async () => {
   try {
-    await navigator.clipboard.writeText(curUrl)
+    await copy(curUrl)
     message.success('链接已复制到剪贴板')
   } catch (err) {
-    message.error('复制链接失败: ' + (err.message || '未知错误'))
+    console.error('复制链接失败:', err)
+    message.error('复制链接失败，请手动复制页面链接')
   }
 }
 

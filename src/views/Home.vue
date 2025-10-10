@@ -465,7 +465,7 @@ const handleClick = (article) => {
 
   &:hover {
     color: @primary-color;
-    transform: translateX(0.3rem);
+    transform: translateY(-0.1rem);
   }
 }
 
