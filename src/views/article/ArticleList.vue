@@ -35,7 +35,7 @@
   </div>
 
   <div v-if="loading" style="margin: 16px;">
-    <a-skeleton avatar  active :paragraph="{ rows: 4 }" v-for="i in (0, 3)" :key="i" />
+    <a-skeleton avatar  active :paragraph="{ rows: 4 }" v-for="i in (0, 2)" :key="i" />
   </div>
   <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="articles" v-else>
     <template #renderItem="{ item }">
@@ -106,7 +106,7 @@ import UserCard from '@/components/UserCard.vue'
 
 const isMobile = useMediaQuery('(max-width: 768px)')
 const articles = ref([])
-const loading = ref(false)
+const loading = ref(true)
 const currentHoverItem = ref(null)
 const router = useRouter()
 const userStore = useUserStore()
