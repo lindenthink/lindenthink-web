@@ -34,7 +34,10 @@
     </div>
   </div>
 
-  <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="articles" :loading="loading">
+  <div v-if="loading" style="margin: 16px;">
+    <a-skeleton avatar  active :paragraph="{ rows: 4 }" v-for="i in (0, 3)" :key="i" />
+  </div>
+  <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="articles" v-else>
     <template #renderItem="{ item }">
       <a-list-item key="item.title" :class="{ 'article-item': true, 'hovered': currentHoverItem === item.id }"
         @mouseenter="handleMouseEnter(item.id)" @mouseleave="handleMouseLeave" @click="handleClick(item.id)">
