@@ -4,21 +4,26 @@
       <div class="article-toc">
         <a-tabs v-model:active-key="activeKey" centered>
           <a-tab-pane key="toc" tab="目录">
-            <div class="article-toc-content" v-if="anchors.length">
-              <a-anchor :affix="false" :offset-top="58" show-ink-in-fixed>
-                <a-anchor-link v-for="(anchor, index) in anchors" :key="index" :href="anchor.href"
-                  :title="anchor.title">
-                  <a-anchor-link v-for="(anchor2, index2) in anchor.children" v-if="anchor.hasChildren" :key="index2"
-                    :href="anchor2.href" :title="anchor2.title">
-                    <a-anchor-link v-for="(anchor3, index3) in anchor2.children" v-if="anchor2.hasChildren"
-                      :key="index3" :href="anchor3.href" :title="anchor3.title">
-                    </a-anchor-link>
-                  </a-anchor-link>
-                </a-anchor-link>
-              </a-anchor>
+            <div v-if="isLoadingAnchors" style="display: flex; justify-content: center; align-items: center; padding: 20px 0;">
+              <a-spin tip="目录加载中..." size="small" />
             </div>
             <div v-else>
-              <p style="color: #999; text-align: center; padding: 10px 0;">暂无目录内容</p>
+              <div class="article-toc-content" v-if="anchors.length">
+                <a-anchor :affix="false" :offset-top="58" show-ink-in-fixed>
+                  <a-anchor-link v-for="(anchor, index) in anchors" :key="index" :href="anchor.href"
+                    :title="anchor.title">
+                    <a-anchor-link v-for="(anchor2, index2) in anchor.children" v-if="anchor.hasChildren" :key="index2"
+                      :href="anchor2.href" :title="anchor2.title">
+                      <a-anchor-link v-for="(anchor3, index3) in anchor2.children" v-if="anchor2.hasChildren"
+                        :key="index3" :href="anchor3.href" :title="anchor3.title">
+                      </a-anchor-link>
+                    </a-anchor-link>
+                  </a-anchor-link>
+                </a-anchor>
+              </div>
+              <div v-else>
+                <p style="color: #999; text-align: center; padding: 10px 0;">暂无目录内容</p>
+              </div>
             </div>
           </a-tab-pane>
           <a-tab-pane key="series" tab="系列" v-if="article.seriesId">
@@ -232,6 +237,7 @@ const activeKey = ref('toc')
 const userStore = useUserStore()
 const currentUser = ref(null)
 const authorInfo = ref({})
+const isLoadingAnchors = ref(true)
 
 onMounted(() => {
   currentUser.value = userStore.userInfo
@@ -378,6 +384,7 @@ const handleLikeChange = async (liked) => {
 // }
 
 async function generateAnchors(retryCount = 0) {
+  isLoadingAnchors.value = true
   await nextTick() // 等待DOM更新
   try {
     if (!viewerRef.value || !viewerRef.value.$el) {
@@ -388,6 +395,7 @@ async function generateAnchors(retryCount = 0) {
         setTimeout(() => generateAnchors(retryCount + 1), 300);
       } else {
         message.error('无法生成目录: 内容查看器未准备好');
+        isLoadingAnchors.value = false
       }
       return;
     }
@@ -436,6 +444,8 @@ async function generateAnchors(retryCount = 0) {
   } catch (error) {
     console.error('Error generating anchors:', error)
     message.error(`生成目录时出错: ${error.message}`);
+  } finally {
+    isLoadingAnchors.value = false
   }
 }
 </script>

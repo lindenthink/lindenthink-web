@@ -7,13 +7,40 @@
 import { ref, watch, nextTick } from 'vue'
 import asciidoctor from '@asciidoctor/core'
 import kroki from 'asciidoctor-kroki'
-import hljs from 'highlight.js'
+import hljs from 'highlight.js/lib/core';
+// 只导入常用语言以减小体积
+import javascript from 'highlight.js/lib/languages/javascript';
+import typescript from 'highlight.js/lib/languages/typescript';
+import html from 'highlight.js/lib/languages/xml';
+import css from 'highlight.js/lib/languages/css';
+import json from 'highlight.js/lib/languages/json';
+import markdown from 'highlight.js/lib/languages/markdown';
+import java from 'highlight.js/lib/languages/java';
+import python from 'highlight.js/lib/languages/python';
+import sql from 'highlight.js/lib/languages/sql';
+import shell from 'highlight.js/lib/languages/bash';
+import yaml from 'highlight.js/lib/languages/yaml';
 /**
  * 参考：https://github.com/highlightjs/highlight.js/tree/main/src/styles
  * 暗色：vs2015.css github-dark.css atom-one-dark.css night-owl.css
  * 浅色: default.css docco.css foundation.css panda-syntax-light.css
  */
 import 'highlight.js/styles/vs2015.css'
+
+// 注册需要的语言
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('typescript', typescript);
+hljs.registerLanguage('html', html);
+hljs.registerLanguage('xml', html); // 同时注册xml
+hljs.registerLanguage('css', css);
+hljs.registerLanguage('json', json);
+hljs.registerLanguage('markdown', markdown);
+hljs.registerLanguage('java', java);
+hljs.registerLanguage('python', python);
+hljs.registerLanguage('sql', sql);
+hljs.registerLanguage('bash', shell);
+hljs.registerLanguage('shell', shell); // 同时注册shell
+hljs.registerLanguage('yaml', yaml);
 
 // 定义 props
 const props = defineProps({
