@@ -4,11 +4,12 @@
       <div class="article-toc">
         <a-tabs v-model:active-key="activeKey" centered>
           <a-tab-pane key="toc" tab="目录">
-            <div v-if="isLoadingAnchors" style="display: flex; justify-content: center; align-items: center; padding: 20px 0;">
+            <div v-if="isLoadingAnchors"
+              style="display: flex; justify-content: center; align-items: center; padding: 20px 0;">
               <a-spin tip="目录加载中..." size="small" />
             </div>
             <div v-else>
-              <div class="article-toc-content" v-if="anchors.length">
+              <div class="article-toc-content" v-if="anchors.length > 0">
                 <a-anchor :affix="false" :offset-top="58" show-ink-in-fixed>
                   <a-anchor-link v-for="(anchor, index) in anchors" :key="index" :href="anchor.href"
                     :title="anchor.title">
@@ -21,9 +22,10 @@
                   </a-anchor-link>
                 </a-anchor>
               </div>
-              <div v-else>
+              <div v-else-if="!isLoadingAnchors">
                 <p style="color: #999; text-align: center; padding: 10px 0;">暂无目录内容</p>
               </div>
+              <div v-else style="min-height: 100px;"></div>
             </div>
           </a-tab-pane>
           <a-tab-pane key="series" tab="系列" v-if="article.seriesId">
@@ -79,7 +81,8 @@
 
           <div class="article">
             <div class="article-status" v-if="currentUser && currentUser.id == article.userId">
-              <a-tag :color="article.state === 'APPROVED' ? 'green' : 'red'" style="margin-right: 2vw;" v-if="!isMobile">
+              <a-tag :color="article.state === 'APPROVED' ? 'green' : 'red'" style="margin-right: 2vw;"
+                v-if="!isMobile">
                 {{ article.state === 'APPROVED' ? '已发布' : '未发布' }}
               </a-tag>
               <a-button size="small" type="link" @click="handleEdit" v-if="!isMobile">
@@ -115,11 +118,11 @@
               <div class="article-head-meta">
                 <EditOutlined style="margin-right: 5px" />
                 作者： <UserCard :user-info="authorInfo"> <span style="cursor: pointer; color: #1890ff;"> {{ article.author
-                    }} </span>
+                }} </span>
                 </UserCard>
                 <a-divider type="vertical"></a-divider>
                 <CalendarOutlined style="margin-right: 5px" /><span>发表于：{{ dayjs(article.updated).format('YYYY-MM-DD')
-                  }}</span><a-divider type="vertical"></a-divider>
+                }}</span><a-divider type="vertical"></a-divider>
                 <a-divider v-if="article.type !== 'ORIGINAL'" type="vertical"></a-divider>
                 <EyeOutlined style="margin-right: 5px" /><span>浏览数：{{ article.visitCount }}</span><a-divider
                   type="vertical"></a-divider>
@@ -285,7 +288,7 @@ const loadArticle = async (id) => {
         brief: article.value.brief,
         email: article.value.email,
       }
-      await generateAnchors() // 生成目录锚点
+      setTimeout(generateAnchors, 200)
       if (activeKey.value == 'series' && !article.value.seriesId) {
         activeKey.value = 'toc'
       }
@@ -328,7 +331,7 @@ watch(
 )
 
 // 使用vueuse的useClipboard实现分享功能
-const { copy, isSupported } = useClipboard()
+const { copy } = useClipboard()
 
 const handleShare = async () => {
   try {
@@ -383,23 +386,14 @@ const handleLikeChange = async (liked) => {
 //   }
 // }
 
-async function generateAnchors(retryCount = 0) {
+async function generateAnchors() {
   isLoadingAnchors.value = true
-  await nextTick() // 等待DOM更新
   try {
     if (!viewerRef.value || !viewerRef.value.$el) {
-      // 添加重试逻辑，最多重试3次
-      if (retryCount < 3) {
-        // console.log(`尝试重试生成目录，当前重试次数: ${retryCount + 1}`);
-        // 等待300毫秒后重试
-        setTimeout(() => generateAnchors(retryCount + 1), 300);
-      } else {
-        message.error('无法生成目录: 内容查看器未准备好');
-        isLoadingAnchors.value = false
-      }
+      message.error('无法生成目录: 内容查看器未准备好');
+      isLoadingAnchors.value = false
       return;
     }
-
     const hList = viewerRef.value.$el.querySelectorAll('h1,h2,h3,h4')
     // 正在处理的父锚点集合
     const parentAnchors = []
@@ -499,6 +493,7 @@ async function generateAnchors(retryCount = 0) {
     font-size: 0.9em;
     text-align: center;
     line-height: 1.5rem;
+
     @media (max-width: @screen-md) {
       margin: 0 1rem;
     }
@@ -554,11 +549,12 @@ async function generateAnchors(retryCount = 0) {
     align-items: center;
     margin-bottom: 2rem;
   }
-  
+
   .article-foot-nav-prev,
   .article-foot-nav-next {
-     width: 35%;
+    width: 35%;
   }
+
   .article-foot-nav-next {
     text-align: right;
   }
