@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --mode production"
+    "build": "vite build --mode production",
+    "analyze": "vite build --mode analyze"
   },
   "dependencies": {
     "@ant-design/icons-vue": "6.1.0",
@@ -38,6 +39,7 @@
     "less": "4.1.1",
     "mockjs": "^1.1.0",
     "prettier": "3.5.3",
+    "rollup-plugin-visualizer": "^6.0.4",
     "typescript": "4.3.2",
     "vite": "2.5.4",
     "vite-plugin-mock": "^3.0.2",
